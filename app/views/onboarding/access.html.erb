@@ -1,5 +1,6 @@
 <div class="profile-page" data-controller="profile-selector">
 
+  <%# Effects Background %>
   <div class="background background-left"></div>
   <div class="background background-right"></div>
 
@@ -11,16 +12,16 @@
         <i class="fa-regular fa-id-card"></i>
       </div>
 
-      <h1>Selecione o perfil</h1>
+      <h1 class="tittle" id="tittle-size">Selecione o perfil</h1>
 
-      <p>
+      <p class="sub-tittle" id="subtittle-size">
         Como você deseja usar a plataforma Flopr?
       </p>
 
     </div>
 
     <div class="profiles">
-
+      <%# Profile Host %>
       <div
         class="profile-option"
         data-action="click->profile-selector#select"
@@ -35,12 +36,13 @@
 
         <h2>Organizador</h2>
 
-        <p>
+        <p class="sub-tittle" id="subtittle-size" >
           Gerencie seus torneios e clubes com precisão profissional.
         </p>
 
       </div>
 
+       <%# Profile Player %>
       <div
         class="profile-option"
         data-action="click->profile-selector#select"
@@ -55,7 +57,7 @@
 
         <h2>Jogador</h2>
 
-        <p>
+        <p class="sub-tittle" id="subtittle-size">
           Encontre os melhores jogos e acompanhe sua evolução.
         </p>
 
@@ -70,20 +72,5 @@
 
   </div>
 
-  <footer>
-
-    <strong>Flopr</strong>
-
-    <div class="links">
-
-      <a href="#">Privacy Policy</a>
-
-      <a href="#">Terms of Service</a>
-
-      <a href="#">Help Center</a>
-
-    </div>
-
-  </footer>
 
 </div>

@@ -1,0 +1,89 @@
+<div class="profile-page" data-controller="profile-selector">
+
+  <div class="background background-left"></div>
+  <div class="background background-right"></div>
+
+  <div class="profile-card">
+
+    <div class="profile-header">
+
+      <div class="profile-icon">
+        <i class="fa-regular fa-id-card"></i>
+      </div>
+
+      <h1>Selecione o perfil</h1>
+
+      <p>
+        Como você deseja usar a plataforma Flopr?
+      </p>
+
+    </div>
+
+    <div class="profiles">
+
+      <div
+        class="profile-option"
+        data-action="click->profile-selector#select"
+        data-profile-selector-target="option"
+        data-value="organizer">
+
+        <div class="radio"></div>
+
+        <div class="icon">
+          <i class="fa-regular fa-folder-open"></i>
+        </div>
+
+        <h2>Organizador</h2>
+
+        <p>
+          Gerencie seus torneios e clubes com precisão profissional.
+        </p>
+
+      </div>
+
+      <div
+        class="profile-option"
+        data-action="click->profile-selector#select"
+        data-profile-selector-target="option"
+        data-value="player">
+
+        <div class="radio"></div>
+
+        <div class="icon">
+          <i class="fa-regular fa-credit-card"></i>
+        </div>
+
+        <h2>Jogador</h2>
+
+        <p>
+          Encontre os melhores jogos e acompanhe sua evolução.
+        </p>
+
+      </div>
+
+    </div>
+
+    <%= link_to "Continuar",
+        "#",
+        class:"continue-btn",
+        data:{ profile_selector_target:"button"} %>
+
+  </div>
+
+  <footer>
+
+    <strong>Flopr</strong>
+
+    <div class="links">
+
+      <a href="#">Privacy Policy</a>
+
+      <a href="#">Terms of Service</a>
+
+      <a href="#">Help Center</a>
+
+    </div>
+
+  </footer>
+
+</div>

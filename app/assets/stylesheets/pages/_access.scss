@@ -1,0 +1,230 @@
+.profile-page{
+  min-height:100vh;
+  background:#09090b;
+  color:white;
+
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+
+  position:relative;
+  overflow:hidden;
+}
+
+.background{
+  position:absolute;
+  width:550px;
+  height:550px;
+  border-radius:50%;
+  filter:blur(90px);
+}
+
+.background-left{
+  top:-180px;
+  left:-120px;
+  background:#5b4bff;
+}
+
+.background-right{
+  bottom:-180px;
+  right:-120px;
+  background:#ff2348;
+}
+
+.profile-card{
+
+  width:820px;
+
+  background:#141418;
+
+  border:1px solid #2d2d34;
+
+  border-radius:18px;
+
+  padding:60px;
+
+  z-index:2;
+}
+
+.profile-header{
+
+  text-align:center;
+
+  margin-bottom:50px;
+
+  h1{
+    font-size:48px;
+    font-weight:700;
+    margin-top:18px;
+  }
+
+  p{
+    color:#9d9da6;
+  }
+
+}
+
+.profile-icon{
+
+  width:50px;
+  height:50px;
+
+  margin:auto;
+
+  border-radius:12px;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  background:#1d1d22;
+}
+
+.profiles{
+
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:20px;
+
+}
+
+.profile-option{
+
+  padding:30px;
+
+  border:1px solid #2b2b33;
+
+  border-radius:14px;
+
+  cursor:pointer;
+
+  transition:.25s;
+
+  position:relative;
+
+}
+
+.profile-option:hover{
+
+  border-color:#8d7cff;
+
+}
+
+.profile-option.selected{
+
+  border-color:#8d7cff;
+
+  background:#1b1a24;
+
+}
+
+.radio{
+
+  position:absolute;
+
+  right:20px;
+
+  top:20px;
+
+  width:18px;
+
+  height:18px;
+
+  border-radius:50%;
+
+  border:2px solid #7d7d86;
+
+}
+
+.profile-option.selected .radio{
+
+  background:#8879ff;
+
+  border-color:#8879ff;
+
+}
+
+.icon{
+
+  width:50px;
+
+  height:50px;
+
+  border-radius:12px;
+
+  background:#202026;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  margin-bottom:24px;
+
+}
+
+h2{
+
+  margin-bottom:10px;
+
+}
+
+p{
+
+  color:#9797a4;
+
+  line-height:1.5;
+
+}
+
+.continue-btn{
+
+  margin:50px auto 0;
+
+  width:340px;
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  height:52px;
+
+  border-radius:30px;
+
+  background:#8b80ff;
+
+  color:white;
+
+  text-decoration:none;
+
+  font-weight:600;
+
+}
+
+footer{
+
+  width:820px;
+
+  margin-top:30px;
+
+  display:flex;
+
+  justify-content:space-between;
+
+  color:#8d8d95;
+
+}
+
+.links{
+
+  display:flex;
+
+  gap:24px;
+
+}

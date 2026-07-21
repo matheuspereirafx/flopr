@@ -5,9 +5,16 @@
   font-weight: bold;
 }
 
-
-.sub-tittle {
-  font-family: $font-secondary;
-  line-height: $subtittle-line-height ;
+.subtittle {
+  font-family: $font-primary;
+  line-height: $subphtittle-line-height ;
   letter-spacing: $subtittlle-letter-spacing ;
+  font-weight: bold;
+}
+
+
+.paragraph-tittle {
+  font-family: $font-secondary;
+  line-height: $paragraphtittle-line-height ;
+  letter-spacing: $paragraphtittlle-letter-spacing ;
 }

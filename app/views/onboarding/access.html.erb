@@ -9,12 +9,12 @@
     <div class="profile-header">
 
       <div class="profile-icon">
-        <i class="fa-regular fa-id-card"></i>
+        <%= image_tag "icons/flopr.png" %>
       </div>
 
-      <h1 class="tittle" id="tittle-size">Selecione o perfil</h1>
+      <h1 class="tittle" id="tittle-custom">Selecione o perfil</h1>
 
-      <p class="sub-tittle" id="subtittle-size">
+      <p class="paragraph-tittle" id="paragraph-size">
         Como você deseja usar a plataforma Flopr?
       </p>
 
@@ -34,15 +34,15 @@
           <%= image_tag "icons/organizadoricon.svg" %>
         </div>
 
-        <h2>Organizador</h2>
+        <h2 class="subtittle">Organizador</h2>
 
-        <p class="sub-tittle" id="subtittle-size" >
+        <p class="paragraph-tittle" id="paragraph-size" >
           Gerencie seus torneios e clubes com precisão profissional.
         </p>
 
       </div>
 
-       <%# Profile Player %>
+      <%# Profile Player %>
       <div
         class="profile-option"
         data-action="click->profile-selector#select"
@@ -53,11 +53,12 @@
 
         <div class="icon">
           <%= image_tag "icons/playericon.svg" %>
+
         </div>
 
-        <h2>Jogador</h2>
+        <h2 class="subtittle">Jogador</h2>
 
-        <p class="sub-tittle" id="subtittle-size">
+        <p class="paragraph-tittle" id="paragraph-size">
           Encontre os melhores jogos e acompanhe sua evolução.
         </p>
 

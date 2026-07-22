@@ -1,4 +1,5 @@
-.clas
+
+
 
 .login-page {
 
@@ -17,58 +18,58 @@
 
 .login-card{
 
-  width:440px;
-
+  width:450px;
   background:#1E1D23;
-
   border:1px solid #2d2c34;
-
   border-radius:14px;
-
-  padding:36px;
-
-  box-shadow:
-  0 20px 40px rgba(0,0,0,.35);
+  padding:24px;
+  box-shadow: 0 20px 40px rgba(0,0,0,.35);
 
 }
-
 .login-card h1{
 
   color:white;
-
-  font-size:34px;
-
-  font-weight:700;
-
-  margin-bottom:6px;
+  font-size: $font-display-mm-size;
+  font-weight:bold;
+  font-family: $font-primary;
+  line-height: $tittle-line-height;
+  letter-spacing: $tittle-letter-spacing;
+  height: 39px;
 
 }
+
+
+.card-login {
+
+  width: 390px;
+  height: 285px;
+
+}
+
 
 .subtitle{
 
   color:#A0A0B2;
+  font-family: $font-secondary;
+  font-size: $font-body-sm-size;
+  margin-bottom:24px;
 
-  font-size:14px;
 
-  margin-bottom:30px;
 
 }
 
 .field{
 
-  margin-bottom:22px;
+  margin-bottom:16px;
 
 }
 
 .field label{
-
+  font-family: $font-secondary;
+  font-size: $font-body-sm-size;
   display:block;
-
-  color:white;
-
+  color:#C9C4D3;
   margin-bottom:8px;
-
-  font-size:14px;
 
 }
 
@@ -84,16 +85,19 @@
 
 .password-header a{
 
-  color:#B8A7FF;
+  font-family: $font-secondary;
 
-  font-size:13px;
+  color:#C7BFFF;
+
+  font-size: 12px;
 
   text-decoration:none;
+
+  font-weight: 400;
 
 }
 
 .input-wrapper{
-
   position:relative;
 
 }
@@ -102,7 +106,7 @@
 
   position:absolute;
 
-  left:14px;
+  left:13px;
 
   top:50%;
 
@@ -144,7 +148,7 @@
 
   position:absolute;
 
-  right:14px;
+  right:30px;
 
   top:50%;
 

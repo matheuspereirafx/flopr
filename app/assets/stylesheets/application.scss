@@ -2,7 +2,11 @@
 @import "bootstrap";
 @import "font-awesome";
 
-// Your CSS partials
+// Your Components
 @import "components/index";
-@import "pages/index";
+
+// Your Config
 @import "config/variables";
+
+//Pages
+@import "pages/index";

@@ -21,7 +21,7 @@
         <div class="input-wrapper">
 
           <%# Icon Email%>
-          <i class="fa-regular fa-envelope"></i>
+          <%=  image_tag  "icons/iconemail.svg", class: "input-icon"  %>
 
           <%= f.input :email,
             label: false,
@@ -52,7 +52,8 @@
           data-controller="password-toggle">
 
           <%# Icon Password%>
-          <i class="fa-solid fa-lock"></i>
+          <%=  image_tag  "icons/iconpassoword.svg", class: "input-icon"  %>
+
 
           <%= f.input :password,
                 label: false,
@@ -92,7 +93,7 @@
     <p class="signup">
       Não tem uma conta?
 
-      <%= link_to "Entrar",
+      <%= link_to "Cadastrar",
             new_registration_path(resource_name) %>
 
     </p>

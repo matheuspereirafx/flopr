@@ -1,11 +1,4 @@
-.tittle {
-  font-family: $font-primary;
-  line-height: $tittle-line-height;
-  letter-spacing: $tittle-letter-spacing;
-  font-weight: bold;
-  color: #E5E1E3;
-  font-size: $font-display-lg-size;
-}
+
 
 .subtittle {
   font-family: $font-primary;
@@ -15,21 +8,16 @@
   font-size: $font-display-md-size;
 }
 
-.paragraph-tittle {
-  font-family: $font-secondary;
-  line-height: $paragraphtittle-line-height ;
-  letter-spacing: $paragraphtittle-letter-spacing ;
-  font-size: $font-body-md-size;
-  font-weight: none;
-  color: #C9C4D3;
-}
 
-h2{
+.profile-page {
+
+  h2{
   margin-bottom:10px;
-}
+  }
 
-p{
-  line-height:1.5;
+  p{
+    line-height:1.5;
+  }
 }
 
 
@@ -177,19 +165,6 @@ p{
 
 }
 
-.icon{
-
-  width:50px;
-  height:50px;
-  border-radius:12px;
-  background:#202026;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  margin-bottom:24px;
-
-}
-
 
 
 .continue-btn{
@@ -206,6 +181,9 @@ p{
   text-decoration:none;
   font-weight:600;
 }
+
+
+
 
 .links{
 

@@ -69,7 +69,7 @@
 
   color:#26213B;
 
-  font-weight:700;
+  font-weight:600;
 
   transition:.25s;
 
@@ -139,6 +139,19 @@
 
 // Checkbox Terms
 
+.terms{
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 32px;
+}
+
+.terms-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
 .terms label{
   color:#9f9cab;
   font-size:13px;
@@ -153,14 +166,7 @@
 
 }
 
-.terms{
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin-bottom: 26px;
-  margin-top: 26px;
 
-}
 
 .terms a{
   color:#C7BFFF;
@@ -199,4 +205,10 @@
   color:#1E1D23;
   font-size:12px;
   font-weight:bold;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-left: 28px; // alinha com o texto do label
 }

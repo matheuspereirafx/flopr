@@ -67,14 +67,12 @@
 
 .field{
   width:100%;
-  margin-bottom:16px;
-
 }
 
 .field label{
   font-family: $font-secondary;
   font-size: $font-body-sm-size;
-  display:block;
+
   color:#C9C4D3;
   margin-bottom:8px;
 
@@ -101,54 +99,6 @@
   text-decoration:none;
 
   font-weight: 400;
-
-}
-
-.input-wrapper{
-  width:100%;
-  position:relative;
-
-}
-
-.input-wrapper .input-icon{
-
-  position:absolute;
-
-  left:13px;
-
-  top:50%;
-
-  transform:translateY(-50%);
-
-  color:#7b7b89;
-
-}
-
-.input-wrapper input{
-
-  width:100%;
-
-  height:48px;
-
-  padding-left:42px;
-
-  padding-right:42px;
-
-  border-radius:8px;
-
-  border:1px solid #373640;
-
-  background:#17161C;
-
-  color:white;
-
-}
-
-.input-wrapper input:focus{
-
-  outline:none;
-
-  border-color:#A996FF;
 
 }
 

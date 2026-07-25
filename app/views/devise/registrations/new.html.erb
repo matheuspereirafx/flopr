@@ -29,11 +29,11 @@
             <%= f.input :email,
                   label: false,
                   required: true,
+                  error:false,
                   input_html: {
                     autocomplete: "email",
                     placeholder: "name@company.com"
                   } %>
-
           </div>
 
         </div>
@@ -53,6 +53,7 @@
             <%= f.input :password,
                   label: false,
                   required: true,
+                  error:false,
                   input_html: {
                     autocomplete: "new-password",
                     placeholder: "••••••••",
@@ -73,7 +74,7 @@
             </button>
 
           </div>
-
+        
         </div>
 
         <%# Confirm Password %>
@@ -89,12 +90,14 @@
             <%= f.input :password_confirmation,
                   label: false,
                   required: true,
+                  error:false,
                   input_html: {
                     autocomplete: "new-password",
                     placeholder: "••••••••"
                   } %>
 
           </div>
+
 
         </div>
 

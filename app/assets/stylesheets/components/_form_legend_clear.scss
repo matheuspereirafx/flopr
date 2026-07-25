@@ -9,6 +9,13 @@ legend ~ div.form-check:first-of-type {
   clear: left;
 }
 
+/// Remove Bootstrap validation icon
+
+.input-wrapper input.is-invalid {
+  background-image: none !important;
+  padding-right: 12px !important;
+}
+
 
 .input-wrapper input:-webkit-autofill,
 .input-wrapper input:-webkit-autofill:hover,

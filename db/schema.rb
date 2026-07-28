@@ -10,9 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_14_231701) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_27_193046) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "clubs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name"
+    t.bigint "owner_id"
+    t.datetime "updated_at", null: false
+    t.string "whatsapp_contact_number"
+    t.index ["owner_id"], name: "index_clubs_on_owner_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -26,4 +35,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_231701) do
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
+
+  add_foreign_key "clubs", "users", column: "owner_id"
 end

@@ -1,0 +1,122 @@
+<div class="club-form-page">
+
+  <div class="club-form-card">
+
+    <header class="club-form-header">
+      <h1>Create Your Club</h1>
+      <p>
+        Define the visual identity and contact details of your private poker club.
+        This information will be visible to all members.
+      </p>
+    </header>
+
+
+    <%= simple_form_for @club do |f| %>
+
+      <!-- Logo Upload -->
+      <div class="form-section">
+
+        <label class="form-label">
+          Club Logo
+        </label>
+
+        <label class="upload-box">
+          <%# image_tag "icons/upload.svg", class: "upload-icon" %>
+
+          <span>
+            Upload Image
+          </span>
+
+          <%= f.file_field :logo, class: "hidden-input" %>
+
+        </label>
+
+      </div>
+
+
+      <!-- Club Name -->
+      <div class="form-section">
+
+        <%= f.input :name,
+          label: "Club Name",
+          placeholder: "Ex: Monte Carlo Elite",
+          input_html: {
+            class: "dark-input"
+          },
+          label_html: {
+            class: "form-label"
+          }
+        %>
+
+
+        <div class="info-message">
+          <span>ⓘ</span>
+
+          The club name should be unique and identify your poker club.
+        </div>
+
+      </div>
+
+
+
+      <!-- Contact -->
+      <div class="form-section contact-section">
+
+        <h3>
+          <span class="contact-icon">
+            ☎
+          </span>
+
+          Contact Channels
+        </h3>
+
+
+        <%= f.input :whatsapp_contact_number,
+          label: "WhatsApp Contact Number",
+          placeholder: "+55 11 99999-9999",
+          input_html: {
+            class: "dark-input"
+          }
+        %>
+
+
+        <div class="info-message">
+          <span>ⓘ</span>
+
+          This number will be used to contact organizers and support players.
+        </div>
+
+
+      </div>
+
+
+
+      <!-- Terms -->
+      <div class="terms">
+
+        <%= check_box_tag :terms, true %>
+
+        <label>
+          I agree that my club information may be displayed publicly.
+        </label>
+
+      </div>
+
+
+
+      <footer class="form-actions">
+
+        <%= link_to clubs_path, class: "back-button" do %>
+          ← Back
+        <% end %>
+
+        <%= f.button :submit, club.persisted? ? "Salvar alterações" : "Criar clube" %>
+
+      </footer>
+
+
+    <% end %>
+
+  </div>
+
+</div>

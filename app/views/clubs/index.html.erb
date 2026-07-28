@@ -1,0 +1,52 @@
+<div class="clubs-page">  
+
+  <div class="clubs-header">
+
+    <div>
+      <h1>Your Clubs</h1>
+
+      <p>
+        Manage your poker organizations, view active tournaments,
+        and oversee member analytics across all your venues.
+      </p>
+
+    </div>
+
+    <%= link_to "Create New Club",
+        new_club_path,
+        class: "btn-primary" %>
+
+  </div>
+
+
+  <div class="clubs-toolbar">
+
+      <input
+        type="text"
+        placeholder="Search clubs..."
+        class="search-input">
+
+      <button class="secondary-button">
+        Filter
+      </button>
+
+      <button class="secondary-button">
+        Sort
+      </button>
+
+  </div>
+
+
+
+  <div class="clubs-grid">
+
+      <% @clubs.each do |club| %>
+
+          <%= render "shared/components/club_card",
+              club: club %>
+
+      <% end %>
+
+  </div>
+
+</div>

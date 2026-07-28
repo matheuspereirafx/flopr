@@ -1,0 +1,60 @@
+.clubs-page {
+    min-height: 100vh;
+    padding:48px;
+    background-color: $backgroundclub;
+
+}
+
+.clubs-header{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:48px;
+
+}
+
+.clubs-header h1{
+  color: #ffffff;
+  font-family: $font-primary;
+  font-size: $font-display-lg-size;
+  line-height: $tittle-line-height;
+  letter-spacing: $tittle-letter-spacing;
+  font-weight: bold;  
+}
+
+.clubs-header p{
+
+  max-width:560px;
+  color:#C9C4D3;
+  font-family: $font-secondary;
+  font-size: $font-body-md-size;
+  line-height: $paragraphtittle-line-height;
+  letter-spacing: $paragraphtittle-letter-spacing;
+  font-weight: 400;
+}
+
+.clubs-toolbar{
+
+    display:flex;
+    gap:8px;
+    margin-bottom:24px;
+
+}
+
+.search-input{
+
+    width:320px;
+
+}
+
+.clubs-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(auto-fill,minmax(340px,1fr));
+
+    gap:24px;
+
+}

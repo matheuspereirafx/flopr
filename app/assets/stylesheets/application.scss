@@ -1,12 +1,15 @@
-// External libraries
+
+// Your Config variables
+@import "config/variables";
+
 @import "bootstrap";
 @import "font-awesome";
+
 
 // Your Components
 @import "components/index";
 
-// Your Config
-@import "config/variables";
+
 
 //Pages
 @import "pages/index";

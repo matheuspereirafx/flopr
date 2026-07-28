@@ -1,0 +1,35 @@
+<div class="club-card">
+
+  <div class="club-card-header">
+
+    <div class="club-logo">
+      <span><%= club.name.first.upcase %></span>
+    </div>
+
+    <div class="club-info">
+      <h3><%= club.name %></h3>
+
+      <span class="count-member">
+        0 membros
+      </span>
+    </div>
+
+    <button class="menu-button" type="button">
+      ⋮
+    </button>
+
+  </div>
+
+  <div class="club-tournament">
+     <%#= Criar um card para torneio Componente %>
+    <div class="no-tournament">
+      Nenhum torneio agendado
+    </div>
+  </div>
+
+  <%#= link_to "Gerenciar clube",
+      club_path(club),
+      class: "club-button" %>
+
+</div>
+

@@ -1,0 +1,80 @@
+.club-card{
+
+    background: linear-gradient(
+        60deg,
+        #201F20 40%,
+        #131314 80%
+    );
+    border:1px solid #2D2C34;
+
+    border-radius:12px;
+
+    padding:24px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:32px;
+
+}
+
+.club-card-header{
+
+    display:flex;
+    align-items:center;
+
+
+}
+
+.club-card-header h3{
+
+    color: #ffffff;
+    font-family: $font-primary;
+    font-size: $font-body-lg-size;
+    line-height: $paragraphtittle-line-height;
+    letter-spacing: $paragraphtittle-letter-spacing;
+    font-weight: 600;
+
+}
+
+
+.club-logo{
+
+    width:48px;
+    height:48px;
+
+    border-radius:8px;
+
+    background:#353435;
+
+}
+
+
+.club-info{
+
+    flex:1;
+
+    margin-left:16px;
+
+}
+
+.club-tournament{
+
+    border-radius:8px;
+
+    background:#0E0E0F;
+
+    padding:16px;
+
+    min-height:110px;
+
+}
+
+.club-button{
+
+    width:100%;
+
+    text-align:center;
+
+}

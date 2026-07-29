@@ -1,22 +1,19 @@
 .club-card{
 
+  background: rgba(25, 24, 30, .20);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  box-shadow:
+    0 10px 20px rgba(0,0,0,.35);
 
-    background: linear-gradient(
-        40deg,
-        #201F20 20%,
-        #131314 50%
-    );
-    border:1px solid #2D2C34;
 
-    border-radius:12px;
+  display:flex;
+  flex-direction:column;
+  gap:32px;
 
-    padding:24px;
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:32px;
+  padding: 24px;
 
 }
 

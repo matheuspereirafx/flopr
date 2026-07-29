@@ -1,0 +1,55 @@
+.btn-primary {
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  height: 48px;
+  padding: 0 32px;
+
+  border-radius: 999px;
+
+  background: #C7BFFF;
+  color: #2E2176;
+
+  font-family: $font-secondary;
+  font-size: 14px;
+  font-weight: 600;
+
+  text-decoration: none;
+
+  transition:
+    background .2s ease,
+    transform .15s ease,
+    box-shadow .2s ease;
+
+  &:hover {
+    background: #D2C5FF;
+    color: #2D2368;
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(199, 184, 255, .28);
+  }
+
+  &:active {
+    transform: translateY(0);
+    background: #B8A6FF;
+  }
+}
+
+.btn-icon {
+  width: 18.5px;
+  height: 18.6px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 22px;
+  line-height: 1;
+
+  flex-shrink: 0;
+  
+  transform: translateY(-1px);
+}

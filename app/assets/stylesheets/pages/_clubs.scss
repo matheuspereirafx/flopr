@@ -20,18 +20,20 @@
   font-size: $font-display-lg-size;
   line-height: $tittle-line-height;
   letter-spacing: $tittle-letter-spacing;
-  font-weight: bold;  
+  font-weight: bold;
 }
 
 .clubs-header p{
 
-  max-width:560px;
+  max-width:610px;
+    font-weight: 400;
+
   color:#C9C4D3;
   font-family: $font-secondary;
   font-size: $font-body-md-size;
   line-height: $paragraphtittle-line-height;
   letter-spacing: $paragraphtittle-letter-spacing;
-  font-weight: 400;
+
 }
 
 .clubs-toolbar{
@@ -49,11 +51,12 @@
 }
 
 .clubs-grid{
+    width: 100%;
+    min-height: 350px;
 
     display:grid;
-
     grid-template-columns:
-        repeat(auto-fill,minmax(340px,1fr));
+        repeat(auto-fill,minmax(440px,1fr));
 
     gap:24px;
 

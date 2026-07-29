@@ -12,30 +12,9 @@
 
     </div>
 
-    <%= link_to "Criar Novo Clube",
-        new_club_path,
-        class: "btn-primary" %>
+    <%= render "shared/components/buttons/button_create" %>
 
   </div>
-
-
-  <div class="clubs-toolbar">
-
-      <input
-        type="text"
-        placeholder="Pesquise clubes..."
-        class="search-input">
-
-      <button class="secondary-button">
-        Filtro
-      </button>
-
-      <button class="secondary-button">
-        Ordenar
-      </button>
-
-  </div>
-
 
 
   <div class="clubs-grid">

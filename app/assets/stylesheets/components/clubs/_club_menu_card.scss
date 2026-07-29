@@ -35,3 +35,12 @@
   background: rgba(255,255,255,.08);
 
 }
+
+
+@media (max-width: 768px) {
+
+  .menu-button {
+    grid-area: menu;
+    justify-self: end;
+  }
+}

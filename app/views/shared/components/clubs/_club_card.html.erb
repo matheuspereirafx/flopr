@@ -2,9 +2,8 @@
 
   <div class="club-card-header">
 
-    <div class="club-logo">
-      <span><%= club.name.first.upcase %></span>
-    </div>
+    <%= render "shared/components/clubs/club_logo",
+      club: club %>
 
     <div class="club-info">
       <h3><%= club.name %></h3>
@@ -14,22 +13,17 @@
       </span>
     </div>
 
-    <button class="menu-button" type="button">
-      ⋮
-    </button>
+    <%= render "shared/components/clubs/club_menu_card",
+      club: club %>
 
   </div>
 
-  <div class="club-tournament">
-     <%#= Criar um card para torneio Componente %>
-    <div class="no-tournament">
-      Nenhum torneio agendado
-    </div>
-  </div>
+
+  <%= render "shared/components/clubs/club_tournament_card",
+      club: club %>
 
   <%#= link_to "Gerenciar clube",
       club_path(club),
       class: "club-button" %>
 
 </div>
-

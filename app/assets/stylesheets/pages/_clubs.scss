@@ -1,7 +1,47 @@
 .clubs-page {
-    min-height: 100vh;
-    padding:48px;
-    background-color: $backgroundclub;
+
+  position: relative;
+
+  min-height: 100vh;
+
+  padding: 48px;
+
+  overflow: hidden;
+
+  background-color: $backgroundclub;
+
+}
+
+.clubs-page::before {
+
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  background:
+    linear-gradient(
+      rgba(18,18,20,.70),
+      rgba(18,18,20,.90)
+    ),
+    image-url("backgroundclub.jpg");
+
+  background-size: cover;
+  background-position: center;
+
+  filter: blur(3px);
+
+  transform: scale(1.08);
+
+  z-index: 0;
+}
+
+.clubs-page > * {
+
+  position: relative;
+
+  z-index: 1;
 
 }
 

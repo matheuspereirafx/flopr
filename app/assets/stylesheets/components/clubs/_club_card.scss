@@ -3,10 +3,9 @@
   background: rgba(25, 24, 30, .20);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 16px;
   box-shadow:
-    0 10px 20px rgba(0,0,0,.35);
+    0 10px 10px rgba(0,0,0,.35);
 
 
   display:flex;
@@ -15,7 +14,30 @@
 
   padding: 24px;
 
+  transition:
+    background .3s ease,
+    transform .3s ease,
+    box-shadow .3s ease;
+
 }
+
+.club-card:hover {
+
+  transform: translateY(-6px) scale(1.02);
+
+  background: linear-gradient(
+    135deg,
+    #201F20 1%,
+    #52489C 100%
+  );
+
+
+  transform: translateY(-4px);
+
+  box-shadow:
+    0 0 24px rgba(0, 190, 200, .12);
+}
+
 
 .club-card-header{
 

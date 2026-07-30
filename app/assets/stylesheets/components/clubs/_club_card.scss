@@ -1,15 +1,19 @@
 .club-card{
 
-
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
 
+  color: inherit;
+  text-decoration: none;
+
+  position: relative;
+
   background: rgba(25, 24, 30, .20);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  box-shadow:
-    0 10px 10px rgba(0,0,0,.35);
+
+  box-shadow:0 10px 10px rgba(0,0,0,.35);
 
   border-radius: 16px;
   padding: 24px;
@@ -20,7 +24,6 @@
   gap:32px;
 
 
-
   transition:
     background .3s ease,
     transform .3s ease,
@@ -28,9 +31,32 @@
 
 }
 
+.club-card-link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+.club-card-header,
+.club-tournament-card {
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
+}
+
+
+.club-menu-card,
+.menu-button,
+.club-menu {
+  position: relative;
+  z-index: 3;
+  pointer-events: auto;
+}
+
 .club-card:hover {
 
-  transform: translateY(-6px) scale(1.02);
+  transform: translateY(-4px);
 
   background: linear-gradient(
     135deg,
@@ -39,7 +65,6 @@
   );
 
 
-  transform: translateY(-4px);
 
   box-shadow:
     0 0 24px rgba(0, 190, 200, .12);

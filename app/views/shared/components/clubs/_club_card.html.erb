@@ -1,5 +1,10 @@
 <div class="club-card">
 
+  <%= link_to club_path(club),
+      class: "club-card-link",
+      aria: { label: "Abrir #{club.name}" } do %>
+  <% end %>
+
   <div class="club-card-header">
 
     <%= render "shared/components/clubs/club_logo",

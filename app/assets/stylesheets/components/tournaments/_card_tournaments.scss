@@ -586,7 +586,7 @@
    MOBILE
 ========================= */
 
-@media (max-width: 768px) {
+@media (min-width: 451px) and (max-width: 768px) {
   .club-show-page {
     padding: 38px 20px 48px;
 
@@ -675,7 +675,27 @@
    MOBILE PEQUENO
 ========================= */
 
-@media (max-width: 420px) {
+@media (max-width: 450px) {
+
+  .club-events__grid .tournament-card {
+    flex-basis: 88%;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+
+  .tournament-card__image-wrapper {
+    height: 160px;
+  }
+
+  .tournament-card__content {
+    padding: 16px;
+  }
+
+  .tournament-card__title {
+    font-size: 20px;
+  }
+
+
   .club-show-page {
     padding-inline: 14px;
   }
@@ -692,17 +712,6 @@
     gap: 14px;
   }
 
-  .club-events__grid .tournament-card {
-    flex-basis: 94%;
-  }
-
-  .tournament-card__content {
-    padding-inline: 18px;
-  }
-
-  .tournament-card__title {
-    font-size: 22px;
-  }
 
   .tournament-card__information-value,
   .tournament-card__players-value strong {

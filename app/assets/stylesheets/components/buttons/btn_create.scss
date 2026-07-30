@@ -57,7 +57,25 @@
 .width-m{
   width: 180px;
   height: 48;
+  max-width: 100%;
+  max-height: 100%;
+  box-sizing: border-box;
+
 }
 .width-g {
   width: 277px;
+  box-sizing: border-box;
+}
+
+
+
+/* =========================
+   Responsividade
+========================= */
+
+@media (max-width: 450px) {
+
+  .width-g{
+    width: 100%;
+  }
 }

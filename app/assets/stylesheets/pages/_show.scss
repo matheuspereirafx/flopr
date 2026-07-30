@@ -164,3 +164,26 @@
 }
 
 
+
+
+/* =========================
+   JOGADORES ATIVOS
+========================= */
+
+
+/* =========================
+   Responsividade
+========================= */
+@media (max-width: 450px) {
+ .club-show-hero__players {
+  display: none;
+ }
+
+ .club-show-hero{
+    margin: 0 auto 32px;
+ }
+
+ .club-show-page {
+    padding-top: 48px;
+  }
+}

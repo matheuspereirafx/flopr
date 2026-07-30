@@ -39,8 +39,13 @@ class ClubsController < ApplicationController
   end
 
   def destroy
-  end
+    @club = current_user.clubs.find(params[:id])
+    @club.destroy
 
+    redirect_to clubs_path,
+            notice: "Clube excluído com sucesso.",
+            status: :see_other
+  end
 
   private
 

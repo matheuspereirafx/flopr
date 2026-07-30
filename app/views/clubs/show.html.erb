@@ -9,6 +9,7 @@
         Premium Club
       </span>
 
+      <%# Nome Clube %>
       <h1 class="club-show-hero__title">
         <%= @club.name %>
       </h1>
@@ -17,15 +18,15 @@
         Gerencie seus torneios, acompanhe eventos ao vivo e consulte os resultados.
       </p>
 
-      <%# Temporariamente sem rota %>
-
+      <%# Temporariamente sem rota correta de torneio%>
       <%= render "shared/components/buttons/button_create",
           text: "Criar Novo Torneio",
-          path: new_club_path%>
+          path: new_club_path,
+          class:"width-g" %>
 
     </div>
 
-
+    <%# Jogadores Clube Ativos, sem backend%>
     <div class="club-show-hero__players">
 
       <span class="club-show-hero__players-label">
@@ -41,144 +42,7 @@
   </section>
 
 
-  <section class="club-events">
-
-    <header class="club-events__header">
-
-      <h2 class="club-events__title">
-        Eventos
-      </h2>
-
-      <div class="club-events__filters">
-
-        <button
-          type="button"
-          class="club-events__filter"
-        >
-          Todos
-        </button>
-
-        <button
-          type="button"
-          class="club-events__filter club-events__filter--active"
-        >
-          Ao vivo
-        </button>
-
-        <button
-          type="button"
-          class="club-events__filter"
-        >
-          Próximos
-        </button>
-
-      </div>
-
-    </header>
-
-
-    <div class="club-events__grid">
-
-      <% 3.times do %>
-
-        <article class="tournament-card">
-
-          <div class="tournament-card__image-wrapper">
-
-            <%= image_tag(
-              "backgroundshow.png",
-              class: "tournament-card__image",
-              alt: "Mesa de tornei o de pôquer"
-            ) %>
-
-            <span class="tournament-card__status">
-              <span class="tournament-card__status-dot"></span>
-              Ao vivo agora
-            </span>
-
-          </div>
-
-
-          <div class="tournament-card__content">
-
-            <div class="tournament-card__heading">
-
-              <h3 class="tournament-card__title">
-                Sunday Million High Roller
-              </h3>
-
-              <p class="tournament-card__type">
-                No Limit Hold'em
-                <span>•</span>
-                Freezeout
-              </p>
-
-            </div>
-
-
-            <div class="tournament-card__information">
-
-              <div class="tournament-card__information-box">
-
-                <span class="tournament-card__information-label">
-                  ◫ Buy-in
-                </span>
-
-                <strong class="tournament-card__information-value tournament-card__information-value--highlight">
-                  R$ 250
-                </strong>
-
-              </div>
-
-
-              <div class="tournament-card__information-box">
-
-                <span class="tournament-card__information-label">
-                  ♟ Restantes
-                </span>
-
-                <div class="tournament-card__players-value">
-
-                  <strong>
-                    45
-                  </strong>
-
-                  <span>
-                    / 120
-                  </span>
-
-                </div>
-
-              </div>
-
-            </div>
-
-
-            <footer class="tournament-card__footer">
-
-              <span class="tournament-card__level">
-                ◷ Nível 12 (1k/2k)
-              </span>
-
-              <%# Ainda sem rota de torneio %>
-              <button
-                type="button"
-                class="tournament-card__details"
-              >
-                Ver detalhes
-                <span>→</span>
-              </button>
-
-            </footer>
-
-          </div>
-
-        </article>
-
-      <% end %>
-
-    </div>
-
-  </section>
+  <%# Cards de torneio sem ligacao Backend %>
+  <%= render "shared/components/tournaments/card_tournaments"%>
 
 </main>

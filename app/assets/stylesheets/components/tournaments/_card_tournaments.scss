@@ -1,0 +1,500 @@
+/* =========================
+   EVENTOS
+========================= */
+
+.club-events {
+  width: 100%;
+  max-width: 1440px;
+
+  margin: 0 auto;
+}
+
+.club-events__header {
+  margin-bottom: 30px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+
+.club-events__title {
+  margin: 0;
+
+  color: #f2eff3;
+
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+}
+
+.club-events__filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.club-events__filter {
+  padding: 9px 16px;
+
+  border: 0;
+  border-radius: 999px;
+
+  color: #aaa5af;
+  background: rgba(255, 255, 255, 0.045);
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.club-events__filter:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.club-events__filter--active {
+  color: #ffffff;
+  background: #8f64ff;
+}
+
+.club-events__filter--active:hover {
+  background: #9e77ff;
+}
+
+.club-events__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 46px;
+}
+
+
+/* =========================
+   CARD DO TORNEIO
+========================= */
+
+.tournament-card {
+  min-width: 0;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(255, 255, 255, 0.035);
+  border-radius: 20px;
+
+  background: rgba(24, 23, 27, 0.96);
+
+  box-shadow:
+    0 18px 34px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.02);
+
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.tournament-card:hover {
+  transform: translateY(-5px);
+
+  border-color: rgba(164, 128, 255, 0.18);
+
+  box-shadow:
+    0 24px 42px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.tournament-card__image-wrapper {
+  position: relative;
+
+  width: 100%;
+  height: 220px;
+
+  overflow: hidden;
+}
+
+.tournament-card__image-wrapper::after {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.03) 40%,
+      rgba(24, 23, 27, 0.98) 100%
+    );
+}
+
+.tournament-card__image {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+  object-position: center;
+
+  transition: transform 0.4s ease;
+}
+
+.tournament-card:hover .tournament-card__image {
+  transform: scale(1.04);
+}
+
+.tournament-card__status {
+  position: absolute;
+  top: 13px;
+  left: 13px;
+  z-index: 2;
+
+  padding: 6px 10px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  border: 1px solid rgba(255, 117, 117, 0.25);
+  border-radius: 999px;
+
+  color: #ffaaa7;
+  background: rgba(20, 18, 19, 0.9);
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.tournament-card__status-dot {
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: #ff837d;
+
+  box-shadow: 0 0 8px rgba(255, 131, 125, 0.8);
+}
+
+.tournament-card__content {
+  min-height: 275px;
+  padding: 0 24px 22px;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.tournament-card__heading {
+  margin-bottom: 28px;
+}
+
+.tournament-card__title {
+  margin: 0 0 8px;
+
+  color: #f1eef2;
+
+  font-size: 25px;
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+}
+
+.tournament-card__type {
+  margin: 0;
+
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  color: #aaa5af;
+
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.tournament-card__information {
+  margin-bottom: 38px;
+
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.tournament-card__information-box {
+  min-width: 0;
+  min-height: 88px;
+
+  padding: 15px 16px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 7px;
+
+  border-radius: 14px;
+
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.tournament-card__information-label {
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.tournament-card__information-value {
+  color: #f0edf2;
+
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.tournament-card__information-value--highlight {
+  color: #b9a7ff;
+}
+
+.tournament-card__players-value {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.tournament-card__players-value strong {
+  color: #f1eef2;
+
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.tournament-card__players-value span {
+  color: #aaa5af;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.tournament-card__footer {
+  margin-top: auto;
+  padding-top: 20px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.055);
+}
+
+.tournament-card__level {
+  color: #aaa5af;
+
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.tournament-card__details {
+  padding: 0;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  border: 0;
+
+  color: #9c6cff;
+  background: transparent;
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.tournament-card__details:hover {
+  color: #b99aff;
+  transform: translateX(2px);
+}
+
+
+
+
+
+
+
+
+
+/* =========================
+   RESPONSIVIDADE
+========================= */
+
+@media (max-width: 1150px) {
+  .club-events__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .club-show-page {
+    padding: 38px 20px 48px;
+
+    background-attachment: scroll;
+  }
+
+  .club-show-hero {
+    margin-bottom: 56px;
+
+    flex-direction: column;
+    gap: 26px;
+  }
+
+  .club-show-hero__title {
+    font-size: 42px;
+  }
+
+  .club-show-hero__create-button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .club-show-hero__players {
+    width: 100%;
+
+    padding: 15px 0 0;
+
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    border-left: 0;
+  }
+
+  .club-events__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .club-events__filters {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .club-events__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tournament-card__image-wrapper {
+    height: 230px;
+  }
+}
+
+
+@media (max-width: 420px) {
+  .club-show-page {
+    padding-inline: 14px;
+  }
+
+  .club-show-hero__title {
+    font-size: 36px;
+  }
+
+  .club-events__title {
+    font-size: 30px;
+  }
+
+  .tournament-card__content {
+    padding-inline: 18px;
+  }
+
+  .tournament-card__title {
+    font-size: 22px;
+  }
+
+  .tournament-card__information-value,
+  .tournament-card__players-value strong {
+    font-size: 24px;
+  }
+
+  .tournament-card__footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .tournament-card {
+    border: 2px solid rgba(255, 255, 255, 0.212);
+  }
+
+}
+
+@media (min-width: 1151px) and (max-width: 1300px) {
+  .club-show-page {
+    padding: 36px 48px 40px;
+  }
+
+  .club-show-hero {
+    min-height: auto;
+    margin-bottom: 38px;
+  }
+
+  .club-events__header {
+    margin-bottom: 20px;
+  }
+
+  .club-events__grid {
+    gap: 26px;
+  }
+
+  .tournament-card__image-wrapper {
+    height: 155px;
+  }
+
+  .tournament-card__content {
+    min-height: 275px;
+    padding: 0 20px 18px;
+  }
+
+  .tournament-card__heading {
+    margin-bottom: 18px;
+  }
+
+  .tournament-card__title {
+    font-size: 21px;
+  }
+
+  .tournament-card__information {
+    margin-bottom: 22px;
+    gap: 10px;
+  }
+
+  .tournament-card__information-box {
+    min-height: 70px;
+    padding: 11px 13px;
+  }
+
+  .tournament-card__information-value,
+  .tournament-card__players-value strong {
+    font-size: 23px;
+  }
+
+  .tournament-card__footer {
+    padding-top: 14px;
+  }
+}

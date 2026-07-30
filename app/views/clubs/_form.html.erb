@@ -3,117 +3,112 @@
   <div class="club-form-card">
 
     <header class="club-form-header">
-      <h1>Create Your Club</h1>
+      <h1>Crie seu clube</h1>
+
       <p>
-        Define the visual identity and contact details of your private poker club.
-        This information will be visible to all members.
+          Defina a identidade visual e os dados de contato do seu clube de pôquer privado.
+          Essas informações ficarão visíveis para todos os membros convidados.
       </p>
     </header>
 
-
     <%= simple_form_for @club do |f| %>
 
-      <!-- Logo Upload -->
-      <div class="form-section">
+      <div class="club-form-content">
 
-        <label class="form-label">
-          Club Logo
-        </label>
+        <%# Logo apenas visual por enquanto %>
+        <div class="form-section logo-section">
 
-        <label class="upload-box">
-          <%# image_tag "icons/upload.svg", class: "upload-icon" %>
+          <label class="form-label">
+            Clube Logo
+          </label>
 
-          <span>
-            Upload Image
-          </span>
+          <button class="upload-box" type="button">
 
-          <%= f.file_field :logo, class: "hidden-input" %>
+            <span class="upload-icon" aria-hidden="true">
+              ↥
+            </span>
 
-        </label>
+            <span class="upload-text">
+              Carregar imagem
+            </span>
 
-      </div>
+          </button>
 
-
-      <!-- Club Name -->
-      <div class="form-section">
-
-        <%= f.input :name,
-          label: "Club Name",
-          placeholder: "Ex: Monte Carlo Elite",
-          input_html: {
-            class: "dark-input"
-          },
-          label_html: {
-            class: "form-label"
-          }
-        %>
-
-
-        <div class="info-message">
-          <span>ⓘ</span>
-
-          The club name should be unique and identify your poker club.
-        </div>
-
-      </div>
-
-
-
-      <!-- Contact -->
-      <div class="form-section contact-section">
-
-        <h3>
-          <span class="contact-icon">
-            ☎
-          </span>
-
-          Contact Channels
-        </h3>
-
-
-        <%= f.input :whatsapp_contact_number,
-          label: "WhatsApp Contact Number",
-          placeholder: "+55 11 99999-9999",
-          input_html: {
-            class: "dark-input"
-          }
-        %>
-
-
-        <div class="info-message">
-          <span>ⓘ</span>
-
-          This number will be used to contact organizers and support players.
         </div>
 
 
+        <%# Nome do clube %>
+        <div class="form-section club-name-section">
+
+          <%= f.input :name,
+            label: "Nome do Clube",
+            placeholder: "Ex: Monte Carlo Elite",
+            required: true,
+            input_html: {
+              class: "dark-input",
+              autocomplete: "off"
+            },
+            label_html: {
+              class: "form-label"
+            } %>
+
+          <div class="info-message">
+
+            <span class="info-icon" aria-hidden="true">
+              i
+            </span>
+
+            <p>
+              O nome do clube deve ser único e fácil de identificar para os seus jogadores.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <%# Contato %>
+        <div class="form-section contact-section">
+
+          <h3>
+
+            <span class="contact-icon" aria-hidden="true">
+              ☎
+            </span>
+
+            Canais de contato
+
+          </h3>
+
+          <%= f.input :whatsapp_contact_number,
+            label: "Número de contato",
+            placeholder: "+55 11 99999-9999",
+            required: true,
+            input_html: {
+              class: "dark-input",
+              autocomplete: "tel"
+            },
+            label_html: {
+              class: "form-label"
+            } %>
+
+        </div>
+
       </div>
-
-
-
-      <!-- Terms -->
-      <div class="terms">
-
-        <%= check_box_tag :terms, true %>
-
-        <label>
-          I agree that my club information may be displayed publicly.
-        </label>
-
-      </div>
-
 
 
       <footer class="form-actions">
 
         <%= link_to clubs_path, class: "back-button" do %>
-          ← Back
+          <span aria-hidden="true">←</span>
+          Voltar
         <% end %>
 
-        <%= f.button :submit, club.persisted? ? "Salvar alterações" : "Criar clube" %>
+        <%= f.button :submit,
+          @club.persisted? ? "Salvar alterações" : "Continuar",
+          class: "continue-button" %>
 
       </footer>
-
 
     <% end %>
 

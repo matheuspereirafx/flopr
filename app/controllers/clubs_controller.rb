@@ -12,7 +12,7 @@ class ClubsController < ApplicationController
     if @club.save
       redirect_to @club
     else
-      render :new, status: unprocessable_entity
+      render :new, status: :unprocessable_entity
     end
   end
 

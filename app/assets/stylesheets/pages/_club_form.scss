@@ -1,0 +1,417 @@
+.club-form-page {
+  min-height: 100vh;
+  padding: 24px;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  background: #111113;
+  color: #f1edf4;
+}
+
+.club-form-card {
+  width: 100%;
+  max-width: 610px;
+
+  background: #1b1a1f;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 7px;
+
+  overflow: hidden;
+}
+
+.club-form-header {
+  padding: 45px 46px 30px;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.035);
+
+  h1 {
+    margin: 0 0 9px;
+
+    font-family: $font-primary;
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.8px;
+
+    color: #f5f1f6;
+  }
+
+  p {
+    max-width: 470px;
+    margin: 0;
+
+    font-family: $font-secondary;
+    font-size: 13px;
+    line-height: 1.45;
+
+    color: #aaa4b1;
+  }
+}
+
+.club-form-content {
+  padding: 35px 46px 38px;
+}
+
+.form-section {
+  margin-bottom: 35px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+
+  font-family: $font-secondary;
+  font-size: 12px;
+  font-weight: 600;
+
+  color: #bdb7c5;
+}
+
+/* Upload */
+
+.logo-section {
+  margin-bottom: 38px;
+}
+
+.upload-box {
+  width: 100%;
+  min-height: 220px;
+  padding: 20px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+
+  background: #1a191e;
+  border: 1px dashed #48444f;
+  border-radius: 7px;
+
+  color: #dad4df;
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    background: #1e1d23;
+    border-color: #8f7ee9;
+  }
+
+  &:active {
+    transform: scale(0.997);
+  }
+}
+
+.upload-icon {
+  font-size: 25px;
+  line-height: 1;
+
+  color: #eee8f0;
+}
+
+.upload-text {
+  font-family: $font-secondary;
+  font-size: 13px;
+  font-weight: 600;
+
+  color: #dcd6e0;
+}
+
+/* Blocos internos */
+
+.club-name-section,
+.contact-section {
+  padding: 24px;
+
+  background: #201f24;
+  border: 1px solid rgba(255, 255, 255, 0.025);
+  border-radius: 9px;
+}
+
+.club-name-section {
+  margin-bottom: 36px;
+}
+
+.contact-section {
+  margin-bottom: 0;
+
+  h3 {
+    margin: 0 0 22px;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    font-family: $font-primary;
+    font-size: 18px;
+    font-weight: 700;
+
+    color: #f2edf4;
+  }
+}
+
+.contact-icon {
+  width: 32px;
+  height: 32px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: linear-gradient(145deg, #6d58c9, #493b92);
+  border-radius: 50%;
+
+  font-size: 13px;
+
+  color: #ffffff;
+}
+
+/* Simple Form */
+
+.form-section {
+  .input {
+    margin-bottom: 0;
+  }
+
+  .form-label,
+  label {
+    font-family: $font-secondary;
+    font-size: 12px;
+    font-weight: 600;
+
+    color: #c6c0cb;
+  }
+
+  .form-text,
+  small {
+    display: block;
+    margin-top: 9px;
+
+    font-family: $font-secondary;
+    font-size: 11px;
+    line-height: 1.4;
+
+    color: #aaa4b2;
+  }
+
+  .invalid-feedback {
+    margin-top: 7px;
+
+    font-family: $font-secondary;
+    font-size: 11px;
+
+    color: #ff8293;
+  }
+}
+
+.dark-input {
+  width: 100%;
+  height: 51px;
+  padding: 0 14px;
+
+  box-sizing: border-box;
+
+  background: #111115;
+  border: 1px solid #393640;
+  border-radius: 6px;
+  outline: none;
+
+  font-family: $font-secondary;
+  font-size: 13px;
+
+  color: #f1edf4;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &::placeholder {
+    color: #6e6875;
+  }
+
+  &:hover {
+    border-color: #514c59;
+  }
+
+  &:focus {
+    background: #141318;
+    border-color: #8f7ee9;
+
+    box-shadow: 0 0 0 3px rgba(143, 126, 233, 0.12);
+  }
+}
+
+/* Mensagens informativas */
+
+.info-message {
+  margin-top: 10px;
+  padding: 9px 11px;
+
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+
+  background: rgba(111, 89, 214, 0.08);
+  border: 1px solid rgba(146, 124, 245, 0.2);
+  border-radius: 5px;
+
+  p {
+    margin: 0;
+
+    font-family: $font-secondary;
+    font-size: 11px;
+    line-height: 1.45;
+
+    color: #beb8c8;
+  }
+}
+
+.info-icon {
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border: 1px solid #9f8df3;
+  border-radius: 50%;
+
+  font-family: $font-secondary;
+  font-size: 9px;
+  font-weight: 700;
+
+  color: #a996ff;
+}
+
+/* Rodapé */
+
+.form-actions {
+  padding: 28px 46px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  font-family: $font-secondary;
+  font-size: 13px;
+  font-weight: 600;
+
+  color: #bdb7c5;
+  text-decoration: none;
+
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #ffffff;
+  }
+}
+
+.continue-button {
+  min-width: 128px;
+  min-height: 42px;
+  padding: 0 22px;
+
+  border: none;
+  border-radius: 999px;
+
+  background: linear-gradient(90deg, #bbaaff, #9885ee);
+
+  font-family: $font-secondary;
+  font-size: 13px;
+  font-weight: 700;
+
+  color: #251e3f;
+  cursor: pointer;
+
+  box-shadow: 0 7px 20px rgba(111, 87, 216, 0.2);
+
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    filter: brightness(1.06);
+    transform: translateY(-1px);
+
+    box-shadow: 0 10px 24px rgba(111, 87, 216, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+/* Evita estilos indesejados do Bootstrap */
+
+.club-form-card {
+  .form-control {
+    background-color: #111115;
+    border-color: #393640;
+    color: #f1edf4;
+  }
+
+  .form-control:focus {
+    background-color: #141318;
+    border-color: #8f7ee9;
+    color: #f1edf4;
+  }
+}
+
+/* Responsividade */
+
+@media (max-width: 650px) {
+  .club-form-page {
+    padding: 0;
+  }
+
+  .club-form-card {
+    max-width: none;
+    min-height: 100vh;
+
+    border: none;
+    border-radius: 0;
+  }
+
+  .club-form-header {
+    padding: 32px 22px 25px;
+
+    h1 {
+      font-size: 28px;
+    }
+  }
+
+  .club-form-content {
+    padding: 28px 22px 34px;
+  }
+
+  .upload-box {
+    min-height: 180px;
+  }
+
+  .club-name-section,
+  .contact-section {
+    padding: 20px;
+  }
+
+  .form-actions {
+    padding: 24px 22px;
+  }
+}

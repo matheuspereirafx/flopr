@@ -1,43 +1,62 @@
+<section
+  class="club-events"
+  data-controller="horizontal-scroll"
+>
 
-  <section class="club-events">
+  <header class="club-events__header">
 
-    <header class="club-events__header">
+    <h2 class="club-events__title">
+      Eventos
+    </h2>
 
-      <h2 class="club-events__title">
-        Eventos
-      </h2>
+    <div class="club-events__filters">
 
-      <div class="club-events__filters">
+      <button
+        type="button"
+        class="club-events__filter"
+      >
+        Todos
+      </button>
 
-        <button
-          type="button"
-          class="club-events__filter"
-        >
-          Todos
-        </button>
+      <button
+        type="button"
+        class="club-events__filter club-events__filter--active"
+      >
+        Ao vivo
+      </button>
 
-        <button
-          type="button"
-          class="club-events__filter club-events__filter--active"
-        >
-          Ao vivo
-        </button>
+      <button
+        type="button"
+        class="club-events__filter"
+      >
+        Próximos
+      </button>
 
-        <button
-          type="button"
-          class="club-events__filter"
-        >
-          Próximos
-        </button>
+    </div>
 
-      </div>
-
-    </header>
+  </header>
 
 
-    <div class="club-events__grid">
+  <div class="club-events__carousel">
 
-      <% 3.times do %>
+    <button
+      type="button"
+      class="club-events__arrow club-events__arrow--previous"
+      aria-label="Ver eventos anteriores"
+      data-horizontal-scroll-target="previousButton"
+      data-action="click->horizontal-scroll#previous"
+    >
+      ←
+    </button>
+
+
+    <div
+      class="club-events__grid"
+      data-horizontal-scroll-target="container"
+      data-action="scroll->horizontal-scroll#updateButtons"
+    >
+
+      <% 10.times do %>
 
         <article class="tournament-card">
 
@@ -46,12 +65,15 @@
             <%= image_tag(
               "backgroundshow.png",
               class: "tournament-card__image",
-              alt: "Mesa de tornei o de pôquer"
+              alt: "Mesa de torneio de pôquer"
             ) %>
 
             <span class="tournament-card__status">
+
               <span class="tournament-card__status-dot"></span>
+
               Ao vivo agora
+
             </span>
 
           </div>
@@ -66,9 +88,13 @@
               </h3>
 
               <p class="tournament-card__type">
+
                 No Limit Hold'em
+
                 <span>•</span>
+
                 Freezeout
+
               </p>
 
             </div>
@@ -79,11 +105,22 @@
               <div class="tournament-card__information-box">
 
                 <span class="tournament-card__information-label">
-                  <%= image_tag "icons/iconcash.png", alt: "" %>
+
+                  <%= image_tag(
+                    "icons/iconcash.png",
+                    alt: ""
+                  ) %>
+
                   Buy-in
+
                 </span>
 
-                <strong class="tournament-card__information-value tournament-card__information-value--highlight">
+                <strong
+                  class="
+                    tournament-card__information-value
+                    tournament-card__information-value--highlight
+                  "
+                >
                   R$ 250
                 </strong>
 
@@ -93,8 +130,14 @@
               <div class="tournament-card__information-box">
 
                 <span class="tournament-card__information-label">
-                    <%= image_tag "icons/iconplayers.png", alt: "" %>
-                     Restantes
+
+                  <%= image_tag(
+                    "icons/iconplayers.png",
+                    alt: ""
+                  ) %>
+
+                  Restantes
+
                 </span>
 
                 <div class="tournament-card__players-value">
@@ -120,12 +163,12 @@
                 ◷ Nível 12 (1k/2k)
               </span>
 
-              <%# Ainda sem rota de torneio %>
               <button
                 type="button"
                 class="tournament-card__details"
               >
                 Ver detalhes
+
                 <span>→</span>
               </button>
 
@@ -139,4 +182,17 @@
 
     </div>
 
-  </section>
+
+    <button
+      type="button"
+      class="club-events__arrow club-events__arrow--next"
+      aria-label="Ver próximos eventos"
+      data-horizontal-scroll-target="nextButton"
+      data-action="click->horizontal-scroll#next"
+    >
+      →
+    </button>
+
+  </div>
+
+</section>

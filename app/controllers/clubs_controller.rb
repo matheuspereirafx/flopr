@@ -1,19 +1,9 @@
 class ClubsController < ApplicationController
+  before_action :set_member_club, only: :show
   before_action :set_owned_club, only: %i[edit update destroy]
-
 
   def index
     @clubs = current_user.owned_clubs
-  end
-
-  def create
-    @club = current_user.owned_clubs.build(club_params)
-
-    if create_club_with_owner_membership
-      redirect_to clubs_path, notice: "Clube criado com sucesso."
-    else
-      render :new, status: :unprocessable_entity
-    end
   end
 
   def show
@@ -23,8 +13,17 @@ class ClubsController < ApplicationController
     @club = Club.new
   end
 
+  def create
+    @club = Club.new(club_params)
 
- def edit
+    if create_club_with_owner_membership
+      redirect_to clubs_path, notice: "Clube criado com sucesso."
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+
+  def edit
   end
 
   def update
@@ -45,6 +44,10 @@ class ClubsController < ApplicationController
 
   private
 
+  def set_member_club
+    @club = current_user.clubs.find(params[:id])
+  end
+
   def set_owned_club
     @club = current_user.owned_clubs.find(params[:id])
   end
@@ -56,24 +59,18 @@ class ClubsController < ApplicationController
     )
   end
 
-  def set_club
-    @club = Club.find(params[:id])
-  end
-
   def create_club_with_owner_membership
-  ActiveRecord::Base.transaction do
-    @club.save!
+    ActiveRecord::Base.transaction do
+      @club.save!
 
-    @club.club_memberships.create!(
-      user: current_user,
-      role: :owner
-    )
-  end
+      @club.club_memberships.create!(
+        user: current_user,
+        role: :owner
+      )
+    end
 
-  true
+    true
   rescue ActiveRecord::RecordInvalid
     false
   end
-
-
 end

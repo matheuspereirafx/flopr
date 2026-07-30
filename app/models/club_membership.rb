@@ -14,5 +14,4 @@ class ClubMembership < ApplicationRecord
               message: "já pertence a este clube"
             }
 
-
 end

@@ -1,19 +1,16 @@
 class User < ApplicationRecord
-  attr_accessor :terms
-
-  has_many :owned_clubs,
-           class_name: "Club",
-           foreign_key: :owner_id,
-           inverse_of: :owner,
-           dependent: :destroy
-
   has_many :club_memberships, dependent: :destroy
 
+  has_many :clubs,
+           through: :club_memberships
 
-  validates :terms,
-            acceptance: {
-              message: "Aceite os Termos de Serviço e a Política de Privacidade."
-            }
+  has_many :owner_club_memberships,
+           -> { where(role: "owner") },
+           class_name: "ClubMembership"
+
+  has_many :owned_clubs,
+           through: :owner_club_memberships,
+           source: :club
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable

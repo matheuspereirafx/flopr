@@ -1,16 +1,16 @@
 class ClubsController < ApplicationController
-  before_action :set_club, only: %i[show edit update destroy]
+  before_action :set_owned_club, only: %i[edit update destroy]
 
 
   def index
-    @clubs = current_user.clubs
+    @clubs = current_user.owned_clubs
   end
 
   def create
-    @club = current_user.clubs.build(club_params)
+    @club = current_user.owned_clubs.build(club_params)
 
-    if @club.save
-      redirect_to @club
+    if create_club_with_owner_membership
+      redirect_to clubs_path, notice: "Clube criado com sucesso."
     else
       render :new, status: :unprocessable_entity
     end
@@ -24,41 +24,56 @@ class ClubsController < ApplicationController
   end
 
 
-  def edit
-    @club = current_user.clubs.find(params[:id])
+ def edit
   end
 
   def update
-    @club = current_user.clubs.find(params[:id])
-
     if @club.update(club_params)
-      redirect_to @club, notice: "Clube atualizado com sucesso."
+      redirect_to clubs_path, notice: "Clube atualizado com sucesso."
     else
       render :edit, status: :unprocessable_entity
     end
   end
 
   def destroy
-    @club = current_user.clubs.find(params[:id])
     @club.destroy
 
     redirect_to clubs_path,
-            notice: "Clube excluído com sucesso.",
-            status: :see_other
+                notice: "Clube excluído com sucesso.",
+                status: :see_other
   end
 
   private
 
+  def set_owned_club
+    @club = current_user.owned_clubs.find(params[:id])
+  end
+
   def club_params
     params.require(:club).permit(
       :name,
-      :whatsapp_contact_number,
-      :logo
+      :whatsapp_contact_number
     )
   end
 
   def set_club
     @club = Club.find(params[:id])
   end
+
+  def create_club_with_owner_membership
+  ActiveRecord::Base.transaction do
+    @club.save!
+
+    @club.club_memberships.create!(
+      user: current_user,
+      role: :owner
+    )
+  end
+
+  true
+  rescue ActiveRecord::RecordInvalid
+    false
+  end
+
 
 end

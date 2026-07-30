@@ -10,9 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_27_193046) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_30_200701) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "club_memberships", force: :cascade do |t|
+    t.bigint "club_id", null: false
+    t.datetime "created_at", null: false
+    t.string "role", default: "member", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["club_id", "user_id"], name: "index_club_memberships_on_club_id_and_user_id", unique: true
+    t.index ["club_id"], name: "index_club_memberships_on_club_id"
+    t.index ["user_id"], name: "index_club_memberships_on_user_id"
+  end
 
   create_table "clubs", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -36,5 +47,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_27_193046) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "club_memberships", "clubs"
+  add_foreign_key "club_memberships", "users"
   add_foreign_key "clubs", "users", column: "owner_id"
 end

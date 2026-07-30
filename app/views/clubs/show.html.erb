@@ -18,13 +18,10 @@
       </p>
 
       <%# Temporariamente sem rota %>
-      <%= button_tag type: "button",
-          class: "club-show-hero__create-button" do %>
 
-        <span class="club-show-hero__create-icon">+</span>
-        Criar novo torneio
-
-      <% end %>
+      <%= render "shared/components/buttons/button_create",
+          text: "Criar Novo Torneio",
+          path: new_club_path%>
 
     </div>
 

@@ -48,6 +48,8 @@
 
   color: #c8bafa;
 
+
+  font-family: $font-secondary;
   font-size: 12px;
   font-weight: 600;
   line-height: 1;
@@ -64,6 +66,7 @@
 
   color: #f1eef2;
 
+  font-family: $font-primary;
   font-size: clamp(38px, 5vw, 62px);
   font-weight: 700;
   line-height: 1.05;
@@ -75,6 +78,7 @@
 
   color: #aaa5af;
 
+  font-family: $font-secondary;
   font-size: 15px;
   line-height: 1.5;
 }

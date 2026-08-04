@@ -1,0 +1,145 @@
+.club-card{
+
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
+  color: inherit;
+  text-decoration: none;
+
+  position: relative;
+
+  background: rgba(25, 24, 30, .20);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow:0 10px 10px rgba(0,0,0,.35);
+
+  border-radius: 16px;
+  padding: 24px;
+
+
+  display:flex;
+  flex-direction:column;
+  gap:32px;
+
+
+  transition:
+    background .3s ease,
+    transform .3s ease,
+    box-shadow .3s ease;
+
+}
+
+.club-card-link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+.club-card-header,
+.club-tournament-card {
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
+}
+
+
+.club-menu-card,
+.menu-button,
+.club-menu {
+  position: relative;
+  z-index: 3;
+  pointer-events: auto;
+}
+
+.club-card:hover {
+
+  transform: translateY(-4px);
+
+  background: linear-gradient(
+    135deg,
+    #201F20 1%,
+    #52489C 100%
+  );
+
+
+
+  box-shadow:
+    0 0 24px rgba(0, 190, 200, .12);
+}
+
+
+.club-card-header{
+
+    display:flex;
+    align-items:center;
+
+
+}
+
+.club-card-header h3{
+
+    color: #ffffff;
+    font-family: $font-primary;
+    font-size: $font-body-lg-size;
+    line-height: $paragraphtittle-line-height;
+    letter-spacing: $paragraphtittle-letter-spacing;
+    font-weight: 600;
+
+}
+
+
+.club-info{
+
+    flex:1;
+
+    margin-left:16px;
+
+}
+
+
+.count-member{
+  color: #C9C4D3;
+
+}
+
+
+
+@media (max-width: 768px) {
+
+  .club-card {
+    padding: 24px 16px;
+    background: rgba(25, 24, 30, .90);
+  }
+
+    .club-card-header {
+    display: grid;
+
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      "logo . menu"
+      "name name name"
+      "members members members";
+
+    align-items: center;
+    gap: 8px;
+  }
+
+  .club-info {
+    margin-left: 0;
+    display: contents;
+  }
+
+  .club-info h3 {
+    grid-area: name;
+    margin: 0;
+  }
+
+  .count-member {
+    grid-area: members;
+  }
+
+
+}

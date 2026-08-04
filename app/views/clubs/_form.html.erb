@@ -1,0 +1,117 @@
+<div class="club-form-page">
+
+  <div class="club-form-card">
+
+    <header class="club-form-header">
+      <h1>Crie seu clube</h1>
+
+      <p>
+          Defina a identidade visual e os dados de contato do seu clube de pôquer privado.
+          Essas informações ficarão visíveis para todos os membros convidados.
+      </p>
+    </header>
+
+    <%= simple_form_for @club do |f| %>
+
+      <div class="club-form-content">
+
+        <%# Logo apenas visual por enquanto %>
+        <div class="form-section logo-section">
+
+          <label class="form-label">
+            Clube Logo
+          </label>
+
+          <button class="upload-box" type="button">
+
+            <span class="upload-icon" aria-hidden="true">
+              ↥
+            </span>
+
+            <span class="upload-text">
+              Carregar imagem
+            </span>
+
+          </button>
+
+        </div>
+
+
+        <%# Nome do clube %>
+        <div class="form-section club-name-section">
+
+          <%= f.input :name,
+            label: "Nome do Clube",
+            placeholder: "Ex: Monte Carlo Elite",
+            required: true,
+            input_html: {
+              class: "dark-input",
+              autocomplete: "off"
+            },
+            label_html: {
+              class: "form-label"
+            } %>
+
+          <div class="info-message">
+
+            <span class="info-icon" aria-hidden="true">
+              i
+            </span>
+
+            <p>
+              O nome do clube deve ser único e fácil de identificar para os seus jogadores.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <%# Contato %>
+        <div class="form-section contact-section">
+
+          <h3>
+
+            <span class="contact-icon" aria-hidden="true">
+              ☎
+            </span>
+
+            Canais de contato
+
+          </h3>
+
+          <%= f.input :whatsapp_contact_number,
+            label: "Número de contato",
+            placeholder: "+55 11 99999-9999",
+            required: true,
+            input_html: {
+              class: "dark-input",
+              autocomplete: "tel"
+            },
+            label_html: {
+              class: "form-label"
+            } %>
+
+        </div>
+
+      </div>
+
+
+      <footer class="form-actions">
+
+        <%= link_to clubs_path, class: "back-button" do %>
+          <span aria-hidden="true">←</span>
+          Voltar
+        <% end %>
+
+        <%= f.button :submit,
+          @club.persisted? ? "Salvar alterações" : "Continuar",
+          class: "continue-button" %>
+
+      </footer>
+
+    <% end %>
+
+  </div>
+
+</div>

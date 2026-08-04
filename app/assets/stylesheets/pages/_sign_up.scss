@@ -1,0 +1,212 @@
+
+// Signup
+.signup-page{
+
+  min-height:100vh;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  padding:24px;
+
+  background:
+    radial-gradient(circle at top left,#24243d,transparent 45%),
+    radial-gradient(circle at bottom right,#3a1f1f,transparent 45%),
+    #131218;
+
+}
+
+.signup-card{
+
+  width:100%;
+  max-width:450px;
+
+  background:#1E1D23;
+
+  border:1px solid #2d2c34;
+
+  border-radius:14px;
+
+  padding:30px;
+
+  box-shadow:0 20px 40px rgba(0,0,0,.35);
+
+}
+
+.signup-card h1{
+
+  color:white;
+
+  font-size:$font-display-mm-size;
+
+  font-family:$font-primary;
+
+  font-weight:bold;
+
+  margin-bottom:8px;
+
+}
+
+.card-signup{
+
+  width:100%;
+
+}
+
+
+.signup-btn{
+
+  width:100%;
+
+  height:50px;
+
+  border:none;
+
+  border-radius:30px;
+
+  background:#C3B5FF;
+
+  color:#26213B;
+
+  font-weight:600;
+
+  transition:.25s;
+
+}
+
+.signup-btn:hover{
+
+  background:#D1C5FF;
+
+}
+
+.signup-footer{
+
+  text-align:center;
+
+  color:#8B8B96;
+
+}
+
+.signup-footer a{
+
+  color:#C7BBFF;
+
+  text-decoration:none;
+
+  font-weight:600;
+
+}
+
+
+
+// Divider
+.divider{
+
+  display:flex;
+
+  align-items:center;
+
+  margin:28px 0;
+
+  color:#777;
+
+}
+
+.divider::before,
+.divider::after{
+
+  content:"";
+
+  flex:1;
+
+  height:1px;
+
+  background:#35343c;
+
+}
+
+.divider span{
+
+  padding:0 16px;
+
+  font-size:13px;
+
+}
+
+
+
+// Checkbox Terms
+
+.terms{
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 32px;
+}
+
+.terms-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.terms label{
+  color:#9f9cab;
+  font-size:13px;
+  line-height:1.5;
+  margin:0;
+
+}
+
+.terms input{
+  margin-top:2px;
+  flex-shrink:0;
+
+}
+
+.terms a{
+  color:#C7BFFF;
+  text-decoration:none;
+
+}
+
+.terms input[type="checkbox"]{
+  appearance: none;
+
+  width:18px;
+  height:18px;
+
+  border:1px solid #4A4854;
+  border-radius:4px;
+
+  background:#17161C;
+
+  cursor:pointer;
+
+  transition:.2s;
+}
+
+.terms input[type="checkbox"]:checked{
+  background:#C3B5FF;
+  border-color:#C3B5FF;
+}
+
+.terms input[type="checkbox"]:checked::after{
+  content:"✓";
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  color:#1E1D23;
+  font-size:12px;
+  font-weight:bold;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-left: 28px; // alinha com o texto do label
+}

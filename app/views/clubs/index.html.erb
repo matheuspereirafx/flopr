@@ -1,0 +1,34 @@
+<div class="clubs-page">
+
+  <div class="clubs-header">
+
+    <div>
+      <h1>Meus Clubes</h1>
+
+      <p>
+        Gerencie suas organizações de pôquer, visualize torneios ativos
+        e acompanhe as estatísticas dos membros em todos os seus locais.
+      </p>
+
+    </div>
+
+    <%= render "shared/components/buttons/button_create",
+        text: "Criar Novo Clube",
+        path: new_club_path %>
+
+
+  </div>
+
+
+  <div class="clubs-grid">
+
+      <% @clubs.each do |club| %>
+
+          <%= render "shared/components/clubs/club_card",
+              club: club %>
+
+      <% end %>
+
+  </div>
+
+</div>

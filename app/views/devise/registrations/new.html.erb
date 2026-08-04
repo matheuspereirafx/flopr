@@ -1,25 +1,147 @@
-<h2>Sign up</h2>
+<div class="signup-page">
 
-<%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-  <%= f.error_notification %>
+  <div class="signup-card">
 
-  <div class="form-inputs">
-    <%= f.input :email,
-                required: true,
-                autofocus: true,
-                input_html: { autocomplete: "email" }%>
-    <%= f.input :password,
-                required: true,
-                hint: ("#{@minimum_password_length} characters minimum" if @minimum_password_length),
-                input_html: { autocomplete: "new-password" } %>
-    <%= f.input :password_confirmation,
-                required: true,
-                input_html: { autocomplete: "new-password" } %>
+    <h1>Crie sua conta</h1>
+
+    <p class="subtitle">
+      Torneios e gestão profissional de pôquer ao seu alcance.
+    </p>
+
+    <div class="card-signup">
+
+      <%= simple_form_for(resource,
+            as: resource_name,
+            url: registration_path(resource_name)) do |f| %>
+
+        <%# Nickname %>
+
+        <%# Email %>
+        <div class="field">
+
+          <label>Email</label>
+
+          <div class="input-wrapper">
+
+            <%= image_tag "icons/iconemail.svg",
+                  class: "input-icon" %>
+
+            <%= f.input :email,
+                  label: false,
+                  required: true,
+                  error:false,
+                  input_html: {
+                    autocomplete: "email",
+                    placeholder: "name@company.com"
+                  } %>
+          </div>
+
+        </div>
+
+        <%# Password %>
+        <div class="field">
+
+          <label>Senha</label>
+
+          <div
+            class="input-wrapper"
+            data-controller="password-toggle">
+
+            <%= image_tag "icons/iconpassoword.svg",
+                  class: "input-icon" %>
+
+            <%= f.input :password,
+                  label: false,
+                  required: true,
+                  error:false,
+                  input_html: {
+                    autocomplete: "new-password",
+                    placeholder: "••••••••",
+                    data: {
+                      password_toggle_target: "input"
+                    }
+                  } %>
+
+            <button
+              type="button"
+              class="toggle-password"
+              data-action="click->password-toggle#toggle">
+
+              <i
+                class="fa-regular fa-eye"
+                data-password-toggle-target="icon"></i>
+
+            </button>
+
+          </div>
+        
+        </div>
+
+        <%# Confirm Password %>
+        <div class="field">
+
+          <label>Confirme sua senha</label>
+
+          <div class="input-wrapper">
+
+            <%= image_tag "icons/confirmedicon.svg",
+                  class: "input-icon" %>
+
+            <%= f.input :password_confirmation,
+                  label: false,
+                  required: true,
+                  error:false,
+                  input_html: {
+                    autocomplete: "new-password",
+                    placeholder: "••••••••"
+                  } %>
+
+          </div>
+
+
+        </div>
+
+        <%# Terms %>
+        <div class="terms">
+
+          <div class="terms-content">
+            <%= f.check_box :terms, required: true %>
+
+           <label for="user_terms">
+              Concordo com os
+              <a href="#">Termos de Serviço</a>
+              e
+              <a href="#">Política de Privacidade</a>.
+            </label>
+          </div>
+
+          <% if resource.errors[:terms].any? %>
+            <div class="error-message">
+              <%= resource.errors[:terms].first %>
+            </div>
+          <% end %>
+
+
+        </div>
+
+        <%= f.button :submit,
+              "Criar uma conta →",
+              class: "signup-btn" %>
+        <% end %>
+
+    </div>
+
+    <div class="divider">
+      <span>or</span>
+    </div>
+
+    <p class="signup-footer">
+      Já tem uma conta?
+
+      <%= link_to "Entrar",
+            new_session_path(resource_name) %>
+    </p>
+
   </div>
 
-  <div class="form-actions">
-    <%= f.button :submit, "Sign up" %>
-  </div>
-<% end %>
-
-<%= render "devise/shared/links" %>
+</div>

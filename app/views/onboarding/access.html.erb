@@ -1,0 +1,77 @@
+<div class="profile-page" data-controller="profile-selector">
+
+  <%# Effects Background %>
+  <div class="background background-left"></div>
+  <div class="background background-right"></div>
+
+  <div class="profile-card">
+
+    <div class="profile-header">
+
+      <div class="profile-icon">
+        <%= image_tag "icons/flopr.png" %>
+      </div>
+
+      <h1 class="tittle">Selecione o perfil</h1>
+
+      <p class="paragraph-tittle">
+        Como você deseja usar a plataforma Flopr?
+      </p>
+
+    </div>
+
+    <div class="profiles">
+      <%# Profile Host %>
+      <div
+        class="profile-option"
+        data-action="click->profile-selector#select"
+        data-profile-selector-target="option"
+        data-value="organizer">
+
+        <div class="radio"></div>
+
+        <div class="icon">
+          <%= image_tag "icons/organizadoricon.svg" %>
+        </div>
+
+        <h2 class="subtittle">Organizador</h2>
+
+        <p class="paragraph-tittle"  >
+          Gerencie seus torneios e clubes com precisão profissional.
+        </p>
+
+      </div>
+
+      <%# Profile Player %>
+      <div
+        class="profile-option"
+        data-action="click->profile-selector#select"
+        data-profile-selector-target="option"
+        data-value="player">
+
+        <div class="radio"></div>
+
+        <div class="icon">
+          <%= image_tag "icons/playericon.svg" %>
+
+        </div>
+
+        <h2 class="subtittle">Jogador</h2>
+
+        <p class="paragraph-tittle">
+          Encontre os melhores jogos e acompanhe sua evolução.
+        </p>
+
+      </div>
+
+    </div>
+
+    <%= link_to "Continuar",
+        "#",
+        class:"continue-btn",
+        data:{ profile_selector_target:"button"} %>
+
+  </div>
+
+
+</div>

@@ -1,0 +1,196 @@
+
+
+
+.login-page {
+
+  min-height:100vh;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  padding: 24px;
+
+
+  background:
+  radial-gradient(circle at top left,#24243d,transparent 45%),
+  radial-gradient(circle at bottom right,#3a1f1f,transparent 45%),
+  #131218;
+
+}
+
+.login-card{
+
+  width:100%;
+  max-width:450px;
+
+  background:#1E1D23;
+  border:1px solid #2d2c34;
+  border-radius:14px;
+  padding:24px;
+  box-shadow: 0 20px 40px rgba(0,0,0,.35);
+
+  display:flex;
+  flex-direction:column;
+
+}
+.login-card h1{
+
+  color:white;
+  font-size: $font-display-mm-size;
+  font-weight:bold;
+  font-family: $font-primary;
+  line-height: $tittle-line-height;
+  letter-spacing: $tittle-letter-spacing;
+  margin-bottom: -8px;
+
+}
+
+
+.card-login {
+
+  width: 100%;
+
+}
+
+
+.subtitle{
+
+  color:#A0A0B2;
+  font-family: $font-secondary;
+  font-size: $font-body-sm-size;
+  margin-bottom:24px;
+
+
+
+}
+
+.field{
+  width:100%;
+}
+
+.field label{
+  font-family: $font-secondary;
+  font-size: $font-body-sm-size;
+
+  color:#C9C4D3;
+  margin-bottom:8px;
+
+}
+
+.password-header{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+}
+
+.password-header a{
+
+  font-family: $font-secondary;
+
+  color:#C7BFFF;
+
+  font-size: 12px;
+
+  text-decoration:none;
+
+  font-weight: 400;
+
+}
+
+.toggle-password{
+
+  position:absolute;
+
+  right:10px;
+
+  top:50%;
+
+  transform:translateY(-50%);
+
+  background:none;
+
+  border:none;
+
+  color:#777;
+
+  cursor:pointer;
+
+}
+
+.login-btn{
+
+  width:100%;
+
+  height:50px;
+
+  border:none;
+
+  border-radius:30px;
+
+  margin-top:18px;
+
+  background:#C3B5FF;
+
+  color:#26213B;
+
+  font-weight:700;
+
+  transition:.25s;
+
+}
+
+.login-btn:hover{
+
+  background:#D1C5FF;
+
+}
+
+.signup{
+
+  text-align:center;
+
+  margin-top:28px;
+
+  color:#8B8B96;
+
+}
+
+.signup a{
+
+  color:#C7BBFF;
+
+  text-decoration:none;
+
+  font-weight:600;
+
+}
+
+
+
+// Responsividade
+@media (max-width: 576px){
+
+  .login-page{
+    padding:16px;
+  }
+
+  .login-card{
+    padding:20px;
+  }
+
+  .login-card h1{
+    font-size:32px;
+    line-height:1.2;
+    height:auto;
+  }
+
+  .subtitle{
+    margin-bottom:20px;
+  }
+
+}

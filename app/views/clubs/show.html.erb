@@ -1,0 +1,48 @@
+<main class="club-show-page">
+
+  <section class="club-show-hero">
+
+    <div class="club-show-hero__content">
+
+      <span class="club-show-hero__category">
+        <span class="club-show-hero__category-icon">✥</span>
+        Premium Club
+      </span>
+
+      <%# Nome Clube %>
+      <h1 class="club-show-hero__title">
+        <%= @club.name %>
+      </h1>
+
+      <p class="club-show-hero__description">
+        Gerencie seus torneios, acompanhe eventos ao vivo e consulte os resultados.
+      </p>
+
+      <%# Temporariamente sem rota correta de torneio %>
+      <%= render "shared/components/buttons/button_create",
+          text: "Criar Novo Torneio",
+          path: new_club_tournament_path(@club),
+          class:"width-g" %>
+
+    </div>
+
+    <%# Jogadores Clube Ativos, sem backend %>
+    <div class="club-show-hero__players">
+
+      <span class="club-show-hero__players-label">
+        Jogadores ativos
+      </span>
+
+      <strong class="club-show-hero__players-count">
+        128
+      </strong>
+
+    </div>
+
+  </section>
+
+
+  <%# Cards de torneio sem ligacao Backend %>
+  <%= render "shared/components/tournaments/card_tournaments" %>
+
+</main>

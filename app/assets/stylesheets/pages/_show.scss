@@ -1,0 +1,193 @@
+.club-show-page {
+  min-height: 100vh;
+  padding: 68px 48px 72px;
+
+  color: #f4f1f5;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(15, 15, 18, 0.65),
+      rgba(15, 15, 18, 0.43)
+    ),
+    image-url("backgroundshow");
+
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+
+/* =========================
+   HERO DO CLUBE
+========================= */
+
+.club-show-hero {
+  width: 100%;
+  max-width: 1440px;
+  min-height: 190px;
+
+  margin: 0 auto 76px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 40px;
+}
+
+.club-show-hero__content {
+  max-width: 750px;
+}
+
+.club-show-hero__category {
+  margin-bottom: 12px;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  color: #c8bafa;
+
+
+  font-family: $font-secondary;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.club-show-hero__category-icon {
+  font-size: 11px;
+}
+
+.club-show-hero__title {
+  margin: 0 0 6px;
+
+  color: #f1eef2;
+
+  font-family: $font-primary;
+  font-size: clamp(38px, 5vw, 62px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.club-show-hero__description {
+  margin: 0 0 18px;
+
+  color: #aaa5af;
+
+  font-family: $font-secondary;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.club-show-hero__create-button {
+  min-width: 280px;
+  min-height: 50px;
+
+  padding: 0 28px;
+
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+
+  border: 0;
+  border-radius: 999px;
+
+  color: #312a4b;
+  background: #b9a8ff;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 12px 26px rgba(137, 105, 255, 0.18),
+    0 3px 8px rgba(0, 0, 0, 0.35);
+
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.club-show-hero__create-button:hover {
+  transform: translateY(-2px);
+  background: #c5b6ff;
+
+  box-shadow:
+    0 15px 30px rgba(137, 105, 255, 0.25),
+    0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.club-show-hero__create-button:active {
+  transform: translateY(0);
+}
+
+.club-show-hero__create-icon {
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 1;
+}
+
+
+/* =========================
+   JOGADORES ATIVOS
+========================= */
+
+.club-show-hero__players {
+  min-width: 140px;
+
+  padding: 4px 18px 18px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  border-left: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.club-show-hero__players-label {
+  color: #aaa5af;
+
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.club-show-hero__players-count {
+  color: #f4f1f5;
+
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+
+
+
+/* =========================
+   JOGADORES ATIVOS
+========================= */
+
+
+/* =========================
+   Responsividade
+========================= */
+@media (max-width: 450px) {
+ .club-show-hero__players {
+  display: none;
+ }
+
+ .club-show-hero{
+    margin: 0 auto 32px;
+ }
+
+ .club-show-page {
+    padding-top: 48px;
+  }
+}

@@ -1,18 +1,77 @@
-<h2>Forgot your password?</h2>
+<div class="signup-page">
 
-<%= simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
-  <%= f.error_notification %>
+  <div class="signup-card">
 
-  <div class="form-inputs">
-    <%= f.input :email,
-                required: true,
-                autofocus: true,
-                input_html: { autocomplete: "email" } %>
+    <h1>Recuperar senha</h1>
+
+    <p class="subtitle">
+      Informe seu email e enviaremos um link para redefinir sua senha.
+    </p>
+
+
+    <div class="card-signup">
+
+      <%= simple_form_for(resource,
+            as: resource_name,
+            url: password_path(resource_name),
+            html: { method: :post }) do |f| %>
+
+
+        <%# Email %>
+        <div class="field">
+
+          <label>Email</label>
+
+          <div class="input-wrapper">
+
+            <%= image_tag "icons/iconemail.svg",
+                  class: "input-icon" %>
+
+
+            <%= f.input :email,
+                  label: false,
+                  required: true,
+                  autofocus: true,
+                  error: false,
+                  input_html: {
+                    autocomplete: "email",
+                    placeholder: "name@company.com"
+                  } %>
+
+          </div>
+
+
+          <%= f.error :email,
+                class: "error-message" %>
+
+        </div>
+
+
+        <%= f.button :submit,
+              "Enviar link de recuperação →",
+              class: "signup-btn" %>
+
+
+      <% end %>
+
+    </div>
+
+
+    <div class="divider">
+      <span>ou</span>
+    </div>
+
+
+    <p class="signup-footer">
+
+      Lembrou sua senha?
+
+      <%= link_to "Entrar",
+            new_session_path(resource_name) %>
+
+    </p>
+
+
   </div>
 
-  <div class="form-actions">
-    <%= f.button :submit, "Send me password reset instructions" %>
-  </div>
-<% end %>
-
-<%= render "devise/shared/links" %>
+</div>

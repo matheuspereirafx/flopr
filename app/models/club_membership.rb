@@ -5,7 +5,8 @@ class ClubMembership < ApplicationRecord
   enum :role, {
     owner: "owner",
     admin: "admin",
-    member: "member"
+    dealer: "dealer",
+    player: "player"
   }
 
   validates :user_id,

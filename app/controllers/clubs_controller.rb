@@ -62,7 +62,7 @@ class ClubsController < ApplicationController
   def create_club_with_owner_membership
     ActiveRecord::Base.transaction do
       @club.save!
-
+      # Esta criando o membership com id do club, id user e passando ja um role .
       @club.club_memberships.create!(
         user: current_user,
         role: :owner

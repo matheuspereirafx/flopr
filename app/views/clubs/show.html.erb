@@ -18,15 +18,15 @@
         Gerencie seus torneios, acompanhe eventos ao vivo e consulte os resultados.
       </p>
 
-      <%# Temporariamente sem rota correta de torneio%>
+      <%# Temporariamente sem rota correta de torneio %>
       <%= render "shared/components/buttons/button_create",
           text: "Criar Novo Torneio",
-          path: new_club_path,
+          path: new_club_tournament_path(@club),
           class:"width-g" %>
 
     </div>
 
-    <%# Jogadores Clube Ativos, sem backend%>
+    <%# Jogadores Clube Ativos, sem backend %>
     <div class="club-show-hero__players">
 
       <span class="club-show-hero__players-label">
@@ -43,6 +43,6 @@
 
 
   <%# Cards de torneio sem ligacao Backend %>
-  <%= render "shared/components/tournaments/card_tournaments"%>
+  <%= render "shared/components/tournaments/card_tournaments" %>
 
 </main>

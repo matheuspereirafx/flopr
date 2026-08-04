@@ -1,4 +1,5 @@
 class Club < ApplicationRecord
+  has_many :tournaments, dependent: :destroy
   has_many :club_memberships, dependent: :destroy
 
   has_many :members,

@@ -44,5 +44,5 @@ class TournamentsController < ApplicationController
       :max_players,
       :starts_at
     )
-  end
+    end
 end

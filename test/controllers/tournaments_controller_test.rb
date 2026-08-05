@@ -205,6 +205,76 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_not tournament.respond_to?(:user_id)
   end
 
+  Tournament.statuses.each_key do |status|
+    test "owner deletes a #{status} tournament" do
+      tournament = create_tournament(status:)
+      sign_in @owner
+
+      assert_difference "Tournament.count", -1 do
+        delete club_tournament_path(@club, tournament)
+      end
+
+      assert_redirected_to club_path(@club)
+      assert_equal "Torneio excluído com sucesso.", flash[:notice]
+    end
+  end
+
+  test "unauthenticated user cannot delete tournament" do
+    tournament = create_tournament
+
+    assert_no_difference "Tournament.count" do
+      delete club_tournament_path(@club, tournament)
+    end
+
+    assert_redirected_to new_user_session_path
+  end
+
+  test "admin cannot delete tournament" do
+    assert_role_cannot_delete_tournament(@admin)
+  end
+
+  test "dealer cannot delete tournament" do
+    assert_role_cannot_delete_tournament(@dealer)
+  end
+
+  test "player cannot delete tournament" do
+    assert_role_cannot_delete_tournament(@player)
+  end
+
+  test "user without membership cannot delete tournament" do
+    tournament = create_tournament
+    sign_in @outsider
+
+    assert_no_difference "Tournament.count" do
+      delete club_tournament_path(@club, tournament)
+    end
+
+    assert_response :not_found
+  end
+
+  test "owner cannot delete tournament from another club by changing the tournament id" do
+    other_tournament = create_tournament(club: @other_club)
+    sign_in @owner
+
+    assert_no_difference "Tournament.count" do
+      delete club_tournament_path(@club, other_tournament)
+    end
+
+    assert_response :not_found
+    assert Tournament.exists?(other_tournament.id)
+  end
+
+  test "owner sees a delete button with confirmation for each tournament" do
+    tournament = create_tournament
+    sign_in @owner
+
+    get club_path(@club)
+
+    assert_select "form[action='#{club_tournament_path(@club, tournament)}'][data-turbo-confirm='Tem certeza que deseja excluir este torneio?']" do
+      assert_select "input[name='_method'][value='delete']"
+    end
+  end
+
   private
 
   def create_user(email)
@@ -232,6 +302,26 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
       max_players: 24,
       starts_at: 2.days.from_now
     }
+  end
+
+  def create_tournament(club: @club, status: :posted)
+    Tournament.create!(
+      **valid_tournament_attributes,
+      club:,
+      status:
+    )
+  end
+
+  def assert_role_cannot_delete_tournament(user)
+    tournament = create_tournament
+    sign_in user
+
+    assert_no_difference "Tournament.count" do
+      delete club_tournament_path(@club, tournament)
+    end
+
+    assert_response :forbidden
+    assert Tournament.exists?(tournament.id)
   end
 
   def assert_missing_required_attribute(attribute)

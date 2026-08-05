@@ -362,9 +362,8 @@
 
 * Owner pode excluir conforme as regras do status.
 * A permissão do admin deve ser explicitamente definida.
-* Dealer e player não podem excluir.
+* Dealer e player e outros role fora o Owner não podem excluir.
 * A exclusão deve exigir confirmação.
-* Torneios com histórico financeiro ou finalizados devem seguir regra de preservação.
 * O torneio deve pertencer ao clube atual.
 * Após excluir, o usuário deve retornar para a lista do clube.
 

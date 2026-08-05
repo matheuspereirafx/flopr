@@ -6,7 +6,7 @@
   <button
     class="menu-button"
     type="button"
-    aria-label="Abrir opções do clube"
+    aria-label="Abrir opções do torneio"
     aria-expanded="false"
     data-resource-menu-target="button"
     data-action="click->resource-menu#toggle"
@@ -22,7 +22,7 @@
     <%= link_to edit_club_path(club),
         class: "resource-menu-item" do %>
 
-      <span>Editar clube</span>
+      <span>Editar Torneio</span>
 
     <% end %>
 
@@ -31,11 +31,11 @@
         class: "resource-menu-item resource-menu-item--danger",
         form: {
           data: {
-            turbo_confirm: "Tem certeza que deseja excluir este clube?"
+            turbo_confirm: "Tem certeza que deseja excluir este Torneio?"
           }
         } do %>
 
-      <span>Excluir clube</span>
+      <span>Excluir Torenio</span>
 
     <% end %>
   </div>

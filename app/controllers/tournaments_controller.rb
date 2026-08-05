@@ -1,6 +1,8 @@
 class TournamentsController < ApplicationController
   before_action :set_member_club
-  before_action :authorize_tournament_creation!
+  before_action :authorize_tournament_creation!, only: %i[new create]
+  before_action :set_tournament, only: :destroy
+  before_action :authorize_tournament_destruction!, only: :destroy
 
   def new
     @tournament = @club.tournaments.build
@@ -17,6 +19,14 @@ class TournamentsController < ApplicationController
     end
   end
 
+  def destroy
+    @tournament.destroy
+
+    redirect_to club_path(@club),
+                notice: "Torneio excluído com sucesso.",
+                status: :see_other
+  end
+
   private
 
   def set_member_club
@@ -29,7 +39,7 @@ class TournamentsController < ApplicationController
   def authorize_tournament_creation!
     return if performed?
     return if @current_membership.owner? || @current_membership.admin?
-
+r
     render plain: "Forbidden", status: :forbidden
   end
 
@@ -40,5 +50,18 @@ class TournamentsController < ApplicationController
       :max_players,
       :starts_at
     )
+  end
+
+  def set_tournament
+    @tournament = @club.tournaments.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    render plain: "Not found", status: :not_found
+  end
+
+  def authorize_tournament_destruction!
+    return if performed?
+    return if @current_membership.owner?
+
+    render plain: "Forbidden", status: :forbidden
   end
 end

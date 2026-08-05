@@ -1,6 +1,10 @@
 class TournamentsController < ApplicationController
   before_action :set_member_club
-  before_action :authorize_tournament_creation!
+  before_action :authorize_tournament_creation!, only: %i[new create]
+
+  def index
+    @tournaments = @club.tournaments.order(starts_at: :asc)
+  end
 
   def new
     @tournament = @club.tournaments.build

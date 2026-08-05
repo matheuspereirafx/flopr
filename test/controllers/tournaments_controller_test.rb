@@ -205,6 +205,121 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_not tournament.respond_to?(:user_id)
   end
 
+  test "unauthenticated user cannot access tournaments index" do
+    get club_tournaments_path(@club)
+
+    assert_redirected_to new_user_session_path
+  end
+
+  test "owner can access tournaments index" do
+    sign_in @owner
+
+    get club_tournaments_path(@club)
+
+    assert_response :success
+  end
+
+  test "admin can access tournaments index" do
+    sign_in @admin
+
+    get club_tournaments_path(@club)
+
+    assert_response :success
+  end
+
+  test "dealer can access tournaments index" do
+    sign_in @dealer
+
+    get club_tournaments_path(@club)
+
+    assert_response :success
+  end
+
+  test "player can access tournaments index" do
+    sign_in @player
+
+    get club_tournaments_path(@club)
+
+    assert_response :success
+  end
+
+  test "user without membership cannot access tournaments index" do
+    sign_in @outsider
+
+    get club_tournaments_path(@club)
+
+    assert_response :not_found
+  end
+
+  test "tournaments index lists only tournaments from current club" do
+    current_tournament = create_tournament(
+      @club,
+      name: "Current Club Tournament",
+      location: "Mesa Principal"
+    )
+    other_tournament = create_tournament(
+      @other_club,
+      name: "Other Club Tournament",
+      location: "Sala Reservada"
+    )
+
+    sign_in @owner
+    get club_tournaments_path(@club)
+
+    assert_response :success
+    assert_includes response.body, current_tournament.name
+    assert_includes response.body, current_tournament.location
+    assert_includes response.body, current_tournament.max_players.to_s
+    assert_includes response.body, current_tournament.status.humanize
+    assert_not_includes response.body, other_tournament.name
+    assert_not_includes response.body, other_tournament.location
+  end
+
+  test "tournaments index presents basic tournament information" do
+    tournament = create_tournament(
+      @club,
+      name: "Saturday Deep Stack",
+      location: "Rua Central, 88",
+      max_players: 32,
+      status: :posted
+    )
+
+    sign_in @player
+    get club_tournaments_path(@club)
+
+    assert_response :success
+    assert_includes response.body, tournament.name
+    assert_includes response.body, tournament.location
+    assert_includes response.body, "32"
+    assert_includes response.body, "Posted"
+    assert_includes response.body, "Buy-in"
+    assert_includes response.body, "R$ 250"
+  end
+
+  test "tournaments index respects role actions for dealer and player" do
+    create_tournament(@club)
+
+    [@dealer, @player].each do |user|
+      sign_in user
+      get club_tournaments_path(@club)
+
+      assert_response :success
+      assert_not_includes response.body, new_club_tournament_path(@club)
+      sign_out user
+    end
+  end
+
+  test "tournaments index shows empty state when club has no tournaments" do
+    empty_club = Club.create!(name: "Empty Club")
+    create_membership(@owner, empty_club, :owner)
+
+    sign_in @owner
+    get club_tournaments_path(empty_club)
+
+    assert_response :success
+    assert_includes response.body, "Nenhum torneio criado ainda."
+  end
+
   private
 
   def create_user(email)
@@ -217,6 +332,18 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
 
   def create_membership(user, club, role)
     ClubMembership.create!(user: user, club: club, role: role)
+  end
+
+  def create_tournament(club, attributes = {})
+    defaults = {
+      name: "Friday Poker Night",
+      location: "Rua das Flores, 123",
+      max_players: 24,
+      starts_at: 2.days.from_now,
+      status: :posted
+    }
+
+    club.tournaments.create!(defaults.merge(attributes))
   end
 
   def tournament_payload(overrides = {})

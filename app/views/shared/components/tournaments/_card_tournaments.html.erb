@@ -61,6 +61,14 @@
                 <span class="tournament-card__status-dot"></span>
                 <%= tournament.status.humanize %>
               </span>
+
+              <% if current_membership.owner? || current_membership.admin? %>
+                <div class="tournament-card__menu">
+                  <%= render "tournaments/tournament_menu_card",
+                             tournament: tournament,
+                             can_destroy: current_membership.owner? %>
+                </div>
+              <% end %>
             </div>
 
             <div class="tournament-card__content">

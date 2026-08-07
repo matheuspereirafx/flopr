@@ -309,6 +309,13 @@
   font-family: $font-secondary;
 }
 
+.tournament-card__menu {
+  position: absolute;
+  top: 13px;
+  right: 13px;
+  z-index: 3;
+}
+
 
 /* =========================
    CONTEÚDO DO CARD

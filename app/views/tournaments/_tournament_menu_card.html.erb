@@ -15,28 +15,30 @@
   </button>
 
   <div
-    class="insede-menu-dropdown"
+    class="inside-menu-dropdown"
     data-inside-menu-target="dropdown"
     hidden
   >
-    <%= link_to edit_club_path(club),
+    <%= link_to edit_club_tournament_path(tournament.club, tournament),
         class: "inside-menu-item" do %>
 
-      <span>Editar clube</span>
+      <span>Editar torneio</span>
 
     <% end %>
 
-    <%= button_to club_path(club),
-        method: :delete,
-        class: "inside-menu-item inside-menu-item--danger",
-        form: {
-          data: {
-            turbo_confirm: "Tem certeza que deseja excluir este torneio?"
-          }
-        } do %>
+    <% if can_destroy %>
+      <%= button_to club_tournament_path(tournament.club, tournament),
+          method: :delete,
+          class: "inside-menu-item inside-menu-item--danger",
+          form: {
+            data: {
+              turbo_confirm: "Tem certeza que deseja excluir este torneio?"
+            }
+          } do %>
 
-      <span>Excluir torneio</span>
+        <span>Excluir torneio</span>
 
+      <% end %>
     <% end %>
   </div>
 </div>

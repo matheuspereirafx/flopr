@@ -47,6 +47,7 @@ class ClubsController < ApplicationController
 
   def set_member_club
     @club = current_user.clubs.find(params[:id])
+    @current_membership = @club.club_memberships.find_by!(user: current_user)
   end
 
   def set_owned_club

@@ -1,0 +1,44 @@
+<div
+  class="inside-menu"
+  data-controller="inside-menu"
+  data-action="click@window->inside-menu#closeOutside">
+
+  <button
+    class="menu-button"
+    type="button"
+    aria-label="Abrir opções do torneio"
+    aria-expanded="false"
+    data-inside-menu-target="button"
+    data-action="click->inside-menu#toggle"
+  >
+    ⋮
+  </button>
+
+  <div
+    class="inside-menu-dropdown"
+    data-inside-menu-target="dropdown"
+    hidden
+  >
+    <%= link_to edit_club_tournament_path(tournament.club, tournament),
+        class: "inside-menu-item" do %>
+
+      <span>Editar torneio</span>
+
+    <% end %>
+
+    <% if can_destroy %>
+      <%= button_to club_tournament_path(tournament.club, tournament),
+          method: :delete,
+          class: "inside-menu-item inside-menu-item--danger",
+          form: {
+            data: {
+              turbo_confirm: "Tem certeza que deseja excluir este torneio?"
+            }
+          } do %>
+
+        <span>Excluir torneio</span>
+
+      <% end %>
+    <% end %>
+  </div>
+</div>

@@ -46,11 +46,14 @@
 }
 
 
-.club-menu-card,
-.menu-button,
-.club-menu {
+.inside-menu,
+.menu-button {
   position: relative;
   z-index: 3;
+  pointer-events: auto;
+}
+
+.inside-menu * {
   pointer-events: auto;
 }
 

@@ -1,26 +1,26 @@
 <div
-  class="club-menu"
-  data-controller="club-menu"
-  data-action="click@window->club-menu#closeOutside" >
+  class="inside-menu"
+  data-controller="inside-menu"
+  data-action="click@window->inside-menu#closeOutside">
 
   <button
     class="menu-button"
     type="button"
-    aria-label="Abrir opções do clube"
+    aria-label="Abrir opções do inside"
     aria-expanded="false"
-    data-club-menu-target="button"
-    data-action="click->club-menu#toggle"
+    data-inside-menu-target="button"
+    data-action="click->inside-menu#toggle"
   >
     ⋮
   </button>
 
   <div
-    class="club-menu-dropdown"
-    data-club-menu-target="dropdown"
+    class="inside-menu-dropdown"
+    data-inside-menu-target="dropdown"
     hidden
   >
     <%= link_to edit_club_path(club),
-        class: "club-menu-item" do %>
+        class: "inside-menu-item" do %>
 
       <span>Editar clube</span>
 
@@ -28,7 +28,7 @@
 
     <%= button_to club_path(club),
         method: :delete,
-        class: "club-menu-item club-menu-item--danger",
+        class: "inside-menu-item inside-menu-item--danger",
         form: {
           data: {
             turbo_confirm: "Tem certeza que deseja excluir este clube?"

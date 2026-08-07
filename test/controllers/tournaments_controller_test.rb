@@ -309,6 +309,29 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "tournaments index shows management menu only to owner and admin" do
+    tournament = create_tournament(@club)
+
+    sign_in @owner
+    get club_tournaments_path(@club)
+
+    assert_includes response.body, edit_club_tournament_path(@club, tournament)
+    assert_includes response.body, club_tournament_path(@club, tournament)
+    sign_out @owner
+
+    sign_in @admin
+    get club_tournaments_path(@club)
+
+    assert_includes response.body, edit_club_tournament_path(@club, tournament)
+    assert_not_includes response.body, "Excluir torneio"
+    sign_out @admin
+
+    sign_in @dealer
+    get club_tournaments_path(@club)
+
+    assert_not_includes response.body, edit_club_tournament_path(@club, tournament)
+  end
+
   test "tournaments index shows empty state when club has no tournaments" do
     empty_club = Club.create!(name: "Empty Club")
     create_membership(@owner, empty_club, :owner)
@@ -318,6 +341,108 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_includes response.body, "Nenhum torneio criado ainda."
+  end
+
+  test "owner can access tournament edit form" do
+    tournament = create_tournament(@club)
+    sign_in @owner
+
+    get edit_club_tournament_path(@club, tournament)
+
+    assert_response :success
+  end
+
+  test "admin can access tournament edit form" do
+    tournament = create_tournament(@club)
+    sign_in @admin
+
+    get edit_club_tournament_path(@club, tournament)
+
+    assert_response :success
+  end
+
+  test "dealer and player cannot access tournament edit form" do
+    tournament = create_tournament(@club)
+
+    [@dealer, @player].each do |user|
+      sign_in user
+      get edit_club_tournament_path(@club, tournament)
+
+      assert_response :forbidden
+      sign_out user
+    end
+  end
+
+  test "user cannot edit tournament from another club" do
+    tournament = create_tournament(@other_club)
+    sign_in @owner
+
+    get edit_club_tournament_path(@club, tournament)
+
+    assert_response :not_found
+  end
+
+  test "owner updates tournament with permitted params" do
+    tournament = create_tournament(@club)
+    sign_in @owner
+
+    patch club_tournament_path(@club, tournament), params: tournament_payload(
+      name: "Sunday High Roller",
+      max_players: 48
+    )
+
+    assert_redirected_to club_path(@club)
+    assert_equal "Torneio atualizado com sucesso.", flash[:notice]
+    assert_equal "Sunday High Roller", tournament.reload.name
+    assert_equal 48, tournament.max_players
+  end
+
+  test "admin updates tournament but cannot change status" do
+    tournament = create_tournament(@club, status: :posted)
+    sign_in @admin
+
+    patch club_tournament_path(@club, tournament), params: tournament_payload(
+      name: "Admin Update",
+      status: "finished"
+    )
+
+    assert_redirected_to club_path(@club)
+    assert_equal "Admin Update", tournament.reload.name
+    assert_equal "posted", tournament.status
+  end
+
+  test "dealer and player cannot update tournament" do
+    tournament = create_tournament(@club)
+
+    [@dealer, @player].each do |user|
+      sign_in user
+      patch club_tournament_path(@club, tournament),
+            params: tournament_payload(name: "Unauthorized update")
+
+      assert_response :forbidden
+      assert_equal "Friday Poker Night", tournament.reload.name
+      sign_out user
+    end
+  end
+
+  test "only owner can delete tournament" do
+    tournament = create_tournament(@club)
+    sign_in @admin
+
+    assert_no_difference "Tournament.count" do
+      delete club_tournament_path(@club, tournament)
+    end
+
+    assert_response :forbidden
+    sign_out @admin
+
+    sign_in @owner
+    assert_difference "Tournament.count", -1 do
+      delete club_tournament_path(@club, tournament)
+    end
+
+    assert_redirected_to club_path(@club)
+    assert_equal "Torneio excluído com sucesso.", flash[:notice]
   end
 
   private

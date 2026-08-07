@@ -11,6 +11,7 @@ class TournamentsController < ApplicationController
 
   def new
     @tournament = @club.tournaments.build
+    5.times { |level| @tournament.blind_levels.build(level: level + 1, duration_minutes: 15) }
   end
 
   def create

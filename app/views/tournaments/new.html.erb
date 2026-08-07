@@ -1,11 +1,199 @@
-<main class="tournament-form-page">
-  <header class="tournament-form-page__header">
-    <h1 class="tournament-form-page__title">Criar torneio</h1>
+<div class="page">
+  <main class="tournament-form" aria-labelledby="page-title">
+    <header class="tournament-form__header">
+      <h1 id="page-title" class="tournament-form__title">Create Tournament</h1>
 
-    <p class="tournament-form-page__description">
-      Informe os dados básicos do novo evento.
-    </p>
-  </header>
+      <p class="tournament-form__subtitle">
+        Configure basic information and blind structure.
+      </p>
+    </header>
 
-  <%= render "shared/components/tournaments/form", club: @club, tournament: @tournament %>
-</main>
+    <%= simple_form_for [@club, @tournament],
+                        html: { class: "tournament-form__body" } do |f| %>
+      <%= f.error_notification class: "form-errors" %>
+
+      <div class="form-grid">
+        <fieldset class="panel panel--basic-info">
+          <legend class="panel__title">Basic Information</legend>
+
+          <div class="field">
+            <span class="field__label">Tournament Banner</span>
+
+            <label for="banner-upload" class="dropzone">
+              <input type="file"
+                     id="banner-upload"
+                     accept="image/png, image/jpeg"
+                     class="dropzone__input"
+                     disabled>
+
+              <span class="dropzone__icon" aria-hidden="true">
+                <i data-lucide="upload-cloud"></i>
+              </span>
+
+              <span class="dropzone__text">
+                Drag and drop or <span class="dropzone__link">click to upload</span>
+              </span>
+
+              <span class="dropzone__hint">
+                Banner upload is not available yet.
+              </span>
+            </label>
+          </div>
+
+          <%= f.input :name,
+                      label: "Tournament Name",
+                      placeholder: "e.g., Friday Night High Roller",
+                      wrapper_html: { class: "field" },
+                      label_html: { class: "field__label" },
+                      input_html: { class: "input" } %>
+
+          <%= f.input :starts_at,
+                      as: :string,
+                      label: "Start Date and Time",
+                      wrapper_html: { class: "field" },
+                      label_html: { class: "field__label" },
+                      input_html: { class: "input", type: "datetime-local" } %>
+
+          <div class="field">
+            <%= f.label :location, "Location / Venue", class: "field__label" %>
+
+            <div class="input-icon">
+              <span class="input-icon__icon" aria-hidden="true">
+                <i data-lucide="map-pin"></i>
+              </span>
+
+              <%= f.input_field :location,
+                                class: "input input--with-icon",
+                                placeholder: "e.g., The Poker Room, Table 1" %>
+            </div>
+          </div>
+
+          <%= f.input :max_players,
+                      label: "Max Players",
+                      placeholder: "Unlimited",
+                      wrapper_html: { class: "field" },
+                      label_html: { class: "field__label" },
+                      input_html: { class: "input", min: 2 } %>
+        </fieldset>
+
+        <fieldset class="panel panel--blind-structure"
+                  data-controller="blind-level-duration">
+          <legend class="sr-only">Blind Structure</legend>
+
+          <div class="panel__header">
+            <span class="panel__title" aria-hidden="true">Blind Structure</span>
+          </div>
+
+          <% selected_duration = @tournament.blind_levels.first&.duration_minutes || 15 %>
+
+          <div class="field">
+            <label class="field__label" for="level-duration">
+              Level Duration
+            </label>
+
+            <div class="select-wrapper">
+              <%= select_tag "level-duration",
+                             options_for_select(
+                               [
+                                 ["5 Minutes", 5],
+                                 ["10 Minutes", 10],
+                                 ["15 Minutes", 15],
+                                 ["20 Minutes", 20],
+                                 ["25 Minutes", 25],
+                                 ["30 Minutes", 30]
+                               ],
+                               selected_duration
+                             ),
+                             id: "level-duration",
+                             name: nil,
+                             class: "select",
+                             data: {
+                               blind_level_duration_target: "select",
+                               action: "change->blind-level-duration#update"
+                             } %>
+
+              <span class="select-wrapper__chevron" aria-hidden="true">
+                <i data-lucide="chevron-down"></i>
+              </span>
+            </div>
+          </div>
+
+          <div class="blinds-table-wrapper">
+            <table class="blinds-table">
+              <caption class="sr-only">Blind schedule by level</caption>
+
+              <thead>
+                <tr>
+                  <th scope="col">Lvl</th>
+                  <th scope="col">Small</th>
+                  <th scope="col">Big</th>
+                  <th scope="col">Ante</th>
+                  <th scope="col">
+                    <span class="sr-only">Actions</span>
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody data-controller="blind-level-row">
+                <%= f.simple_fields_for :blind_levels do |blind_level_fields| %>
+                  <tr data-blind-level-row-target="row">
+                    <td>
+                      <%= blind_level_fields.object.level %>
+                      <%= blind_level_fields.hidden_field :level %>
+
+                      <%= blind_level_fields.hidden_field :duration_minutes,
+                                                          value: selected_duration,
+                                                          data: {
+                                                            blind_level_duration_target: "input"
+                                                          } %>
+
+                      <%= blind_level_fields.hidden_field :_destroy,
+                                                          value: 0,
+                                                          data: {
+                                                            blind_level_row_target: "destroyInput"
+                                                          } %>
+                    </td>
+
+                    <td>
+                      <%= blind_level_fields.input_field :small_blind,
+                                                          class: "input",
+                                                          min: 0 %>
+                    </td>
+
+                    <td>
+                      <%= blind_level_fields.input_field :big_blind,
+                                                          class: "input",
+                                                          min: 0 %>
+                    </td>
+
+                    <td>
+                      <%= blind_level_fields.input_field :ante,
+                                                          class: "input",
+                                                          min: 0 %>
+                    </td>
+
+                    <td class="blinds-table__action">
+                      <button type="button"
+                              class="icon-button icon-button--danger"
+                              aria-label="Remove level <%= blind_level_fields.object.level %>"
+                              data-action="blind-level-row#remove">
+                        <i data-lucide="x"></i>
+                      </button>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </fieldset>
+      </div>
+
+      <hr class="tournament-form__divider">
+
+      <div class="tournament-form__actions">
+        <%= link_to "Cancel", club_path(@club), class: "button button--ghost" %>
+        <%= f.button :submit, "Create Tournament", class: "button button--primary" %>
+      </div>
+    <% end %>
+  </main>
+</div>

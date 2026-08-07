@@ -35,7 +35,7 @@ Antes de analisar ou implementar uma funcionalidade, consulte os documentos rela
 * `docs/database.md`: Models, tabelas e relacionamentos;
 * `docs/permissions.md`: papéis e regras de autorização;
 * `docs/coding-standards.md`: padrões de desenvolvimento;
-* `docs/user-stories/`: requisitos e critérios de aceitação.
+* `docs/design.md`: padrões de design, desenvolvimento de front-end;
 
 O arquivo da User Story atual deve ser considerado a principal fonte de escopo da funcionalidade.
 
@@ -57,15 +57,14 @@ Cada User Story deve ser trabalhada em:
 Antes de alterar qualquer arquivo:
 
 1. Leia este `AGENTS.md`.
-2. Leia a User Story indicada.
+2. Leia a User Story mencionada
 3. Consulte os documentos relacionados.
 4. Verifique a branch atual.
 5. Analise o código existente.
 6. Analise rotas, Models, Controllers, Views e schema relacionados.
 7. Identifique regras de negócio e permissões.
 8. Apresente um plano de implementação.
-9. Liste os arquivos que serão criados ou alterados.
-10. Aguarde aprovação quando isso for solicitado.
+9. Liste os arquivos que serão criados ou alterados 
 
 Não implemente durante a etapa de análise.
 
@@ -443,7 +442,7 @@ Antes de implementar uma interface:
 1. analise a imagem ou referência visual;
 2. consulte os estilos existentes;
 3. consulte os componentes existentes;
-4. consulte `docs/coding-standards.md`;
+4. consulte `docs/coding-standards.md` e `docs/design.md` ;
 5. apresente a composição da página;
 6. mostre a hierarquia dos blocos;
 7. explique a função de cada elemento;

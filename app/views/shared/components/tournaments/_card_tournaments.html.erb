@@ -64,7 +64,7 @@
 
               <% if current_membership.owner? || current_membership.admin? %>
                 <div class="tournament-card__menu">
-                  <%= render "tournaments/tournament_menu_card",
+                  <%= render "shared/components/tournaments/tournament_menu_card",
                              tournament: tournament,
                              can_destroy: current_membership.owner? %>
                 </div>

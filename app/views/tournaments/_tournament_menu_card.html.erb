@@ -6,7 +6,7 @@
   <button
     class="menu-button"
     type="button"
-    aria-label="Abrir opções do inside"
+    aria-label="Abrir opções do torneio"
     aria-expanded="false"
     data-inside-menu-target="button"
     data-action="click->inside-menu#toggle"
@@ -15,7 +15,7 @@
   </button>
 
   <div
-    class="inside-menu-dropdown"
+    class="insede-menu-dropdown"
     data-inside-menu-target="dropdown"
     hidden
   >
@@ -31,11 +31,11 @@
         class: "inside-menu-item inside-menu-item--danger",
         form: {
           data: {
-            turbo_confirm: "Tem certeza que deseja excluir este clube?"
+            turbo_confirm: "Tem certeza que deseja excluir este torneio?"
           }
         } do %>
 
-      <span>Excluir clube</span>
+      <span>Excluir torneio</span>
 
     <% end %>
   </div>

@@ -386,10 +386,12 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     tournament = create_tournament(@club)
     sign_in @owner
 
-    patch club_tournament_path(@club, tournament), params: tournament_payload(
-      name: "Sunday High Roller",
-      max_players: 48
-    )
+    patch club_tournament_path(@club, tournament), params: {
+      tournament: {
+        name: "Sunday High Roller",
+        max_players: 48
+      }
+    }
 
     assert_redirected_to club_path(@club)
     assert_equal "Torneio atualizado com sucesso.", flash[:notice]
@@ -401,10 +403,12 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     tournament = create_tournament(@club, status: :posted)
     sign_in @admin
 
-    patch club_tournament_path(@club, tournament), params: tournament_payload(
-      name: "Admin Update",
-      status: "finished"
-    )
+    patch club_tournament_path(@club, tournament), params: {
+      tournament: {
+        name: "Admin Update",
+        status: "finished"
+      }
+    }
 
     assert_redirected_to club_path(@club)
     assert_equal "Admin Update", tournament.reload.name
@@ -460,15 +464,16 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
   end
 
   def create_tournament(club, attributes = {})
-    defaults = {
-      name: "Friday Poker Night",
-      location: "Rua das Flores, 123",
-      max_players: 24,
-      starts_at: 2.days.from_now,
-      status: :posted
-    }
+  defaults = {
+    name: "Friday Poker Night",
+    location: "Rua das Flores, 123",
+    max_players: 24,
+    starts_at: 2.days.from_now,
+    status: :posted,
+    blind_levels_attributes: blind_levels_attributes
+  }
 
-    club.tournaments.create!(defaults.merge(attributes))
+  club.tournaments.create!(defaults.merge(attributes))
   end
 
   def tournament_payload(overrides = {})
@@ -477,13 +482,15 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     }
   end
 
+
   def valid_tournament_attributes
-    {
-      name: "Friday Poker Night",
-      location: "Rua das Flores, 123",
-      max_players: 24,
-      starts_at: 2.days.from_now
-    }
+  {
+    name: "Friday Poker Night",
+    location: "Rua das Flores, 123",
+    max_players: 24,
+    starts_at: 2.days.from_now,
+    blind_levels_attributes: blind_levels_attributes
+  }
   end
 
   def assert_missing_required_attribute(attribute)
@@ -495,5 +502,17 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unprocessable_entity
+  end
+
+  def blind_levels_attributes
+    5.times.map do |index|
+      {
+        level: index + 1,
+        duration_minutes: 15,
+        small_blind: (index + 1) * 100,
+        big_blind: (index + 1) * 200,
+        ante: 0
+      }
+    end
   end
 end

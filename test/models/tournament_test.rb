@@ -77,14 +77,28 @@ class TournamentTest < ActiveSupport::TestCase
   private
 
   def build_tournament(attributes = {})
-    defaults = {
-      club: @club,
-      name: "Friday Poker Night",
-      location: "Rua das Flores, 123",
-      max_players: 24,
-      starts_at: 2.days.from_now
-    }
+  defaults = {
+    club: @club,
+    name: "Friday Poker Night",
+    location: "Rua das Flores, 123",
+    max_players: 24,
+    starts_at: 2.days.from_now,
+    blind_levels_attributes: blind_levels_attributes
+  }
 
-    Tournament.new(defaults.merge(attributes))
+  Tournament.new(defaults.merge(attributes))
+  end
+
+  def blind_levels_attributes
+    5.times.map do |index|
+      {
+        level: index + 1,
+        duration_minutes: 15,
+        small_blind: (index + 1) * 100,
+        big_blind: (index + 1) * 200,
+        ante: 0
+      }
+    end
+
   end
 end

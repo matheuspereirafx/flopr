@@ -88,7 +88,14 @@ class TournamentsController < ApplicationController
       :name,
       :location,
       :max_players,
-      :starts_at
+      :starts_at,
+      blind_levels_attributes: [
+        :level,
+        :duration_minutes,
+        :small_blind,
+        :big_blind,
+        :ante
+      ]
     )
   end
 end

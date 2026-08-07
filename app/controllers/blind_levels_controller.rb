@@ -1,0 +1,2 @@
+class BlindLevelsController < ApplicationController
+end

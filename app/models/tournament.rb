@@ -1,5 +1,10 @@
 class Tournament < ApplicationRecord
   belongs_to :club
+  has_many :blind_levels, dependent: :destroy
+
+  accepts_nested_attributes_for :blind_levels
+
+  validates :blind_levels, length: { minimum: 5 }
 
   enum :status, {
     draft: "draft",

@@ -1,14 +1,10 @@
 <main class="tournament-form-page">
-  <section class="tournament-form-page__content">
-    <h1>Editar torneio</h1>
+  <header class="tournament-form-page__header">
+    <h1 class="tournament-form-page__title">Editar torneio</h1>
 
-    <%= simple_form_for [@club, @tournament] do |f| %>
-      <%= f.input :name, label: "Nome" %>
-      <%= f.input :location, label: "Endereço" %>
-      <%= f.input :max_players, label: "Total de players" %>
-      <%= f.input :starts_at, as: :datetime, html5: true, label: "Data e hora" %>
-
-      <%= f.button :submit, "Salvar alterações" %>
-    <% end %>
-  </section>
+    <p class="tournament-form-page__description">
+      Atualize os dados básicos do evento.
+    </p>
+  </header>
+  <%= render "shared/components/tournaments/form", club: @club, tournament: @tournament %>
 </main>

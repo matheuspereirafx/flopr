@@ -10,9 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_04_202347) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_07_125420) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "blind_levels", force: :cascade do |t|
+    t.integer "ante", default: 0, null: false
+    t.integer "big_blind", null: false
+    t.datetime "created_at", null: false
+    t.integer "duration_minutes", null: false
+    t.integer "level", null: false
+    t.integer "small_blind", null: false
+    t.bigint "tournament_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tournament_id", "level"], name: "index_blind_levels_on_tournament_id_and_level", unique: true
+    t.index ["tournament_id"], name: "index_blind_levels_on_tournament_id"
+  end
 
   create_table "club_memberships", force: :cascade do |t|
     t.bigint "club_id", null: false
@@ -60,6 +73,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_202347) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "blind_levels", "tournaments"
   add_foreign_key "club_memberships", "clubs"
   add_foreign_key "club_memberships", "users"
   add_foreign_key "tournaments", "clubs"

@@ -506,10 +506,12 @@ table {
 .blinds-table-wrapper {
   border: 1px solid $color-border;
   border-radius: $radius-md;
-  overflow: hidden; // garante que os cantos arredondados "cortem" o cabeçalho e as linhas internas
+  overflow-x: auto;
 }
 
 .blinds-table {
+  min-width: 640px;
+
   thead {
     background: $color-surface;
   }
@@ -615,25 +617,28 @@ table {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  padding: 0;
+  width: 36px;
+  height: 36px;
   border: 1px solid transparent;
-  border-radius: $radius-sm - 4px;
+  border-radius: $radius-sm;
   color: $color-text-secondary;
-  float: right;
-  transition: color $transition-fast,
-              background-color $transition-fast,
-              border-color $transition-fast;
-  svg { width: 14px; height: 14px; }
 
-  &:hover {
+  &:hover:not(:disabled) {
+    color: #ef4444;
     background-color: rgba(#ef4444, 0.1);
     border-color: rgba(#ef4444, 0.35);
-    color: #ef4444;
   }
 
-  @include focus-ring;
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+
+  i,
+  svg {
+    width: 18px;
+    height: 18px;
+  }
 }
 
 // ---- Add level button ---------------------------------------------------------

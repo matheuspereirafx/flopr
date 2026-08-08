@@ -1,17 +1,25 @@
 class TournamentsController < ApplicationController
   before_action :set_member_club
-  before_action :authorize_tournament_creation!, only: %i[new create]
+  before_action :authorize_owner!, only: %i[new create edit update destroy]
   before_action :set_tournament, only: %i[edit update destroy]
-  before_action :authorize_tournament_management!, only: %i[edit update]
   before_action :authorize_tournament_deletion!, only: :destroy
 
   def index
     @tournaments = @club.tournaments.order(starts_at: :asc)
   end
-
   def new
     @tournament = @club.tournaments.build
-    5.times { |level| @tournament.blind_levels.build(level: level + 1, duration_minutes: 15) }
+
+    Tournament::MINIMUM_BLIND_LEVELS.times do |index|
+      @tournament.blind_levels.build(
+        level: index + 1,
+        duration_minutes: 15,
+        ante: 0
+      )
+    end
+
+    @tournament.blind_levels_count =
+      Tournament::MINIMUM_BLIND_LEVELS
   end
 
   def create
@@ -53,12 +61,7 @@ class TournamentsController < ApplicationController
     render plain: "Not found", status: :not_found
   end
 
-  def authorize_tournament_creation!
-    return if performed?
-    return if tournament_manager?
-
     render plain: "Forbidden", status: :forbidden
-  end
 
   def set_tournament
     @tournament = @club.tournaments.find(params[:id])
@@ -66,12 +69,7 @@ class TournamentsController < ApplicationController
     render plain: "Not found", status: :not_found
   end
 
-  def authorize_tournament_management!
-    return if performed?
-    return if tournament_manager?
 
-    render plain: "Forbidden", status: :forbidden
-  end
 
   def authorize_tournament_deletion!
     return if performed?
@@ -80,23 +78,29 @@ class TournamentsController < ApplicationController
     render plain: "Forbidden", status: :forbidden
   end
 
-  def tournament_manager?
-    @current_membership.owner? || @current_membership.admin?
-  end
-
   def tournament_params
     params.require(:tournament).permit(
       :name,
       :location,
       :max_players,
       :starts_at,
+      :blind_levels_count,
       blind_levels_attributes: [
+        :id,
         :level,
         :duration_minutes,
         :small_blind,
         :big_blind,
-        :ante
+        :ante,
+        :_destroy
       ]
     )
+  end
+
+  def authorize_owner!
+    return if performed?
+    return if @current_membership.owner?
+
+    render plain: "Forbidden", status: :forbidden
   end
 end

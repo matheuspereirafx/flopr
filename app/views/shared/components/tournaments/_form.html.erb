@@ -17,8 +17,9 @@
       <% selected_duration =
            tournament.blind_levels.first&.duration_minutes || 15 %>
 
-      <div class="form-grid">
-        <fieldset class="panel panel--basic-info">
+      <div class="tournament-form__content">
+        <div class="form-grid">
+          <fieldset class="panel panel--basic-info">
           <legend class="panel__title">Informações básicas</legend>
 
           <%= f.input :name,
@@ -63,9 +64,9 @@
                         class: "input",
                         min: 2
                       } %>
-        </fieldset>
+          </fieldset>
 
-        <fieldset class="panel panel--blind-structure"
+          <fieldset class="panel panel--blind-structure"
                   data-controller="blind-structure">
           <legend class="sr-only">Estrutura de blinds</legend>
 
@@ -311,19 +312,34 @@
             <i data-lucide="plus"></i>
             Adicionar nível
           </button>
-        </fieldset>
-      </div>
+          </fieldset>
+        </div>
 
-      <hr class="tournament-form__divider">
+        <div class="tournament-form__actions">
+          <%= link_to club_path(club),
+                      class: "button button--ghost",
+                      aria: { label: "Cancelar" },
+                      title: "Cancelar" do %>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m18 6-12 12M6 6l12 12" />
+            </svg>
+            <span class="sr-only">Cancelar</span>
+          <% end %>
 
-      <div class="tournament-form__actions">
-        <%= link_to "Cancelar",
-                    club_path(club),
-                    class: "button button--ghost" %>
-
-        <%= f.button :submit,
-                     tournament.persisted? ? "Salvar alterações" : "Criar torneio",
-                     class: "button button--primary" %>
+          <%= button_tag type: "submit",
+                         class: "button button--primary",
+                         aria: {
+                           label: tournament.persisted? ? "Salvar alterações" : "Criar torneio"
+                         },
+                         title: tournament.persisted? ? "Salvar alterações" : "Criar torneio" do %>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+            <span class="sr-only">
+              <%= tournament.persisted? ? "Salvar alterações" : "Criar torneio" %>
+            </span>
+          <% end %>
+        </div>
       </div>
     <% end %>
   </main>

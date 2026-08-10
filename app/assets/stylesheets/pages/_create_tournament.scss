@@ -66,7 +66,6 @@ $radius-lg: 16px;
 $radius-pill: 999px;
 
 // Tipografia
-$font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', Arial, sans-serif;
 $font-size-xs:   12px;
 $font-size-sm:   13px;
 $font-size-base: 14px;
@@ -106,7 +105,7 @@ $breakpoint-tablet: 860px;
   border: 1px solid $color-border;
   border-radius: $radius-sm;
   color: $color-text-primary;
-  font-family: $font-family-base;
+  font-family: $font-secondary;
   font-size: $font-size-sm;
   padding: $space-3 $space-4;
   transition: border-color $transition-fast, background-color $transition-fast;
@@ -146,7 +145,7 @@ body {
 body {
   background: $color-bg;
   color: $color-text-primary;
-  font-family: $font-family-base;
+  font-family: $font-secondary;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased; // evita texto claro sobre fundo escuro parecer "borrado/grosso" no WebKit
 }
@@ -197,7 +196,8 @@ table {
 
   &__title {
     margin: 0 0 $space-1;
-    font-size: $font-size-xl;
+    font-family: $font-primary;
+    font-size: $font-display-lg-size;
     font-weight: 700;
     letter-spacing: -0.02em; // tracking levemente negativo deixa títulos grandes menos "espaçados", mais sólidos
   }
@@ -286,7 +286,8 @@ table {
   gap: $space-5;
 
   &__title {
-    font-size: $font-size-lg;
+    font-family: $font-primary;
+    font-size: $font-display-mm-size;
     font-weight: 700;
   }
 
@@ -746,4 +747,14 @@ table {
 
 .icon-button--danger {
   color: $color-text-muted;
+}
+
+
+// Sublinhado do botoon
+a.button,
+a.button:visited,
+a.button:hover,
+a.button:focus,
+a.button:active {
+  text-decoration: none !important;
 }

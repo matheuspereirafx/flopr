@@ -188,7 +188,8 @@ table {
 
 .tournament-form {
   width: 100%;
-  max-width: 1040px;
+  max-width: 1300px;
+  margin-left: -150px;
 
   &__header {
     margin-bottom: $space-6;

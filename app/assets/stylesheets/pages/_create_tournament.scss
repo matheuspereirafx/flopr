@@ -187,7 +187,7 @@ table {
 .tournament-form {
   width: 100%;
   max-width: 1500px;
-  margin-left: -150px;  
+  margin-left: 0;
   margin-top: 48px;
 
   &__header {
@@ -282,6 +282,21 @@ table {
   @media (max-width: $breakpoint-tablet) {
     grid-template-columns: 1fr;
     height: auto;
+  }
+}
+
+@media (min-width: $breakpoint-tablet + 1px) and (max-width: 1280px) {
+  .page {
+    padding: $space-6 $space-4;
+  }
+
+  .tournament-form {
+    max-width: none;
+    margin-left: 0;
+  }
+
+  .form-grid {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   }
 }
 

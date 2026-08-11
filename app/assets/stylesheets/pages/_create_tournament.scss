@@ -101,7 +101,7 @@ $breakpoint-tablet: 860px;
 // idênticos — reaproveitar via @include evita duplicar as ~10 propriedades.
 @mixin field-surface {
   width: 100%;
-  background: $color-surface;
+  background: #0E0E0F;
   border: 1px solid $color-border;
   border-radius: $radius-sm;
   color: $color-text-primary;
@@ -346,7 +346,9 @@ table {
   margin: 0;
   min-width: 0; // permite que o conteúdo (ex.: tabela) encolha dentro do grid em vez de estourar a coluna
 
-  background: #131316;
+  // Background das tabelas
+  background: #201F20;
+
   border-radius: $radius-lg;
   padding: $space-6;
   display: flex;
@@ -603,6 +605,8 @@ table {
 .blinds-table {
   min-width: 640px;
 
+
+  // Linha Coluna Tabela  Blind
   thead {
     background: $color-surface;
   }
@@ -611,7 +615,7 @@ table {
     text-align: left;
     font-size: $font-size-xs;
     font-weight: 600;
-    color: $color-text-secondary;
+    color: #ffffff;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     padding: $space-3 $space-4;

@@ -276,10 +276,13 @@ table {
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  align-items: start;
   gap: $space-5;
+  height: 680px;
 
   @media (max-width: $breakpoint-tablet) {
     grid-template-columns: 1fr;
+    height: auto;
   }
 }
 
@@ -338,6 +341,21 @@ table {
     display: flex;
     align-items: center;
     justify-content: space-between;
+  }
+}
+
+.panel--blind-structure {
+  height: 100%;
+  min-height: 0;
+
+  .blinds-table-wrapper {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  @media (max-width: $breakpoint-tablet) {
+    height: auto;
   }
 }
 

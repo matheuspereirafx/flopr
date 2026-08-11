@@ -599,6 +599,7 @@ table {
   &__break-icon {
     width: 14px;
     height: 14px;
+    
   }
 
   // Input numérico embutido diretamente na célula da tabela (small/big/ante).
@@ -682,6 +683,12 @@ table {
   svg {
     width: 18px;
     height: 18px;
+  }
+
+  &__symbol {
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 1;
   }
 }
 

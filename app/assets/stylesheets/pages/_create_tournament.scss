@@ -354,6 +354,10 @@ table {
   }
 }
 
+#level-duration-label {
+  margin-top: 16px;
+}
+
 // Duas colunas dentro de um painel (ex.: Date/Start Time). Reaproveitada em
 // vários pontos do formulário para não duplicar a regra de grid.
 .field-row {
@@ -599,7 +603,7 @@ table {
   &__break-icon {
     width: 14px;
     height: 14px;
-    
+
   }
 
   // Input numérico embutido diretamente na célula da tabela (small/big/ante).

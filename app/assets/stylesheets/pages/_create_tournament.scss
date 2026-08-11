@@ -180,10 +180,8 @@ table {
 // .page: centraliza o cartão do formulário na viewport e dá a "respiração"
 // (padding) entre o conteúdo e a borda da janela em telas grandes.
 .page {
-  min-height: 100vh;
   display: flex;
   justify-content: center;
-  padding: $space-8 $space-4;
 }
 
 .tournament-form {

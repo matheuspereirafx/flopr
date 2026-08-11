@@ -182,6 +182,9 @@ table {
 .page {
   display: flex;
   justify-content: center;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .tournament-form {
@@ -192,6 +195,10 @@ table {
 
   &__header {
     margin-bottom: $space-6;
+
+      @media (max-width: $breakpoint-tablet) {
+        margin-left: 16px;
+    }
   }
 
   &__title {
@@ -221,7 +228,7 @@ table {
     gap: $space-6;
 
     @media (max-width: $breakpoint-tablet) {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 
@@ -280,8 +287,9 @@ table {
   height: 680px;
 
   @media (max-width: $breakpoint-tablet) {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     height: auto;
+    min-width: 0;
   }
 }
 
@@ -584,6 +592,9 @@ table {
 
 // ---- Blinds table ------------------------------------------------------------
 .blinds-table-wrapper {
+  position: relative;
+  width: 100%;
+  min-width: 0;
   border: 1px solid $color-border;
   border-radius: $radius-md;
   overflow-x: auto;
@@ -848,11 +859,13 @@ a.button:active {
 @media (max-width: $breakpoint-tablet) {
   .page {
     display: block;
-    padding: $space-5 $space-4;
+    padding: $space-5 0;
   }
 
   .tournament-form {
+    width: 100%;
     max-width: none;
+    min-width: 0;
     margin-top: 0;
 
     &__title {
@@ -861,6 +874,7 @@ a.button:active {
 
     &__content {
       gap: $space-5;
+      min-width: 0;
     }
 
     &__actions {
@@ -883,6 +897,8 @@ a.button:active {
   }
 
   .blinds-table-wrapper {
+    max-width: 100%;
+    overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
 }

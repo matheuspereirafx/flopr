@@ -143,7 +143,7 @@ body {
 }
 
 body {
-  background: $color-bg;
+  background: #131314;
   color: $color-text-primary;
   font-family: $font-secondary;
   line-height: 1.5;
@@ -338,7 +338,7 @@ table {
   margin: 0;
   min-width: 0; // permite que o conteúdo (ex.: tabela) encolha dentro do grid em vez de estourar a coluna
 
-  background: $color-panel;
+  background: #131316;
   border-radius: $radius-lg;
   padding: $space-6;
   display: flex;
@@ -382,7 +382,7 @@ table {
   &__label {
     font-size: $font-size-sm;
     color: $color-text-secondary;
-    font-weight: 500;
+    font-weight: 400;
   }
 }
 

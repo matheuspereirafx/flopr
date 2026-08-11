@@ -844,3 +844,45 @@ a.button:focus,
 a.button:active {
   text-decoration: none !important;
 }
+
+@media (max-width: $breakpoint-tablet) {
+  .page {
+    display: block;
+    padding: $space-5 $space-4;
+  }
+
+  .tournament-form {
+    max-width: none;
+    margin-top: 0;
+
+    &__title {
+      font-size: $font-size-xl;
+    }
+
+    &__content {
+      gap: $space-5;
+    }
+
+    &__actions {
+      justify-content: center;
+      margin-top: $space-1;
+
+      .button {
+        width: 52px;
+        height: 52px;
+      }
+    }
+  }
+
+  .panel {
+    padding: $space-4;
+  }
+
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+
+  .blinds-table-wrapper {
+    -webkit-overflow-scrolling: touch;
+  }
+}

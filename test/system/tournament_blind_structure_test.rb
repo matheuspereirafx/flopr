@@ -33,6 +33,7 @@ class TournamentBlindStructureTest < ApplicationSystemTestCase
 
     assert_equal 7, visible_level_rows.count
 
+    last("[data-blind-structure-target='smallBlind']").set(700)
     count_input.set(5)
     count_input.send_keys(:tab)
 
@@ -40,10 +41,8 @@ class TournamentBlindStructureTest < ApplicationSystemTestCase
     assert_equal "5", count_input.value
   end
 
-  test "updates every duration after confirmation" do
-    accept_confirm do
-      select "20 minutos", from: "level-duration"
-    end
+  test "updates every duration immediately" do
+    select "20 minutos", from: "level-duration"
 
     assert all("[data-blind-structure-target='durationLabel']").all? do |label|
       label.text == "20 min"
@@ -51,9 +50,7 @@ class TournamentBlindStructureTest < ApplicationSystemTestCase
   end
 
   test "new levels use the selected duration" do
-    accept_confirm do
-      select "20 minutos", from: "level-duration"
-    end
+    select "20 minutos", from: "level-duration"
 
     click_button "Adicionar nível"
 
@@ -67,13 +64,11 @@ class TournamentBlindStructureTest < ApplicationSystemTestCase
     assert_equal "200", first("[data-blind-structure-target='bigBlind']").value
   end
 
-  test "removes a configured extra level after confirmation and renumbers rows" do
+  test "removes a configured extra level and renumbers rows" do
     click_button "Adicionar nível"
     last("[data-blind-structure-target='smallBlind']").set(100)
 
-    accept_confirm do
-      all("[data-blind-structure-target='removeButton']").last.click
-    end
+    all("[data-blind-structure-target='removeButton']").last.click
 
     assert_equal 5, visible_level_rows.count
     assert_equal %w[1 2 3 4 5], all("[data-blind-structure-target='levelLabel']").map(&:text)

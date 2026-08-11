@@ -36,17 +36,6 @@ export default class extends Controller {
     if (desiredCount < this.visibleRows.length) {
       const rowsToRemove = this.visibleRows.slice(desiredCount)
 
-      if (rowsToRemove.some((row) => this.rowHasValues(row))) {
-        const confirmed = window.confirm(
-          "Os últimos níveis possuem valores preenchidos. Deseja removê-los?"
-        )
-
-        if (!confirmed) {
-          this.countTarget.value = this.visibleRows.length
-          return
-        }
-      }
-
       rowsToRemove.forEach((row) => this.markForRemoval(row))
     }
 
@@ -63,14 +52,6 @@ export default class extends Controller {
 
     const row = event.currentTarget.closest("tr")
 
-    if (this.rowHasValues(row)) {
-      const confirmed = window.confirm(
-        "Este nível possui valores preenchidos. Deseja excluí-lo?"
-      )
-
-      if (!confirmed) return
-    }
-
     this.markForRemoval(row)
     this.synchronize()
   }
@@ -79,17 +60,6 @@ export default class extends Controller {
     const newDuration = this.durationTarget.value
 
     if (this.durationInputs.every((input) => input.value === newDuration)) {
-      return
-    }
-
-    const confirmed = window.confirm(
-      `Aplicar a duração de ${newDuration} minutos em todos os níveis?`
-    )
-
-    if (!confirmed) {
-      this.durationTarget.value =
-        this.durationInputs[0]?.value || 15
-
       return
     }
 

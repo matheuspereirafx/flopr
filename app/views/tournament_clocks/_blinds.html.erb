@@ -3,10 +3,12 @@
     <span class="tournament-clock-blind__label">Small blind</span>
     <strong class="tournament-clock-blind__value"><%= number_with_delimiter(current_blind_level.small_blind, delimiter: ".") %></strong>
   </article>
+  <span class="tournament-clock-blinds__separator" aria-hidden="true">/</span>
   <article class="tournament-clock-blind tournament-clock-blind--featured">
     <span class="tournament-clock-blind__label">Big blind</span>
     <strong class="tournament-clock-blind__value"><%= number_with_delimiter(current_blind_level.big_blind, delimiter: ".") %></strong>
   </article>
+  <span class="tournament-clock-blinds__separator" aria-hidden="true">/</span>
   <article class="tournament-clock-blind">
     <span class="tournament-clock-blind__label">Ante</span>
     <strong class="tournament-clock-blind__value"><%= number_with_delimiter(current_blind_level.ante, delimiter: ".") %></strong>

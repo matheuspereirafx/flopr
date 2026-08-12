@@ -20,7 +20,7 @@
         <%= @clock_in_overtime ? "Tempo extra" : "Tempo restante" %>
       </p>
       <strong class="tournament-clock-timer__value" data-tournament-clock-target="timer">
-        <%= @clock_in_overtime ? "+" : "" %><%= format("%02d:%02d", @clock_display_seconds / 60, @clock_display_seconds % 60) %>
+        <%= @clock_in_overtime ? "+" : "" %><%= format("%02d : %02d", @clock_display_seconds / 60, @clock_display_seconds % 60) %>
       </strong>
     </article>
 

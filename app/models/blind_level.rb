@@ -1,22 +1,49 @@
 class BlindLevel < ApplicationRecord
   belongs_to :tournament
 
-  validates :level, :duration_minutes, presence: true,
-    numericality: { only_integer: true, greater_than: 0 }
+  before_validation :set_default_ante
 
-  validates :small_blind, :big_blind, :ante, presence: true,
-    numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  validates :level,
+            presence: true,
+            numericality: {
+              only_integer: true,
+              greater_than: 0
+            }
+
+  validates :duration_minutes,
+            presence: true,
+            numericality: {
+              only_integer: true,
+              greater_than: 0
+            }
+
+  validates :small_blind,
+            presence: true,
+            numericality: {
+              only_integer: true,
+              greater_than: 0
+            }
+
+  validates :big_blind,
+            presence: true,
+            numericality: {
+              only_integer: true,
+              greater_than: 0
+            }
+
+  validates :ante,
+            numericality: {
+              only_integer: true,
+              greater_than_or_equal_to: 0
+            }
 
   validate :big_blind_cannot_be_less_than_small_blind
 
-  validates :duration_minutes,
-          presence: true,
-          numericality: {
-            only_integer: true,
-            greater_than_or_equal_to: 5
-          }
-
   private
+
+  def set_default_ante
+    self.ante = 0 if ante.blank?
+  end
 
   def big_blind_cannot_be_less_than_small_blind
     return if small_blind.blank? || big_blind.blank?

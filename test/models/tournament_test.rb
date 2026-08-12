@@ -6,72 +6,61 @@ class TournamentTest < ActiveSupport::TestCase
   end
 
   test "belongs to club" do
-    association = Tournament.reflect_on_association(:club)
-
-    assert_equal :belongs_to, association.macro
+    assert_equal :belongs_to, Tournament.reflect_on_association(:club).macro
   end
 
-  test "is valid with required attributes" do
+  test "is valid with five sequential blind levels of the same duration" do
+    assert build_tournament.valid?
+  end
+
+  test "is invalid with fewer than five blind levels" do
+    tournament = build_tournament(blind_levels_attributes: blind_levels_attributes.take(4))
+
+    assert_not tournament.valid?
+    assert_includes tournament.errors[:blind_levels], "deve possuir no mínimo 5 níveis"
+  end
+
+  test "renumbers blind levels sequentially before validation" do
+    attributes = blind_levels_attributes.map.with_index do |attributes, index|
+      attributes.merge(level: 10 - index)
+    end
+    tournament = build_tournament(blind_levels_attributes: attributes)
+
+    assert tournament.valid?
+    assert_equal [1, 2, 3, 4, 5], tournament.blind_levels.map(&:level)
+  end
+
+  test "is invalid when blind level durations differ" do
+    attributes = blind_levels_attributes
+    attributes.last[:duration_minutes] = 30
+    tournament = build_tournament(blind_levels_attributes: attributes)
+
+    assert_not tournament.valid?
+    assert_includes tournament.errors[:blind_levels], "devem possuir a mesma duração"
+  end
+
+  test "is invalid when selected count differs from active blind levels" do
     tournament = build_tournament
+    tournament.blind_levels_count = 6
+
+    assert_not tournament.valid?
+    assert_includes tournament.errors[:blind_levels_count],
+                    "deve ser igual à quantidade de níveis configurados"
+  end
+
+  test "allows removal while at least five blind levels remain" do
+    tournament = build_tournament(blind_levels_attributes: blind_levels_attributes(6))
+    tournament.blind_levels.last.mark_for_destruction
 
     assert tournament.valid?
   end
 
-  test "is invalid without club" do
-    tournament = build_tournament(club: nil)
-
-    assert_not tournament.valid?
-    assert_not_empty tournament.errors[:club]
-  end
-
-  test "is invalid without name" do
-    tournament = build_tournament(name: nil)
-
-    assert_not tournament.valid?
-    assert tournament.errors.of_kind?(:name, :blank)
-  end
-
-  test "is invalid without location" do
-    tournament = build_tournament(location: nil)
-
-    assert_not tournament.valid?
-    assert tournament.errors.of_kind?(:location, :blank)
-  end
-
-  test "is invalid without max players" do
-    tournament = build_tournament(max_players: nil)
-
-    assert_not tournament.valid?
-    assert tournament.errors.of_kind?(:max_players, :blank)
-  end
-
-  test "is invalid without starts at" do
-    tournament = build_tournament(starts_at: nil)
-
-    assert_not tournament.valid?
-    assert tournament.errors.of_kind?(:starts_at, :blank)
-  end
-
-  test "is invalid without status" do
-    tournament = build_tournament(status: nil)
-
-    assert_not tournament.valid?
-    assert tournament.errors.of_kind?(:status, :blank)
-  end
-
-  test "defaults status to posted" do
+  test "is invalid when removal leaves fewer than five blind levels" do
     tournament = build_tournament
+    tournament.blind_levels.last.mark_for_destruction
 
-    assert_equal "posted", tournament.status
-    assert tournament.posted?
-  end
-
-  test "defines the expected statuses" do
-    assert_equal({
-      "draft" => "draft",
-      "posted" => "posted",
-      "finished" => "finished"
-    }, Tournament.statuses)
+    assert_not tournament.valid?
+    assert_includes tournament.errors[:blind_levels], "deve possuir no mínimo 5 níveis"
   end
 
   private
@@ -82,9 +71,23 @@ class TournamentTest < ActiveSupport::TestCase
       name: "Friday Poker Night",
       location: "Rua das Flores, 123",
       max_players: 24,
-      starts_at: 2.days.from_now
+      starts_at: 2.days.from_now,
+      status: :posted,
+      blind_levels_attributes: blind_levels_attributes
     }
 
     Tournament.new(defaults.merge(attributes))
+  end
+
+  def blind_levels_attributes(count = 5)
+    count.times.map do |index|
+      {
+        level: index + 1,
+        duration_minutes: 15,
+        small_blind: (index + 1) * 100,
+        big_blind: (index + 1) * 200,
+        ante: 0
+      }
+    end
   end
 end

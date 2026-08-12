@@ -1,0 +1,349 @@
+<div class="page">
+  <main class="tournament-form" aria-labelledby="page-title">
+    <header class="tournament-form__header">
+      <h1 id="page-title" class="tournament-form__title">
+        <%= tournament.persisted? ? "Editar torneio" : "Criar torneio" %>
+      </h1>
+
+      <p class="tournament-form__subtitle">
+        Configure as informações básicas e a estrutura de blinds.
+      </p>
+    </header>
+
+    <%= simple_form_for [club, tournament],
+                        html: { class: "tournament-form__body" } do |f| %>
+      <%= f.error_notification class: "form-errors" %>
+
+      <% selected_duration =
+           tournament.blind_levels.first&.duration_minutes || 15 %>
+
+      <div class="tournament-form__content">
+        <div class="form-grid">
+          <fieldset class="panel panel--basic-info">
+          <legend class="panel__title">Informações básicas</legend>
+
+          <%= f.input :name,
+                      label: "Nome do torneio",
+                      placeholder: "Ex.: Friday Night High Roller",
+                      wrapper_html: { class: "field" },
+                      label_html: { class: "field__label" },
+                      input_html: { class: "input" } %>
+
+          <%= f.input :starts_at,
+                      as: :string,
+                      label: "Data e hora de início",
+                      wrapper_html: { class: "field" },
+                      label_html: { class: "field__label" },
+                      input_html: {
+                        class: "input",
+                        type: "datetime-local"
+                      } %>
+
+          <div class="field">
+            <%= f.label :location,
+                        "Local",
+                        class: "field__label" %>
+
+            <div class="input-icon">
+              <span class="input-icon__icon" aria-hidden="true">
+                <i data-lucide="map-pin"></i>
+              </span>
+
+              <%= f.input_field :location,
+                                class: "input input--with-icon",
+                                placeholder: "Ex.: Poker Room, Mesa 1" %>
+            </div>
+          </div>
+
+          <%= f.input :max_players,
+                      label: "Máximo de jogadores",
+                      placeholder: "Ex.: 30",
+                      wrapper_html: { class: "field" },
+                      label_html: { class: "field__label" },
+                      input_html: {
+                        class: "input",
+                        min: 2
+                      } %>
+          </fieldset>
+
+          <fieldset class="panel panel--blind-structure"
+                  data-controller="blind-structure">
+          <legend class="sr-only">Estrutura de blinds</legend>
+
+          <div class="panel__header">
+            <span class="panel__title">Estrutura de blinds</span>
+          </div>
+
+          <div class="blind-structure__settings">
+            <div class="field">
+              <%= f.label :blind_levels_count,
+                          "Quantidade de níveis",
+                          class: "field__label" %>
+
+              <%= f.input_field :blind_levels_count,
+                                value: tournament.blind_levels_count ||
+                                       tournament.blind_levels.size,
+                                type: "number",
+                                min: Tournament::MINIMUM_BLIND_LEVELS,
+                                step: 1,
+                                class: "input",
+                                data: {
+                                  blind_structure_target: "count",
+                                  action: "change->blind-structure#changeCount"
+                                } %>
+            </div>
+
+            <div class="field">
+              <label
+                id="level-duration-label"
+                class="field__label"
+                for="level-duration">
+                Duração do nível
+              </label>
+
+              <div class="select-wrapper">
+                <%= select_tag "level-duration",
+                               options_for_select(
+                                 [
+                                   ["5 minutos", 5],
+                                   ["10 minutos", 10],
+                                   ["15 minutos", 15],
+                                   ["20 minutos", 20],
+                                   ["25 minutos", 25],
+                                   ["30 minutos", 30]
+                                 ],
+                                 selected_duration
+                               ),
+                               id: "level-duration",
+                               name: nil,
+                               class: "select",
+                               data: {
+                                 blind_structure_target: "duration",
+                                 action: "change->blind-structure#changeDuration"
+                               } %>
+
+                <span class="select-wrapper__chevron" aria-hidden="true">
+                  <i data-lucide="chevron-down"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="blinds-table-wrapper">
+            <table class="blinds-table">
+              <caption class="sr-only">
+                Estrutura de blinds por nível
+              </caption>
+
+              <thead>
+                <tr>
+                  <th scope="col">Nível</th>
+                  <th scope="col">Small</th>
+                  <th scope="col">Big</th>
+                  <th scope="col">Ante</th>
+                  <th scope="col">Duração</th>
+                  <th scope="col">
+                    <span class="sr-only">Ações</span>
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody data-blind-structure-target="body">
+                <%= f.simple_fields_for :blind_levels do |blind_level_fields| %>
+                  <tr data-blind-structure-target="row">
+                    <td>
+                      <span data-blind-structure-target="levelLabel">
+                        <%= blind_level_fields.object.level %>
+                      </span>
+
+                      <%= blind_level_fields.hidden_field :id %>
+
+                      <%= blind_level_fields.hidden_field :level,
+                                                          data: {
+                                                            blind_structure_target: "levelInput"
+                                                          } %>
+
+                      <%= blind_level_fields.hidden_field :_destroy,
+                                                          value: 0,
+                                                          data: {
+                                                            blind_structure_target: "destroyInput"
+                                                          } %>
+                    </td>
+
+                    <td>
+                      <%= blind_level_fields.number_field :small_blind,
+                                                          class: "blinds-table__input",
+                                                          min: 1,
+                                                          step: 1,
+                                                          inputmode: "numeric",
+                                                          data: {
+                                                            blind_structure_target: "smallBlind",
+                                                            action: "input->blind-structure#suggestBigBlind"
+                                                          } %>
+                    </td>
+
+                    <td>
+                      <%= blind_level_fields.number_field :big_blind,
+                                                          class: "blinds-table__input",
+                                                          min: 1,
+                                                          step: 1,
+                                                          inputmode: "numeric",
+                                                          data: {
+                                                            blind_structure_target: "bigBlind"
+                                                          } %>
+                    </td>
+
+                    <td>
+                      <%= blind_level_fields.number_field :ante,
+                                                          class: "blinds-table__input",
+                                                          min: 0,
+                                                          step: 1,
+                                                          inputmode: "numeric",
+                                                          placeholder: "0" %>
+                    </td>
+
+                    <td>
+                      <%= blind_level_fields.hidden_field :duration_minutes,
+                                                          value: blind_level_fields.object.duration_minutes || selected_duration,
+                                                          data: {
+                                                            blind_structure_target: "durationInput"
+                                                          } %>
+
+                      <span data-blind-structure-target="durationLabel">
+                        <%= blind_level_fields.object.duration_minutes || selected_duration %> min
+                      </span>
+                    </td>
+
+                    <td class="blinds-table__action">
+                      <button type="button"
+                              class="icon-button icon-button--danger"
+                              aria-label="Excluir nível <%= blind_level_fields.object.level %>"
+                              data-blind-structure-target="removeButton"
+                              data-action="blind-structure#remove">
+                        <span class="icon-button__symbol" aria-hidden="true">×</span>
+                      </button>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+
+          <template data-blind-structure-target="template">
+            <%= f.simple_fields_for :blind_levels,
+                                    BlindLevel.new(
+                                      duration_minutes: selected_duration,
+                                      ante: 0
+                                    ),
+                                    child_index: "NEW_RECORD" do |blind_level_fields| %>
+              <tr data-blind-structure-target="row">
+                <td>
+                  <span data-blind-structure-target="levelLabel"></span>
+
+                  <%= blind_level_fields.hidden_field :level,
+                                                      data: {
+                                                        blind_structure_target: "levelInput"
+                                                      } %>
+
+                  <%= blind_level_fields.hidden_field :_destroy,
+                                                      value: 0,
+                                                      data: {
+                                                        blind_structure_target: "destroyInput"
+                                                      } %>
+                </td>
+
+                <td>
+                  <%= blind_level_fields.number_field :small_blind,
+                                                      class: "blinds-table__input",
+                                                      min: 1,
+                                                      step: 1,
+                                                      inputmode: "numeric",
+                                                      data: {
+                                                        blind_structure_target: "smallBlind",
+                                                        action: "input->blind-structure#suggestBigBlind"
+                                                      } %>
+                </td>
+
+                <td>
+                  <%= blind_level_fields.number_field :big_blind,
+                                                      class: "blinds-table__input",
+                                                      min: 1,
+                                                      step: 1,
+                                                      inputmode: "numeric",
+                                                      data: {
+                                                        blind_structure_target: "bigBlind"
+                                                      } %>
+                </td>
+
+                <td>
+                  <%= blind_level_fields.number_field :ante,
+                                                      class: "blinds-table__input",
+                                                      min: 0,
+                                                      step: 1,
+                                                      inputmode: "numeric",
+                                                      placeholder: "0" %>
+                </td>
+
+                <td>
+                  <%= blind_level_fields.hidden_field :duration_minutes,
+                                                      value: selected_duration,
+                                                      data: {
+                                                        blind_structure_target: "durationInput"
+                                                      } %>
+
+                  <span data-blind-structure-target="durationLabel">
+                    <%= selected_duration %> min
+                  </span>
+                </td>
+
+                <td class="blinds-table__action">
+                  <button type="button"
+                          class="icon-button icon-button--danger"
+                          aria-label="Excluir nível"
+                          data-blind-structure-target="removeButton"
+                          data-action="blind-structure#remove">
+                    <span class="icon-button__symbol" aria-hidden="true">×</span>
+                  </button>
+                </td>
+              </tr>
+            <% end %>
+          </template>
+
+          <button type="button"
+                  class="button button--secondary"
+                  data-action="blind-structure#add">
+            <i data-lucide="plus"></i>
+            Adicionar nível
+          </button>
+          </fieldset>
+        </div>
+
+        <div class="tournament-form__actions">
+          <%= link_to club_path(club),
+                      class: "button button--ghost",
+                      aria: { label: "Cancelar" },
+                      title: "Cancelar" do %>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m18 6-12 12M6 6l12 12" />
+            </svg>
+            <span class="sr-only">Cancelar</span>
+          <% end %>
+
+          <%= button_tag type: "submit",
+                         class: "button button--primary",
+                         aria: {
+                           label: tournament.persisted? ? "Salvar alterações" : "Criar torneio"
+                         },
+                         title: tournament.persisted? ? "Salvar alterações" : "Criar torneio" do %>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+            <span class="sr-only">
+              <%= tournament.persisted? ? "Salvar alterações" : "Criar torneio" %>
+            </span>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </main>
+</div>

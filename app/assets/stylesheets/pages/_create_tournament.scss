@@ -1,0 +1,908 @@
+
+// =============================================================================
+// TOURNAMENT CREATION FORM — SCSS
+// -----------------------------------------------------------------------------
+// Organização do arquivo (arquitetura simplificada inspirada em ITCSS):
+//   1. Tokens (variáveis)  -> a "fonte da verdade" de cor, espaçamento e tipo
+//   2. Mixins e funções    -> comportamentos reutilizáveis
+//   3. Reset / base        -> normalização e estilos de <body>/<html>
+//   4. Layout               -> .page, .form-grid (estrutura macro)
+//   5. Componentes          -> .panel, .field, .input, .button, .blinds-table...
+//   6. Utilitários          -> .sr-only e afins
+//
+// Convenção de nomenclatura: BEM (Block__Element--Modifier).
+// Isso evita seletores aninhados profundos (baixa especificidade, fácil de
+// sobrescrever) e deixa claro, só pelo nome da classe, a que componente cada
+// elemento pertence.
+// =============================================================================
+
+
+// -----------------------------------------------------------------------------
+// 1. TOKENS
+// -----------------------------------------------------------------------------
+// Centralizar cor/espaçamento/tipografia em variáveis é o que permite trocar o
+// tema inteiro (ex.: dark -> light) mexendo em um único lugar, e garante
+// consistência visual entre componentes que, de outra forma, cada um inventaria
+// seu próprio cinza ou seu próprio radius.
+
+// Cores — paleta "dark UI" com roxo como cor de destaque (accent), igual ao
+// protótipo: fundo quase preto, painéis em cinza-azulado escuro, texto em
+// tons de cinza claro para manter contraste sem ser branco puro (menos fadiga
+// visual em telas escuras).
+$color-bg:              #0a0a0c;
+$color-panel:           #131316;
+$color-panel-border:    #232327;
+$color-surface:         #1a1a1f;   // inputs, tabela, segmented control (um nível acima do painel)
+$color-surface-hover:   #202026;
+
+$color-text-primary:    #f5f5f7;
+$color-text-secondary:  #9a9aa2;
+$color-text-muted:      #6e6e76;
+$color-placeholder:     #55555d;
+
+$color-accent:          #7c5cff;   // roxo do botão primário / seleção ativa
+$color-accent-hover:    #8f70ff;
+$color-accent-soft:     rgba($color-accent, 0.12);
+
+$color-border:          #2a2a30;
+$color-border-strong:   #3a3a42;
+
+// Espaçamento em escala de 4px — múltiplos previsíveis evitam "números mágicos"
+// espalhados pelo CSS e facilitam alinhamento entre componentes distintos.
+$space-1: 4px;
+$space-2: 8px;
+$space-3: 12px;
+$space-4: 16px;
+$space-5: 20px;
+$space-6: 24px;
+$space-8: 32px;
+$space-10: 40px;
+
+// Raio de borda — dois níveis (padrão e "pill" para controles arredondados,
+// como botões e o segmented control) cobrem todos os casos do layout.
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 16px;
+$radius-pill: 999px;
+
+// Tipografia
+$font-size-xs:   12px;
+$font-size-sm:   13px;
+$font-size-base: 14px;
+$font-size-lg:   16px;
+$font-size-xl:   28px;
+
+// Transições — uma duração única para toda a UI mantém a sensação de
+// "resposta" consistente entre hover, foco e troca de estado.
+$transition-fast: 0.15s ease;
+
+// Breakpoint único: abaixo dele o grid de 2 colunas vira 1 coluna.
+$breakpoint-tablet: 860px;
+
+
+// -----------------------------------------------------------------------------
+// 2. MIXINS
+// -----------------------------------------------------------------------------
+
+// Estado de foco visível e consistente para todo elemento interativo.
+// Centralizado em um mixin para que TODOS os controles (input, select, botão,
+// checkbox custom) tenham o mesmo anel de foco — importante para navegação
+// via teclado (acessibilidade), sem precisar repetir a regra em cada seletor.
+@mixin focus-ring {
+  &:focus-visible {
+    outline: 2px solid $color-accent;
+    outline-offset: 2px;
+  }
+}
+
+// Aparência compartilhada por todo campo "tipo input" (input de texto, select,
+// number, date, time). Extraído em mixin em vez de uma classe única porque
+// <select> e <input> têm elementos distintos no HTML, mas devem parecer
+// idênticos — reaproveitar via @include evita duplicar as ~10 propriedades.
+@mixin field-surface {
+  width: 100%;
+  background: #0E0E0F;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  color: $color-text-primary;
+  font-family: $font-secondary;
+  font-size: $font-size-sm;
+  padding: $space-3 $space-4;
+  transition: border-color $transition-fast, background-color $transition-fast;
+
+  &::placeholder {
+    color: $color-placeholder;
+  }
+
+  &:hover {
+    border-color: $color-border-strong;
+  }
+
+  &:focus {
+    border-color: $color-accent;
+  }
+
+  @include focus-ring;
+}
+
+
+// -----------------------------------------------------------------------------
+// 3. RESET / BASE
+// -----------------------------------------------------------------------------
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box; // padding/border não somam à largura definida — evita contas manuais de layout
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #131314;
+  color: $color-text-primary;
+  font-family: $font-secondary;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased; // evita texto claro sobre fundo escuro parecer "borrado/grosso" no WebKit
+}
+
+// Reset de formulário: navegadores aplicam fontes e cores próprias a
+// input/select/button por padrão. Forçamos herança para que os componentes
+// customizados abaixo controlem 100% da aparência.
+input,
+select,
+button {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+table {
+  border-collapse: collapse; // remove o espaçamento duplo entre bordas de células adjacentes
+  width: 100%;
+}
+
+
+// -----------------------------------------------------------------------------
+// 4. LAYOUT
+// -----------------------------------------------------------------------------
+
+// .page: centraliza o cartão do formulário na viewport e dá a "respiração"
+// (padding) entre o conteúdo e a borda da janela em telas grandes.
+.page {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.tournament-form {
+  width: 100%;
+  max-width: 1500px;
+  margin-left: 0;
+  margin-top: 48px;
+
+  &__header {
+    margin-bottom: $space-6;
+
+      @media (max-width: $breakpoint-tablet) {
+        margin-left: 16px;
+    }
+  }
+
+  &__title {
+    margin: 0 0 $space-1;
+    font-family: $font-primary;
+    font-size: $font-display-lg-size;
+    font-weight: 700;
+    letter-spacing: -0.02em; // tracking levemente negativo deixa títulos grandes menos "espaçados", mais sólidos
+  }
+
+  &__subtitle {
+    margin: 0;
+    color: $color-text-secondary;
+    font-size: $font-size-base;
+  }
+
+  // <form> em si não precisa de estilo próprio além de ser um bloco de layout;
+  // o espaçamento entre grid e rodapé é controlado pela margem do divisor abaixo.
+  &__body {
+    display: block;
+  }
+
+  &__content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: $space-6;
+
+    @media (max-width: $breakpoint-tablet) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: $space-3;
+
+    .button {
+      width: 56px;
+      height: 56px;
+      padding: 0;
+      border-radius: 50%;
+
+      svg {
+        width: 22px;
+        height: 22px;
+        fill: none;
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 2;
+      }
+    }
+
+    .button--primary {
+      background: rgba($color-accent, 0.55);
+      border-color: rgba($color-accent, 0.7);
+
+      &:hover {
+        background: rgba($color-accent-hover, 0.7);
+        border-color: $color-accent-hover;
+      }
+    }
+
+    .button--ghost {
+      color: #fff;
+    }
+
+    @media (max-width: $breakpoint-tablet) {
+      flex-direction: row;
+      justify-content: flex-end;
+    }
+  }
+}
+
+// Grid principal: duas colunas de largura igual lado a lado, colapsando para
+// uma coluna em telas estreitas. `fieldset` teria margin/padding/border
+// padrão do navegador — zeramos isso aqui para tratá-lo como um <div> comum.
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  gap: $space-5;
+  height: 680px;
+
+  @media (max-width: $breakpoint-tablet) {
+    grid-template-columns: minmax(0, 1fr);
+    height: auto;
+    min-width: 0;
+  }
+}
+
+@media (min-width: $breakpoint-tablet + 1px) and (max-width: 1280px) {
+  .page {
+    padding: $space-6 $space-4;
+  }
+
+  .tournament-form {
+    max-width: none;
+    margin-left: 0;
+  }
+
+  .form-grid {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  }
+}
+
+
+// -----------------------------------------------------------------------------
+// 5. COMPONENTES
+// -----------------------------------------------------------------------------
+
+// ---- Form errors (Rails: tournament.errors) --------------------------------
+// Bloco exibido apenas quando o model volta com erros de validação após um
+// submit malsucedido. `role="alert"` avisa leitores de tela imediatamente,
+// sem precisar de foco manual via JS.
+.form-errors {
+  background: rgba(#ef4444, 0.08);
+  border: 1px solid rgba(#ef4444, 0.35);
+  border-radius: $radius-md;
+  padding: $space-4 $space-5;
+  margin-bottom: $space-5;
+
+  &__title {
+    margin: 0 0 $space-2;
+    font-weight: 700;
+    font-size: $font-size-sm;
+    color: #f87171;
+  }
+
+  &__list {
+    margin: 0;
+    padding-left: $space-5;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+  }
+}
+
+// ---- Panel (cartão "Basic Information" / "Blind Structure") --------------
+.panel {
+  // reset dos estilos nativos de <fieldset>
+  border: 1px solid $color-panel-border;
+  margin: 0;
+  min-width: 0; // permite que o conteúdo (ex.: tabela) encolha dentro do grid em vez de estourar a coluna
+
+  // Background das tabelas
+  background: #201F20;
+
+  border-radius: $radius-lg;
+  padding: $space-6;
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+
+  &__title {
+    font-family: $font-primary;
+    font-size: $font-display-mm-size;
+    font-weight: 700;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.panel--blind-structure {
+  height: 100%;
+  min-height: 0;
+
+  .blinds-table-wrapper {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  @media (max-width: $breakpoint-tablet) {
+    height: auto;
+  }
+}
+
+// ---- Field (label + controle) ---------------------------------------------
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+
+  &__label {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    font-weight: 400;
+  }
+}
+
+#level-duration-label {
+  margin-top: 16px;
+}
+
+// Duas colunas dentro de um painel (ex.: Date/Start Time). Reaproveitada em
+// vários pontos do formulário para não duplicar a regra de grid.
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-4;
+}
+
+// ---- Input / Select ---------------------------------------------------------
+.input {
+  @include field-surface;
+}
+
+// Wrapper para inputs com ícone embutido (ex.: campo de localização). O ícone
+// fica posicionado em absoluto sobre o padding-left extra do input, técnica
+// que dispensa JS para alinhar ícone + texto perfeitamente.
+.input-icon {
+  position: relative;
+
+  &__icon {
+    position: absolute;
+    left: $space-4;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    color: $color-text-muted;
+    pointer-events: none; // clique "atravessa" o ícone e cai no input por baixo
+
+    svg { width: 16px; height: 16px; }
+  }
+}
+
+.input--with-icon {
+  padding-left: $space-8 + $space-1; // espaço suficiente para o ícone não sobrepor o texto digitado
+}
+
+// <select> nativo perde a seta padrão do navegador (appearance: none) para
+// que possamos desenhar nossa própria seta consistente com o resto da UI.
+.select-wrapper {
+  position: relative;
+
+  &__chevron {
+    position: absolute;
+    right: $space-4;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $color-text-muted;
+    pointer-events: none;
+
+    svg { width: 16px; height: 16px; }
+  }
+}
+
+.select {
+  @include field-surface;
+  appearance: none; // remove a seta nativa do navegador
+  padding-right: $space-8 + $space-1; // reserva espaço para a seta customizada acima
+  cursor: pointer;
+}
+
+// ---- Dropzone (upload de banner) ------------------------------------------
+.dropzone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  text-align: center;
+  padding: $space-8 $space-4;
+  border: 1.5px dashed $color-border-strong;
+  border-radius: $radius-md;
+  background: $color-surface;
+  cursor: pointer;
+  transition: border-color $transition-fast, background-color $transition-fast;
+
+  &:hover {
+    border-color: $color-accent;
+    background: $color-accent-soft;
+  }
+
+  // O input real fica visualmente escondido, mas continua acessível: navegável
+  // por teclado (Tab) e ativável por Enter/Espaço quando o <label> está focado,
+  // porque o foco recai sobre o próprio input, apenas sem exibi-lo.
+  &__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    overflow: hidden;
+
+    // O anel de foco é aplicado ao dropzone inteiro (não ao input invisível),
+    // para que o usuário de teclado veja claramente qual elemento está ativo.
+    &:focus-visible ~ .dropzone__icon,
+    &:focus-visible ~ .dropzone__text {
+      outline: 2px solid $color-accent;
+      outline-offset: 4px;
+    }
+  }
+
+  &__icon {
+    color: $color-text-muted;
+    svg { width: 28px; height: 28px; }
+  }
+
+  &__text {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+  }
+
+  &__link {
+    color: $color-accent;
+    font-weight: 600;
+  }
+
+  &__hint {
+    font-size: $font-size-xs;
+    color: $color-text-muted;
+  }
+}
+
+// ---- Link button ("Load Standard") -----------------------------------------
+.link-button {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  color: $color-accent;
+  font-size: $font-size-sm;
+  font-weight: 600;
+
+  &__icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  &:hover {
+    color: $color-accent-hover;
+  }
+
+  @include focus-ring;
+}
+
+// ---- Segmented control (Turbo / Regular / Deep Stack) ----------------------
+// Implementado com radios nativos + labels estilizados: o estado "selecionado"
+// vem de :checked, então não depende de JavaScript para funcionar.
+.segmented-control {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $space-1;
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  padding: $space-1;
+
+  &__input {
+    // Mesmo padrão de "esconder visualmente sem remover da árvore de acessibilidade"
+    // usado no input de arquivo acima.
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    overflow: hidden;
+
+    &:checked + .segmented-control__option {
+      background: $color-accent;
+      color: #fff;
+    }
+
+    &:focus-visible + .segmented-control__option {
+      outline: 2px solid $color-accent;
+      outline-offset: 2px;
+    }
+  }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: $space-2 $space-3;
+    border-radius: $radius-sm - 2px;
+    font-size: $font-size-sm;
+    font-weight: 600;
+    color: $color-text-secondary;
+    cursor: pointer;
+    transition: background-color $transition-fast, color $transition-fast;
+
+    &:hover {
+      background: $color-surface-hover;
+    }
+  }
+}
+
+// ---- Blinds table ------------------------------------------------------------
+.blinds-table-wrapper {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  overflow-x: auto;
+}
+
+.blinds-table {
+  min-width: 640px;
+
+
+  // Linha Coluna Tabela  Blind
+  thead {
+    background: $color-surface;
+  }
+
+  th {
+    text-align: left;
+    font-size: $font-size-xs;
+    font-weight: 600;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: $space-3 $space-4;
+  }
+
+  td {
+    padding: $space-3 $space-4;
+    font-size: $font-size-sm;
+    border-top: 1px solid $color-border;
+  }
+
+  tbody tr:hover td {
+    background: $color-surface-hover;
+  }
+
+  // Linha de intervalo tem tratamento visual distinto (fundo levemente destacado)
+  // para se diferenciar rapidamente de uma linha de nível de blind ao rolar a tabela.
+  &__break-row td {
+    background: rgba($color-accent, 0.06);
+    padding: $space-2 $space-4;
+  }
+
+  &__break {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-2;
+    color: $color-accent-hover;
+    font-size: $font-size-xs;
+    font-weight: 600;
+  }
+
+  &__break-icon {
+    width: 14px;
+    height: 14px;
+
+  }
+
+  // Input numérico embutido diretamente na célula da tabela (small/big/ante).
+  // Sem borda/fundo próprios em repouso para parecer texto simples; o estilo
+  // "de campo" só aparece no hover/focus, reforçando que a linha é editável
+  // sem poluir visualmente a leitura da tabela.
+  &__input {
+    width: 72px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: $radius-sm - 4px;
+    padding: $space-1 $space-2;
+    font-size: $font-size-sm;
+    color: $color-text-primary;
+
+    &::placeholder {
+      color: $color-text-muted;
+    }
+
+    &:hover {
+      background: $color-surface;
+      border-color: $color-border;
+    }
+
+    &:focus {
+      background: $color-surface;
+      border-color: $color-accent;
+    }
+
+    @include focus-ring;
+  }
+
+  // Campo de texto do rótulo do intervalo ("15 Min Break"), estilizado para
+  // se misturar ao texto ao redor (mesma cor de destaque), só revelando que é
+  // editável no hover/focus — mesma lógica do &__input acima.
+  &__break-input {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: $radius-sm - 4px;
+    padding: $space-1 $space-2;
+    font-size: $font-size-xs;
+    font-weight: 600;
+    color: inherit;
+    width: 140px;
+
+    &:hover,
+    &:focus {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: $color-border;
+    }
+
+    @include focus-ring;
+  }
+}
+
+// Botão de ícone genérico (usado para remover o intervalo). Extraído como
+// componente próprio porque reaparece em qualquer lugar que precise de uma
+// ação compacta e sem rótulo textual (sempre com aria-label no HTML).
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid transparent;
+  border-radius: $radius-sm;
+  color: $color-text-secondary;
+
+  &:hover:not(:disabled) {
+    color: #ef4444;
+    background-color: rgba(#ef4444, 0.1);
+    border-color: rgba(#ef4444, 0.35);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+
+  i,
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &__symbol {
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 1;
+  }
+}
+
+// ---- Add level button ---------------------------------------------------------
+.add-level-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  width: 100%;
+  padding: $space-3;
+  border: 1px dashed $color-border-strong;
+  border-radius: $radius-sm;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  transition: border-color $transition-fast, color $transition-fast, background-color $transition-fast;
+
+  &__icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    border-color: $color-accent;
+    color: $color-accent-hover;
+    background: $color-accent-soft;
+  }
+
+  @include focus-ring;
+}
+
+// ---- Buttons (Cancel / Create Tournament) ------------------------------------
+// Estilos comuns a qualquer botão do rodapé ficam no bloco base .button;
+// os modificadores (--ghost / --primary) só sobrescrevem cor e borda.
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  padding: $space-3 $space-6;
+  border-radius: $radius-pill;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  transition: background-color $transition-fast, border-color $transition-fast, transform $transition-fast;
+
+  &__icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:active {
+    transform: scale(0.98); // leve "afundamento" no clique — feedback tátil sem depender de cor
+  }
+
+  @include focus-ring;
+
+  &--ghost {
+    background: transparent;
+    border: 1px solid $color-border-strong;
+    color: $color-text-primary;
+
+    &:hover {
+      background: $color-surface;
+    }
+  }
+
+  &--primary {
+    background: $color-accent;
+    border: 1px solid $color-accent;
+    color: #fff;
+
+    &:hover {
+      background: $color-accent-hover;
+      border-color: $color-accent-hover;
+    }
+  }
+}
+
+
+// -----------------------------------------------------------------------------
+// 6. UTILITÁRIOS
+// -----------------------------------------------------------------------------
+
+// Esconde visualmente um elemento mas o mantém legível por leitores de tela —
+// usado no <legend> da segunda coluna e na <caption> da tabela, que precisam
+// existir para acessibilidade mas cujo texto já é exibido visualmente em outro
+// elemento (para não duplicar o título na tela).
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+
+.blinds-table__action {
+  width: 48px;
+  text-align: right;
+}
+
+.icon-button--danger {
+  color: $color-text-muted;
+}
+
+
+// Sublinhado do botoon
+a.button,
+a.button:visited,
+a.button:hover,
+a.button:focus,
+a.button:active {
+  text-decoration: none !important;
+}
+
+@media (max-width: $breakpoint-tablet) {
+  .page {
+    display: block;
+    padding: $space-5 0;
+  }
+
+  .tournament-form {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    margin-top: 0;
+
+    &__title {
+      font-size: $font-size-xl;
+    }
+
+    &__content {
+      gap: $space-5;
+      min-width: 0;
+    }
+
+    &__actions {
+      justify-content: center;
+      margin-top: $space-1;
+
+      .button {
+        width: 52px;
+        height: 52px;
+      }
+    }
+  }
+
+  .panel {
+    padding: $space-4;
+  }
+
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+
+  .blinds-table-wrapper {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}

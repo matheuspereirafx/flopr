@@ -1,14 +1,3 @@
-<main class="tournament-form-page">
-  <section class="tournament-form-page__content">
-    <h1>Criar torneio</h1>
-
-    <%= simple_form_for [@club, @tournament] do |f| %>
-      <%= f.input :name, label: "Nome" %>
-      <%= f.input :location, label: "Endereço" %>
-      <%= f.input :max_players, label: "Total de players" %>
-      <%= f.input :starts_at, as: :datetime, html5: true, label: "Data e hora" %>
-
-      <%= f.button :submit, "Criar torneio" %>
-    <% end %>
-  </section>
-</main>
+<%= render "shared/components/tournaments/form",
+           club: @club,
+           tournament: @tournament %>

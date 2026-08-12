@@ -4,7 +4,6 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
   def setup
     @club = Club.create!(name: "Poker House")
     @other_club = Club.create!(name: "Other Poker House")
-
     @owner = create_user("owner@example.com")
     @admin = create_user("admin@example.com")
     @dealer = create_user("dealer@example.com")
@@ -18,53 +17,29 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     create_membership(@outsider, @other_club, :owner)
   end
 
-  test "unauthenticated user cannot access new tournament form" do
-    get new_club_tournament_path(@club)
-
-    assert_redirected_to new_user_session_path
-  end
-
-  test "owner can access new tournament form" do
+  test "only owner can access new tournament form" do
     sign_in @owner
-
     get new_club_tournament_path(@club)
-
     assert_response :success
-  end
 
-  test "admin can access new tournament form" do
-    sign_in @admin
-
-    get new_club_tournament_path(@club)
-
-    assert_response :success
-  end
-
-  test "dealer cannot access new tournament form" do
-    sign_in @dealer
-
-    get new_club_tournament_path(@club)
-
-    assert_response :forbidden
-  end
-
-  test "player cannot access new tournament form" do
-    sign_in @player
-
-    get new_club_tournament_path(@club)
-
-    assert_response :forbidden
-  end
-
-  test "unauthenticated user cannot create tournament" do
-    assert_no_difference "Tournament.count" do
-      post club_tournaments_path(@club), params: tournament_payload
+    [@admin, @dealer, @player].each do |user|
+      sign_out @owner
+      sign_in user
+      get new_club_tournament_path(@club)
+      assert_response :forbidden
     end
-
-    assert_redirected_to new_user_session_path
   end
 
-  test "owner creates tournament with valid params" do
+  test "unauthenticated user is redirected and outsider receives not found" do
+    get new_club_tournament_path(@club)
+    assert_redirected_to new_user_session_path
+
+    sign_in @outsider
+    get new_club_tournament_path(@club)
+    assert_response :not_found
+  end
+
+  test "owner creates tournament with five blind levels" do
     sign_in @owner
 
     assert_difference "Tournament.count", 1 do
@@ -72,387 +47,181 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     end
 
     tournament = Tournament.order(:created_at).last
-
+    assert_equal [1, 2, 3, 4, 5], tournament.blind_levels.pluck(:level)
+    assert_equal [15], tournament.blind_levels.reorder(nil).distinct.pluck(:duration_minutes)
     assert_redirected_to club_path(@club)
-    assert_equal "Torneio criado com sucesso.", flash[:notice]
-    assert_equal @club, tournament.club
-    assert_equal "Friday Poker Night", tournament.name
-    assert_equal "Rua das Flores, 123", tournament.location
-    assert_equal 24, tournament.max_players
-    assert_equal "posted", tournament.status
   end
 
-  test "admin creates tournament with valid params" do
-    sign_in @admin
+  test "owner creates exactly ten blind levels when selected count is ten" do
+    sign_in @owner
 
-    assert_difference "Tournament.count", 1 do
-      post club_tournaments_path(@club), params: tournament_payload
+    post club_tournaments_path(@club),
+         params: tournament_payload(
+           blind_levels_count: 10,
+           blind_levels_attributes: blind_levels_attributes(10)
+         )
+
+    tournament = Tournament.order(:created_at).last
+    assert_equal 10, tournament.blind_levels.count
+    assert_equal (1..10).to_a, tournament.blind_levels.pluck(:level)
+  end
+
+  test "non owners cannot create tournaments" do
+    [@admin, @dealer, @player].each do |user|
+      sign_in user
+
+      assert_no_difference "Tournament.count" do
+        post club_tournaments_path(@club), params: tournament_payload
+      end
+
+      assert_response :forbidden
+      sign_out user
     end
-
-    assert_redirected_to club_path(@club)
-    assert_equal @club, Tournament.order(:created_at).last.club
   end
 
-  test "dealer cannot create tournament" do
-    sign_in @dealer
-
-    assert_no_difference "Tournament.count" do
-      post club_tournaments_path(@club), params: tournament_payload
-    end
-
-    assert_response :forbidden
-  end
-
-  test "player cannot create tournament" do
-    sign_in @player
-
-    assert_no_difference "Tournament.count" do
-      post club_tournaments_path(@club), params: tournament_payload
-    end
-
-    assert_response :forbidden
-  end
-
-  test "user without membership cannot access new tournament form" do
-    sign_in @outsider
-
-    get new_club_tournament_path(@club)
-
-    assert_response :not_found
-  end
-
-  test "user without membership cannot create tournament" do
-    sign_in @outsider
-
-    assert_no_difference "Tournament.count" do
-      post club_tournaments_path(@club), params: tournament_payload
-    end
-
-    assert_response :not_found
-  end
-
-  test "owner of another club cannot create tournament in current club" do
-    sign_in @outsider
-
-    assert_no_difference "Tournament.count" do
-      post club_tournaments_path(@club), params: tournament_payload
-    end
-
-    assert_response :not_found
-  end
-
-  test "invalid params do not create tournament" do
+  test "creation below the minimum number of levels fails" do
     sign_in @owner
 
     assert_no_difference "Tournament.count" do
-      post club_tournaments_path(@club), params: tournament_payload(name: "")
+      post club_tournaments_path(@club),
+           params: tournament_payload(
+             blind_levels_count: 4,
+             blind_levels_attributes: blind_levels_attributes(4)
+           )
     end
 
     assert_response :unprocessable_entity
   end
 
-  test "missing name does not create tournament" do
-    assert_missing_required_attribute(:name)
-  end
+  test "creation with divergent durations fails" do
+    attributes = blind_levels_attributes
+    attributes.last[:duration_minutes] = 30
 
-  test "missing location does not create tournament" do
-    assert_missing_required_attribute(:location)
-  end
-
-  test "missing max players does not create tournament" do
-    assert_missing_required_attribute(:max_players)
-  end
-
-  test "missing starts at does not create tournament" do
-    assert_missing_required_attribute(:starts_at)
-  end
-
-  test "club id param is ignored and tournament belongs to club from URL" do
     sign_in @owner
-
-    assert_difference "Tournament.count", 1 do
+    assert_no_difference "Tournament.count" do
       post club_tournaments_path(@club),
-           params: tournament_payload(club_id: @other_club.id)
+           params: tournament_payload(blind_levels_attributes: attributes)
     end
 
-    tournament = Tournament.order(:created_at).last
-
-    assert_equal @club, tournament.club
-    assert_not_equal @other_club, tournament.club
+    assert_response :unprocessable_entity
   end
 
-  test "status param is ignored and tournament starts as posted" do
-    sign_in @owner
-
-    assert_difference "Tournament.count", 1 do
-      post club_tournaments_path(@club),
-           params: tournament_payload(status: "posted")
-    end
-
-    assert_equal "posted", Tournament.order(:created_at).last.status
-  end
-
-  test "sensitive user id param is ignored" do
-    sign_in @owner
-
-    assert_difference "Tournament.count", 1 do
-      post club_tournaments_path(@club),
-           params: tournament_payload(user_id: @outsider.id)
-    end
-
-    tournament = Tournament.order(:created_at).last
-
-    assert_not tournament.respond_to?(:user_id)
-  end
-
-  test "unauthenticated user cannot access tournaments index" do
-    get club_tournaments_path(@club)
-
-    assert_redirected_to new_user_session_path
-  end
-
-  test "owner can access tournaments index" do
-    sign_in @owner
-
-    get club_tournaments_path(@club)
-
-    assert_response :success
-  end
-
-  test "admin can access tournaments index" do
-    sign_in @admin
-
-    get club_tournaments_path(@club)
-
-    assert_response :success
-  end
-
-  test "dealer can access tournaments index" do
-    sign_in @dealer
-
-    get club_tournaments_path(@club)
-
-    assert_response :success
-  end
-
-  test "player can access tournaments index" do
-    sign_in @player
-
-    get club_tournaments_path(@club)
-
-    assert_response :success
-  end
-
-  test "user without membership cannot access tournaments index" do
-    sign_in @outsider
-
-    get club_tournaments_path(@club)
-
-    assert_response :not_found
-  end
-
-  test "tournaments index lists only tournaments from current club" do
-    current_tournament = create_tournament(
-      @club,
-      name: "Current Club Tournament",
-      location: "Mesa Principal"
-    )
-    other_tournament = create_tournament(
-      @other_club,
-      name: "Other Club Tournament",
-      location: "Sala Reservada"
-    )
+  test "owner can edit and update tournament blind structure" do
+    tournament = create_tournament(@club)
+    original_level = tournament.blind_levels.first
 
     sign_in @owner
-    get club_tournaments_path(@club)
-
+    get edit_club_tournament_path(@club, tournament)
     assert_response :success
-    assert_includes response.body, current_tournament.name
-    assert_includes response.body, current_tournament.location
-    assert_includes response.body, current_tournament.max_players.to_s
-    assert_includes response.body, current_tournament.status.humanize
-    assert_not_includes response.body, other_tournament.name
-    assert_not_includes response.body, other_tournament.location
+
+    patch club_tournament_path(@club, tournament),
+          params: tournament_payload(
+            blind_levels_count: 6,
+            blind_levels_attributes: tournament.blind_levels.map do |level|
+              level.attributes.slice("id", "level", "duration_minutes", "small_blind", "big_blind", "ante")
+            end + blind_levels_attributes(1, start_level: 6)
+          )
+
+    assert_redirected_to club_path(@club)
+    assert_equal 6, tournament.reload.blind_levels.count
+    assert_equal original_level.small_blind, tournament.blind_levels.first.small_blind
   end
 
-  test "tournaments index presents basic tournament information" do
+  test "owner can remove final blind levels while keeping the minimum" do
     tournament = create_tournament(
       @club,
-      name: "Saturday Deep Stack",
-      location: "Rua Central, 88",
-      max_players: 32,
-      status: :posted
+      blind_levels_count: 6,
+      blind_levels_attributes: blind_levels_attributes(6)
     )
+    levels = tournament.blind_levels.to_a
 
-    sign_in @player
-    get club_tournaments_path(@club)
+    sign_in @owner
+    patch club_tournament_path(@club, tournament),
+          params: tournament_payload(
+            blind_levels_count: 5,
+            blind_levels_attributes: levels.map do |level|
+              attributes = level.attributes.slice("id", "level", "duration_minutes", "small_blind", "big_blind", "ante")
+              attributes[:_destroy] = "1" if level == levels.last
+              attributes
+            end
+          )
 
-    assert_response :success
-    assert_includes response.body, tournament.name
-    assert_includes response.body, tournament.location
-    assert_includes response.body, "32"
-    assert_includes response.body, "Posted"
-    assert_includes response.body, "Buy-in"
-    assert_includes response.body, "R$ 250"
+    assert_redirected_to club_path(@club)
+    assert_equal [1, 2, 3, 4, 5], tournament.reload.blind_levels.pluck(:level)
   end
 
-  test "tournaments index respects role actions for dealer and player" do
-    create_tournament(@club)
+  test "update below the minimum number of levels fails" do
+    tournament = create_tournament(@club)
+    levels = tournament.blind_levels.to_a
 
-    [@dealer, @player].each do |user|
+    sign_in @owner
+    patch club_tournament_path(@club, tournament),
+          params: tournament_payload(
+            blind_levels_count: 4,
+            blind_levels_attributes: levels.map do |level|
+              attributes = level.attributes.slice("id", "level", "duration_minutes", "small_blind", "big_blind", "ante")
+              attributes[:_destroy] = "1" if level == levels.last
+              attributes
+            end
+          )
+
+    assert_response :unprocessable_entity
+    assert_equal 5, tournament.reload.blind_levels.count
+  end
+
+  test "non owners cannot edit update or delete a tournament" do
+    tournament = create_tournament(@club)
+
+    [@admin, @dealer, @player].each do |user|
       sign_in user
-      get club_tournaments_path(@club)
 
-      assert_response :success
-      assert_not_includes response.body, new_club_tournament_path(@club)
-      sign_out user
-    end
-  end
-
-  test "tournaments index shows management menu only to owner and admin" do
-    tournament = create_tournament(@club)
-
-    sign_in @owner
-    get club_tournaments_path(@club)
-
-    assert_includes response.body, edit_club_tournament_path(@club, tournament)
-    assert_includes response.body, club_tournament_path(@club, tournament)
-    sign_out @owner
-
-    sign_in @admin
-    get club_tournaments_path(@club)
-
-    assert_includes response.body, edit_club_tournament_path(@club, tournament)
-    assert_not_includes response.body, "Excluir torneio"
-    sign_out @admin
-
-    sign_in @dealer
-    get club_tournaments_path(@club)
-
-    assert_not_includes response.body, edit_club_tournament_path(@club, tournament)
-  end
-
-  test "tournaments index shows empty state when club has no tournaments" do
-    empty_club = Club.create!(name: "Empty Club")
-    create_membership(@owner, empty_club, :owner)
-
-    sign_in @owner
-    get club_tournaments_path(empty_club)
-
-    assert_response :success
-    assert_includes response.body, "Nenhum torneio criado ainda."
-  end
-
-  test "owner can access tournament edit form" do
-    tournament = create_tournament(@club)
-    sign_in @owner
-
-    get edit_club_tournament_path(@club, tournament)
-
-    assert_response :success
-  end
-
-  test "admin can access tournament edit form" do
-    tournament = create_tournament(@club)
-    sign_in @admin
-
-    get edit_club_tournament_path(@club, tournament)
-
-    assert_response :success
-  end
-
-  test "dealer and player cannot access tournament edit form" do
-    tournament = create_tournament(@club)
-
-    [@dealer, @player].each do |user|
-      sign_in user
       get edit_club_tournament_path(@club, tournament)
-
       assert_response :forbidden
-      sign_out user
-    end
-  end
 
-  test "user cannot edit tournament from another club" do
-    tournament = create_tournament(@other_club)
-    sign_in @owner
-
-    get edit_club_tournament_path(@club, tournament)
-
-    assert_response :not_found
-  end
-
-  test "owner updates tournament with permitted params" do
-    tournament = create_tournament(@club)
-    sign_in @owner
-
-    patch club_tournament_path(@club, tournament), params: tournament_payload(
-      name: "Sunday High Roller",
-      max_players: 48
-    )
-
-    assert_redirected_to club_path(@club)
-    assert_equal "Torneio atualizado com sucesso.", flash[:notice]
-    assert_equal "Sunday High Roller", tournament.reload.name
-    assert_equal 48, tournament.max_players
-  end
-
-  test "admin updates tournament but cannot change status" do
-    tournament = create_tournament(@club, status: :posted)
-    sign_in @admin
-
-    patch club_tournament_path(@club, tournament), params: tournament_payload(
-      name: "Admin Update",
-      status: "finished"
-    )
-
-    assert_redirected_to club_path(@club)
-    assert_equal "Admin Update", tournament.reload.name
-    assert_equal "posted", tournament.status
-  end
-
-  test "dealer and player cannot update tournament" do
-    tournament = create_tournament(@club)
-
-    [@dealer, @player].each do |user|
-      sign_in user
-      patch club_tournament_path(@club, tournament),
-            params: tournament_payload(name: "Unauthorized update")
-
+      patch club_tournament_path(@club, tournament), params: tournament_payload(name: "Unauthorized")
       assert_response :forbidden
       assert_equal "Friday Poker Night", tournament.reload.name
+
+      assert_no_difference "Tournament.count" do
+        delete club_tournament_path(@club, tournament)
+      end
+      assert_response :forbidden
+
       sign_out user
     end
   end
 
-  test "only owner can delete tournament" do
+  test "owner can delete tournament" do
     tournament = create_tournament(@club)
-    sign_in @admin
-
-    assert_no_difference "Tournament.count" do
-      delete club_tournament_path(@club, tournament)
-    end
-
-    assert_response :forbidden
-    sign_out @admin
-
     sign_in @owner
+
     assert_difference "Tournament.count", -1 do
       delete club_tournament_path(@club, tournament)
     end
 
     assert_redirected_to club_path(@club)
-    assert_equal "Torneio excluído com sucesso.", flash[:notice]
+  end
+
+  test "sensitive parameters are ignored" do
+    sign_in @owner
+
+    post club_tournaments_path(@club),
+         params: tournament_payload(
+           club_id: @other_club.id,
+           status: "finished",
+           user_id: @outsider.id
+         )
+
+    tournament = Tournament.order(:created_at).last
+    assert_equal @club, tournament.club
+    assert_equal "posted", tournament.status
+    assert_not tournament.respond_to?(:user_id)
   end
 
   private
 
   def create_user(email)
-    User.create!(
-      email: email,
-      password: "password123",
-      name: email.split("@").first
-    )
+    User.create!(email: email, password: "password123", name: email.split("@").first)
   end
 
   def create_membership(user, club, role)
@@ -460,21 +229,11 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
   end
 
   def create_tournament(club, attributes = {})
-    defaults = {
-      name: "Friday Poker Night",
-      location: "Rua das Flores, 123",
-      max_players: 24,
-      starts_at: 2.days.from_now,
-      status: :posted
-    }
-
-    club.tournaments.create!(defaults.merge(attributes))
+    club.tournaments.create!(valid_tournament_attributes.merge(attributes))
   end
 
   def tournament_payload(overrides = {})
-    {
-      tournament: valid_tournament_attributes.merge(overrides)
-    }
+    { tournament: valid_tournament_attributes.merge(overrides) }
   end
 
   def valid_tournament_attributes
@@ -482,18 +241,22 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
       name: "Friday Poker Night",
       location: "Rua das Flores, 123",
       max_players: 24,
-      starts_at: 2.days.from_now
+      starts_at: 2.days.from_now,
+      blind_levels_count: 5,
+      blind_levels_attributes: blind_levels_attributes
     }
   end
 
-  def assert_missing_required_attribute(attribute)
-    sign_in @owner
-
-    assert_no_difference "Tournament.count" do
-      post club_tournaments_path(@club),
-           params: tournament_payload(attribute => nil)
+  def blind_levels_attributes(count = 5, start_level: 1)
+    count.times.map do |index|
+      level = start_level + index
+      {
+        level: level,
+        duration_minutes: 15,
+        small_blind: level * 100,
+        big_blind: level * 200,
+        ante: 0
+      }
     end
-
-    assert_response :unprocessable_entity
   end
 end

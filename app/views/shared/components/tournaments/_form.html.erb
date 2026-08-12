@@ -34,7 +34,7 @@
                         "Data e hora de início",
                         class: "field__label" %>
 
-            <div class="input-icon">
+            <div class="input-icon" data-controller="date-time-picker">
               <span class="input-icon__icon" aria-hidden="true">
                 <%= image_tag "icons/Icondate.svg",
                               class: "input-icon__image",
@@ -44,7 +44,8 @@
               <%= f.text_field :starts_at,
                                class: "input input--with-icon tournament-form__datetime-input",
                                type: "datetime-local",
-                               value: tournament.starts_at&.strftime("%Y-%m-%dT%H:%M") %>
+                               value: tournament.starts_at&.strftime("%Y-%m-%dT%H:%M"),
+                               data: { action: "click->date-time-picker#open" } %>
             </div>
           </div>
 

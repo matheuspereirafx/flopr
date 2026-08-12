@@ -11,11 +11,10 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
   get "/access", to: "onboarding#access", as: :access
   resources :clubs do
-    resources :tournaments, only: %i[index new create edit update destroy]
-  end
-
-  resources :clubs do
-  resources :tournaments do
+    resources :tournaments, only: %i[index new create edit update destroy] do
+      resource :charge_options,
+               only: %i[new create edit update],
+               controller: "tournament_charge_options"
       resources :blind_levels, only: %i[new create]
     end
   end

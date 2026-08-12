@@ -49,7 +49,17 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     tournament = Tournament.order(:created_at).last
     assert_equal [1, 2, 3, 4, 5], tournament.blind_levels.pluck(:level)
     assert_equal [15], tournament.blind_levels.reorder(nil).distinct.pluck(:duration_minutes)
-    assert_redirected_to club_path(@club)
+    assert_redirected_to new_club_tournament_charge_options_path(@club, tournament)
+    assert_equal "draft", tournament.status
+  end
+
+  test "new tournament form presents continue as the primary action" do
+    sign_in @owner
+
+    get new_club_tournament_path(@club)
+
+    assert_response :success
+    assert_select "button[type='submit'][title='Continuar'][aria-label='Continuar']"
   end
 
   test "owner cannot create a tournament with a name already used in different casing" do
@@ -135,7 +145,8 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
             end + blind_levels_attributes(1, start_level: 6)
           )
 
-    assert_redirected_to club_path(@club)
+    assert_redirected_to edit_club_tournament_charge_options_path(@club, tournament)
+    assert_equal "draft", tournament.reload.status
     assert_equal 6, tournament.reload.blind_levels.count
     assert_equal original_level.small_blind, tournament.blind_levels.first.small_blind
   end
@@ -174,7 +185,7 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
             end
           )
 
-    assert_redirected_to club_path(@club)
+    assert_redirected_to edit_club_tournament_charge_options_path(@club, tournament)
     assert_equal [1, 2, 3, 4, 5], tournament.reload.blind_levels.pluck(:level)
   end
 
@@ -242,7 +253,7 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
 
     tournament = Tournament.order(:created_at).last
     assert_equal @club, tournament.club
-    assert_equal "posted", tournament.status
+    assert_equal "draft", tournament.status
     assert_not tournament.respond_to?(:user_id)
   end
 
@@ -270,6 +281,7 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
       location: "Rua das Flores, 123",
       max_players: 24,
       starts_at: 2.days.from_now,
+      status: :draft,
       blind_levels_count: 5,
       blind_levels_attributes: blind_levels_attributes
     }

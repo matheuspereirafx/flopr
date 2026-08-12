@@ -1,0 +1,176 @@
+<% form_method = tournament.posted? ? :patch : :post %>
+
+<div class="page">
+  <main class="tournament-form financial-form" aria-labelledby="page-title">
+    <header class="tournament-form__header financial-form__header">
+      <div>
+        <p class="financial-form__step">Etapa 2 de 2</p>
+        <h1 id="page-title" class="tournament-form__title">
+          Configurações financeiras
+        </h1>
+        <p class="tournament-form__subtitle">
+          Defina o buy-in obrigatório e as recargas disponíveis em
+          <strong><%= tournament.name %></strong>.
+        </p>
+      </div>
+    </header>
+
+    <%= form_with scope: :financial_configuration,
+                  url: club_tournament_charge_options_path(club, tournament),
+                  method: form_method,
+                  html: {
+                    class: "tournament-form__body",
+                    data: { controller: "financial-options" }
+                  } do %>
+      <div class="tournament-form__content">
+        <div class="form-grid financial-form__grid">
+          <fieldset class="panel financial-panel financial-panel--required">
+            <legend class="panel__title">Buy-in obrigatório</legend>
+            <p class="financial-panel__description">
+              Todo torneio precisa de um buy-in válido para ser publicado.
+            </p>
+
+            <%= hidden_field_tag "financial_configuration[charge_options][buy_in][active]", "1" %>
+            <%= render "shared/components/tournaments/charge_option_fields",
+                       option: charge_options.fetch("buy_in"),
+                       kind: "buy_in",
+                       amount_label: "Valor do buy-in",
+                       chips_label: "Quantidade de fichas do buy-in",
+                       chips_optional: false %>
+          </fieldset>
+
+          <fieldset class="panel financial-panel financial-panel--optional">
+            <legend class="panel__title">Recargas e opções adicionais</legend>
+            <p class="financial-panel__description">
+              Selecione o nível final e ative somente as recargas disponíveis aos jogadores.
+            </p>
+
+            <section class="financial-period" aria-labelledby="financial-period-title">
+              <div class="financial-period__header">
+                <div>
+                  <h2 id="financial-period-title" class="financial-period__title">
+                    Período de recargas
+                  </h2>
+                  <p class="financial-option__hint">
+                    Rebuy, rebuy duplo e taxa extra encerram no mesmo nível.
+                  </p>
+                </div>
+
+                <div class="field financial-period__field">
+                  <%= label_tag "financial_configuration_period_end_level_id",
+                                "Nível final",
+                                class: "field__label" %>
+                  <div class="select-wrapper">
+                    <%= select_tag "financial_configuration[period_end_level_id]",
+                                   options_from_collection_for_select(
+                                     tournament.blind_levels,
+                                     :id,
+                                     :level,
+                                     period_end_level&.id
+                                   ),
+                                   include_blank: "Selecione",
+                                   class: "select",
+                                   data: {
+                                     financial_options_target: "periodSelect",
+                                     action: "change->financial-options#changePeriod"
+                                   } %>
+                    <span class="select-wrapper__chevron" aria-hidden="true">
+                      <i data-lucide="chevron-down"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+            </section>
+
+            <div class="financial-options-list">
+              <% [
+                   ["rebuy", "Permitir rebuy", "Valor do rebuy", "Quantidade de fichas do rebuy"],
+                   ["double_rebuy", "Permitir rebuy duplo", "Valor do rebuy duplo", "Quantidade de fichas do rebuy duplo"],
+                   ["addon", "Permitir add-on", "Valor do add-on", "Quantidade de fichas do add-on"],
+                   ["fee", "Permitir taxa extra", "Valor da taxa extra", "Quantidade de fichas"]
+                 ].each do |kind, title, amount_label, chips_label| %>
+                <% option = charge_options.fetch(kind) %>
+
+                <article class="financial-option <%= "financial-option--active" if option.active? %>"
+                         data-financial-options-target="option"
+                         data-kind="<%= kind %>">
+                  <div class="financial-option__header">
+                    <div>
+                      <h2 class="financial-option__title"><%= title %></h2>
+                      <% if kind == "double_rebuy" %>
+                        <p class="financial-option__hint">
+                          Disponível somente quando o rebuy estiver habilitado.
+                        </p>
+                      <% elsif kind == "rebuy" %>
+                        <p class="financial-option__hint">
+                          Disponível até o encerramento do nível selecionado.
+                        </p>
+                      <% elsif kind == "addon" %>
+                        <p class="financial-option__hint">
+                          Liberado após o encerramento do período de rebuy.
+                        </p>
+                      <% elsif kind == "fee" %>
+                        <p class="financial-option__hint">
+                          Disponível durante o mesmo período do rebuy.
+                        </p>
+                      <% end %>
+                    </div>
+
+                    <label class="financial-switch">
+                      <%= hidden_field_tag "financial_configuration[charge_options][#{kind}][active]", "0" %>
+                      <%= check_box_tag "financial_configuration[charge_options][#{kind}][active]",
+                                        "1",
+                                        option.active?,
+                                        class: "financial-switch__input",
+                                        disabled: period_end_level.blank?,
+                                        data: {
+                                          financial_options_target: "toggle",
+                                          action: "change->financial-options#toggle"
+                                        } %>
+                      <span class="financial-switch__control" aria-hidden="true"></span>
+                      <span class="sr-only"><%= title %></span>
+                    </label>
+                  </div>
+
+                  <div class="financial-option__fields"
+                       data-financial-options-target="fields"
+                       <%= "hidden" unless option.active? %>>
+                    <%= render "shared/components/tournaments/charge_option_fields",
+                               option: option,
+                               kind: kind,
+                               amount_label: amount_label,
+                               chips_label: chips_label,
+                               chips_optional: kind == "fee" %>
+                  </div>
+                </article>
+              <% end %>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="tournament-form__actions">
+          <%= link_to edit_club_tournament_path(club, tournament),
+                      class: "button button--ghost",
+                      aria: { label: "Voltar para os dados do torneio" },
+                      title: "Voltar para os dados do torneio" do %>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+            <span class="sr-only">Voltar</span>
+          <% end %>
+
+          <%= button_tag type: "submit",
+                         class: "button button--primary",
+                         aria: { label: "Finalizar criação do torneio" },
+                         title: "Finalizar criação do torneio" do %>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m5 12 4 4L19 6" />
+            </svg>
+            <span class="sr-only">Finalizar criação</span>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </main>
+</div>

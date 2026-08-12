@@ -67,6 +67,32 @@ class TournamentTest < ActiveSupport::TestCase
     assert tournament.valid?
   end
 
+  test "posted tournament requires only an active buy in" do
+    tournament = build_tournament(status: :posted)
+
+    assert_not tournament.valid?
+    assert_includes tournament.errors[:base], "buy-in deve estar configurado"
+    assert_not_includes tournament.errors[:base], "rebuy deve estar configurado"
+  end
+
+  test "posted tournament is valid with buy in and no rebuy" do
+    tournament = build_tournament(status: :posted)
+    tournament.charge_options.build(
+      kind: :buy_in,
+      active: true,
+      amount: 50,
+      chip_amount: 10_000
+    )
+
+    assert tournament.valid?
+  end
+
+  test "draft tournament can be saved before financial configuration" do
+    tournament = build_tournament(status: :draft)
+
+    assert tournament.valid?
+  end
+
   test "is invalid when removal leaves fewer than five blind levels" do
     tournament = build_tournament
     tournament.blind_levels.last.mark_for_destruction
@@ -84,7 +110,7 @@ class TournamentTest < ActiveSupport::TestCase
       location: "Rua das Flores, 123",
       max_players: 24,
       starts_at: 2.days.from_now,
-      status: :posted,
+      status: :draft,
       blind_levels_attributes: blind_levels_attributes
     }
 

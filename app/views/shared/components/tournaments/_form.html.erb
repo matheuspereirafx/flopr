@@ -356,14 +356,14 @@
           <%= button_tag type: "submit",
                          class: "button button--primary",
                          aria: {
-                           label: tournament.persisted? ? "Salvar alterações" : "Criar torneio"
+                           label: tournament.persisted? ? "Salvar alterações" : "Continuar"
                          },
-                         title: tournament.persisted? ? "Salvar alterações" : "Criar torneio" do %>
+                         title: tournament.persisted? ? "Salvar alterações" : "Continuar" do %>
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="m9 18 6-6-6-6" />
             </svg>
             <span class="sr-only">
-              <%= tournament.persisted? ? "Salvar alterações" : "Criar torneio" %>
+              <%= tournament.persisted? ? "Salvar alterações" : "Continuar" %>
             </span>
           <% end %>
         </div>

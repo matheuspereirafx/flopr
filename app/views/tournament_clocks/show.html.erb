@@ -1,0 +1,34 @@
+<main class="tournament-clock-page" aria-labelledby="clock-page-title">
+  <div class="tournament-clock-page__background" aria-hidden="true"></div>
+
+  <section class="tournament-clock-page__content"
+           data-controller="tournament-clock"
+           data-tournament-clock-seconds-value="<%= @clock_display_seconds %>"
+           data-tournament-clock-running-value="<%= @clock_state.running? || @clock_state.overtime? %>"
+           data-tournament-clock-overtime-value="<%= @clock_in_overtime %>">
+    <%= render "tournament_clocks/header",
+               club: @club,
+               tournament: @tournament,
+               current_membership: @current_membership,
+               clock_state: @clock_state,
+               current_blind_level: @current_blind_level,
+               next_blind_level: @next_blind_level,
+               clock_in_overtime: @clock_in_overtime %>
+
+    <article class="tournament-clock-timer" aria-live="polite">
+      <p class="tournament-clock-timer__eyebrow sr-only">
+        <%= @clock_in_overtime ? "Tempo extra" : "Tempo restante" %>
+      </p>
+      <strong class="tournament-clock-timer__value" data-tournament-clock-target="timer">
+        <%= @clock_in_overtime ? "+" : "" %><%= format("%02d : %02d", @clock_display_seconds / 60, @clock_display_seconds % 60) %>
+      </strong>
+    </article>
+
+    <%= render "tournament_clocks/blinds",
+               current_blind_level: @current_blind_level,
+               next_blind_level: @next_blind_level %>
+
+    <%= render "tournament_clocks/summary",
+               available_charge_options: @available_charge_options %>
+  </section>
+</main>

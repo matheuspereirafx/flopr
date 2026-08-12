@@ -1,0 +1,27 @@
+<section class="tournament-clock-blinds" aria-label="Blinds do nível atual">
+  <article class="tournament-clock-blind">
+    <span class="tournament-clock-blind__label">Small blind</span>
+    <strong class="tournament-clock-blind__value"><%= number_with_delimiter(current_blind_level.small_blind, delimiter: ".") %></strong>
+  </article>
+  <span class="tournament-clock-blinds__separator" aria-hidden="true">/</span>
+  <article class="tournament-clock-blind tournament-clock-blind--featured">
+    <span class="tournament-clock-blind__label">Big blind</span>
+    <strong class="tournament-clock-blind__value"><%= number_with_delimiter(current_blind_level.big_blind, delimiter: ".") %></strong>
+  </article>
+  <span class="tournament-clock-blinds__separator" aria-hidden="true">/</span>
+  <article class="tournament-clock-blind">
+    <span class="tournament-clock-blind__label">Ante</span>
+    <strong class="tournament-clock-blind__value"><%= number_with_delimiter(current_blind_level.ante, delimiter: ".") %></strong>
+  </article>
+
+  <div class="tournament-clock-next-level">
+    <% if next_blind_level.present? %>
+      <span class="tournament-clock-next-level__label">Próximo nível (<%= next_blind_level.level %>)</span>
+      <strong><%= number_with_delimiter(next_blind_level.small_blind, delimiter: ".") %> / <%= number_with_delimiter(next_blind_level.big_blind, delimiter: ".") %> / <%= number_with_delimiter(next_blind_level.ante, delimiter: ".") %></strong>
+      <span class="tournament-clock-next-level__duration"><%= next_blind_level.duration_minutes %> min</span>
+    <% else %>
+      <span class="tournament-clock-next-level__label">Estrutura de blinds</span>
+      <strong>Último nível configurado</strong>
+    <% end %>
+  </div>
+</section>

@@ -54,6 +54,9 @@
              end %>
 
           <article class="tournament-card">
+            <%= link_to club_tournament_path(tournament.club, tournament),
+                        class: "tournament-card__link",
+                        aria: { label: "Ver detalhes do torneio #{tournament.name}" } do %>
             <div class="tournament-card__image-wrapper">
               <%= image_tag(
                 "backgroundshow.png",
@@ -66,13 +69,6 @@
                 <%= tournament.status.humanize %>
               </span>
 
-              <% if current_membership.owner? || current_membership.admin? %>
-                <div class="tournament-card__menu">
-                  <%= render "shared/components/tournaments/tournament_menu_card",
-                             tournament: tournament,
-                             can_destroy: current_membership.owner? %>
-                </div>
-              <% end %>
             </div>
 
             <div class="tournament-card__content">
@@ -136,16 +132,22 @@
                   ◷ Nível 1 (100/200)
                 </span>
 
-                <button
-                  type="button"
-                  class="tournament-card__details"
-                >
+                <span class="tournament-card__details">
                   Ver detalhes
 
                   <span>→</span>
-                </button>
+                </span>
               </footer>
             </div>
+            <% end %>
+
+            <% if current_membership.owner? || current_membership.admin? %>
+              <div class="tournament-card__menu">
+                <%= render "shared/components/tournaments/tournament_menu_card",
+                           tournament: tournament,
+                           can_destroy: current_membership.owner? %>
+              </div>
+            <% end %>
           </article>
         <% end %>
       </div>

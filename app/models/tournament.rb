@@ -5,12 +5,16 @@ class Tournament < ApplicationRecord
 
   belongs_to :club
 
-  has_many :blind_levels,
-           -> { order(:level) },
-           dependent: :destroy
+  has_one :clock_state,
+          class_name: "TournamentClockState",
+          dependent: :destroy
 
   has_many :charge_options,
            class_name: "TournamentChargeOption",
+           dependent: :destroy
+
+  has_many :blind_levels,
+           -> { order(:level) },
            dependent: :destroy
 
   accepts_nested_attributes_for :blind_levels,

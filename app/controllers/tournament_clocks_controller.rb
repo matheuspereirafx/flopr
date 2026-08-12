@@ -1,4 +1,6 @@
 class TournamentClocksController < ApplicationController
+  layout "tournament_clock", only: :show
+
   before_action :set_member_club
   before_action :set_tournament
   before_action :set_clock_state

@@ -6,7 +6,7 @@
       LEVEL <%= current_blind_level.level %> A <%= tournament.blind_levels.size %>
     </p>
     <p class="tournament-clock-header__duration">
-      ◷ <%= current_blind_level.duration_minutes %> min duration
+      ◷ <%= current_blind_level.duration_minutes %> min de duração
     </p>
 
     <% if (current_membership.owner? || current_membership.admin?) && clock_state.not_started? %>
@@ -18,7 +18,8 @@
       <%= button_to pause_club_tournament_clock_path(club, tournament),
                     method: :patch,
                     class: "tournament-clock-control" do %>
-        <span aria-hidden="true">Ⅱ</span><span class="sr-only">Pausar relógio</span>
+        <%= image_tag "icons/iconpause.svg", class: "tournament-clock-control__icon", alt: "" %>
+        <span class="sr-only">Pausar relógio</span>
       <% end %>
     <% elsif (current_membership.owner? || current_membership.admin?) && clock_state.paused? %>
       <%= button_to resume_club_tournament_clock_path(club, tournament),

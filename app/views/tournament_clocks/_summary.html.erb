@@ -1,24 +1,37 @@
 <section class="tournament-clock-summary" aria-label="Resumo do torneio">
   <article class="tournament-clock-summary-card">
-    <p class="tournament-clock-summary-card__title">♙ PLAYERS</p>
+    <p class="tournament-clock-summary-card__title">
+      <%= image_tag "icons/Iconplayer.svg", class: "tournament-clock-summary-card__title-icon", alt: "" %>
+      JOGADORES
+    </p>
     <strong class="tournament-clock-summary-card__empty">Aguardando inscrições</strong>
     <p class="tournament-clock-summary-card__hint">Ativos e eliminados aparecerão aqui.</p>
   </article>
 
   <article class="tournament-clock-summary-card tournament-clock-summary-card--prize">
     <p class="tournament-clock-summary-card__title">
-      ◎ PRIZE POOL
+      <%= image_tag "icons/prizepoolicon.svg", class: "tournament-clock-summary-card__title-icon", alt: "" %>
+      PREMIAÇÃO
       <strong class="tournament-clock-summary-card__prize-value">R$ 3.000,00</strong>
     </p>
     <p class="tournament-clock-summary-card__hint">Valor provisório até a regra de cálculo ser definida.</p>
   </article>
 
   <aside class="tournament-clock-charge-options" aria-label="Recargas disponíveis">
-    <p class="tournament-clock-charge-options__title">◉ Registration</p>
+    <p class="tournament-clock-charge-options__title" id="title_options"> ◉ Recargas</p>
     <% if available_charge_options.any? %>
       <ul class="tournament-clock-charge-options__list">
         <% available_charge_options.each do |option| %>
-          <li><%= option.kind.humanize %><span><%= number_to_currency(option.amount) %></span></li>
+          <li>
+            <p><%= option.kind.humanize %></p>
+            <p class="tournament-clock-charge-options__availability">
+              <% if option.available_until_level.present? %>
+                Disponível até o final do nível <%= option.available_until_level.level %>.
+              <% else %>
+                Disponível até o final do torneio.
+              <% end %>
+            </p>
+          </li>
         <% end %>
       </ul>
     <% else %>

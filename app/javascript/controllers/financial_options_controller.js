@@ -9,7 +9,10 @@ export default class extends Controller {
     "moneyValue",
     "chipsDisplay",
     "chipsValue",
-    "periodSelect"
+    "periodSelect",
+    "periodTrigger",
+    "periodLabel",
+    "periodOptions"
   ]
 
   connect() {
@@ -20,19 +23,7 @@ export default class extends Controller {
   }
 
   toggle(event) {
-    const toggle = event.currentTarget
     const option = event.currentTarget.closest("[data-financial-options-target='option']")
-
-    if (!toggle.checked && this.hasConfiguredValues(option)) {
-      const confirmed = window.confirm(
-        "Esta configuração deixará de ser utilizada pelos jogadores. Deseja continuar?"
-      )
-
-      if (!confirmed) {
-        toggle.checked = true
-        return
-      }
-    }
 
     this.syncOption(option)
     this.syncDoubleRebuy()
@@ -40,6 +31,33 @@ export default class extends Controller {
 
   changePeriod() {
     this.syncPeriodOptions()
+  }
+
+  togglePeriodDropdown(event) {
+    event.stopPropagation()
+    const open = this.periodOptionsTarget.hidden
+
+    this.periodOptionsTarget.hidden = !open
+    this.periodTriggerTarget.setAttribute("aria-expanded", open.toString())
+  }
+
+  closePeriodDropdown(event) {
+    if (event && this.element.contains(event.target)) return
+
+    this.periodOptionsTarget.hidden = true
+    this.periodTriggerTarget.setAttribute("aria-expanded", "false")
+  }
+
+  selectPeriod(event) {
+    const option = event.currentTarget
+
+    this.periodSelectTarget.value = option.dataset.periodId
+    this.periodLabelTarget.textContent = option.dataset.periodLabel
+    this.periodOptionsTarget.querySelectorAll("[role='option']").forEach((item) => {
+      item.setAttribute("aria-selected", (item === option).toString())
+    })
+    this.closePeriodDropdown()
+    this.changePeriod()
   }
 
   formatMoney(event) {
@@ -137,11 +155,4 @@ export default class extends Controller {
     return this.periodSelectTarget.value !== ""
   }
 
-  hasConfiguredValues(option) {
-    return Array.from(
-      option.querySelectorAll(
-        "[data-financial-options-target='moneyValue'], [data-financial-options-target='chipsValue'], input[type='text']"
-      )
-    ).some((input) => input.value.trim() !== "")
-  }
 }

@@ -27,7 +27,7 @@
   max-width: 1440px;
   min-height: 190px;
 
-  margin: 0 auto 76px;
+  margin: 0 auto 40px;
 
   display: flex;
   justify-content: space-between;
@@ -179,12 +179,40 @@
    Responsividade
 ========================= */
 @media (max-width: 450px) {
+ .club-show__create-tournament {
+  position: fixed;
+  z-index: 20;
+  bottom: 24px;
+  right: 20px;
+
+  width: 56px;
+  height: 56px;
+  min-height: 56px;
+  padding: 0;
+  border-radius: 50%;
+
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.35);
+ }
+
+ .club-show__create-tournament span:not(.btn-icon) {
+  display: none;
+ }
+
+ .club-show__create-tournament .btn-icon {
+  width: auto;
+  height: auto;
+  font-size: 30px;
+  transform: none;
+ }
+
  .club-show-hero__players {
   display: none;
  }
 
  .club-show-hero{
-    margin: 0 auto 32px;
+    min-height: auto;
+    margin: 0 auto;
+    gap: 0px;
  }
 
  .club-show-page {

@@ -690,6 +690,47 @@
 
 @media (max-width: 450px) {
 
+  .club-events,
+  .club-events__carousel,
+  .club-events__grid {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .club-events__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .club-events__filters {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .club-events__filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .club-events__arrow--previous {
+    left: 8px;
+  }
+
+  .club-events__arrow--next {
+    right: 8px;
+  }
+
+  .club-show-hero__content,
+  .club-show-hero__create-button {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .club-show-hero__create-button {
+    width: 100%;
+  }
+
   .club-events__grid .tournament-card {
     flex-basis: 88%;
     max-width: 320px;

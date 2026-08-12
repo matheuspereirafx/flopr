@@ -125,30 +125,39 @@
                 Duração do nível
               </label>
 
-              <div class="select-wrapper">
-                <%= select_tag "level-duration",
-                               options_for_select(
-                                 [
-                                   ["5 minutos", 5],
-                                   ["10 minutos", 10],
-                                   ["15 minutos", 15],
-                                   ["20 minutos", 20],
-                                   ["25 minutos", 25],
-                                   ["30 minutos", 30]
-                                 ],
-                                 selected_duration
-                               ),
-                               id: "level-duration",
-                               name: nil,
-                               class: "select",
-                               data: {
-                                 blind_structure_target: "duration",
-                                 action: "change->blind-structure#changeDuration"
-                               } %>
-
-                <span class="select-wrapper__chevron" aria-hidden="true">
-                  <i data-lucide="chevron-down"></i>
-                </span>
+              <div class="blind-duration-select"
+                   data-action="click@window->blind-structure#closeDurationDropdown">
+                <%= tag.input type: "hidden",
+                              id: "level-duration",
+                              value: selected_duration,
+                              data: { blind_structure_target: "duration" } %>
+                <button type="button"
+                        class="blind-duration-select__trigger"
+                        aria-haspopup="listbox"
+                        aria-expanded="false"
+                        data-blind-structure-target="durationTrigger"
+                        data-action="click->blind-structure#toggleDurationDropdown">
+                  <span data-blind-structure-target="durationLabelSelect">
+                    <%= selected_duration %> minutos
+                  </span>
+                  <i data-lucide="chevron-down" aria-hidden="true"></i>
+                </button>
+                <div class="blind-duration-select__options"
+                     role="listbox"
+                     hidden
+                     data-blind-structure-target="durationOptions">
+                  <% [5, 10, 15, 20, 25, 30].each do |duration| %>
+                    <button type="button"
+                            class="blind-duration-select__option"
+                            role="option"
+                            aria-selected="<%= duration == selected_duration %>"
+                            data-duration="<%= duration %>"
+                            data-duration-label="<%= duration %> minutos"
+                            data-action="click->blind-structure#selectDuration">
+                      <%= duration %> minutos
+                    </button>
+                  <% end %>
+                </div>
               </div>
             </div>
           </div>
@@ -344,7 +353,7 @@
 
         <div class="tournament-form__actions">
           <%= link_to club_path(club),
-                      class: "button button--ghost",
+                      class: "button button--ghost tournament-form__cancel",
                       aria: { label: "Cancelar" },
                       title: "Cancelar" do %>
             <svg viewBox="0 0 24 24" aria-hidden="true">

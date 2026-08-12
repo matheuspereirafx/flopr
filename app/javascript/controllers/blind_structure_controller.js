@@ -7,6 +7,9 @@ export default class extends Controller {
     "row",
     "count",
     "duration",
+    "durationTrigger",
+    "durationLabelSelect",
+    "durationOptions",
     "durationInput",
     "durationLabel",
     "levelInput",
@@ -70,6 +73,33 @@ export default class extends Controller {
     this.durationLabelTargets.forEach((label) => {
       label.textContent = `${newDuration} min`
     })
+  }
+
+  toggleDurationDropdown(event) {
+    event.stopPropagation()
+    const open = this.durationOptionsTarget.hidden
+
+    this.durationOptionsTarget.hidden = !open
+    this.durationTriggerTarget.setAttribute("aria-expanded", open.toString())
+  }
+
+  closeDurationDropdown(event) {
+    if (event && this.element.contains(event.target)) return
+
+    this.durationOptionsTarget.hidden = true
+    this.durationTriggerTarget.setAttribute("aria-expanded", "false")
+  }
+
+  selectDuration(event) {
+    const option = event.currentTarget
+
+    this.durationTarget.value = option.dataset.duration
+    this.durationLabelSelectTarget.textContent = option.dataset.durationLabel
+    this.durationOptionsTarget.querySelectorAll("[role='option']").forEach((item) => {
+      item.setAttribute("aria-selected", (item === option).toString())
+    })
+    this.closeDurationDropdown()
+    this.changeDuration()
   }
 
   suggestBigBlind(event) {

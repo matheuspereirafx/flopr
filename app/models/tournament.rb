@@ -5,6 +5,10 @@ class Tournament < ApplicationRecord
 
   belongs_to :club
 
+  has_one :clock_state,
+          class_name: "TournamentClockState",
+          dependent: :destroy
+
   has_many :blind_levels,
            -> { order(:level) },
            dependent: :destroy

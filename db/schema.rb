@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_11_224500) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_12_201000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -63,6 +63,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_224500) do
     t.check_constraint "chip_amount IS NULL OR chip_amount >= 0", name: "tournament_charge_options_chips_non_negative"
   end
 
+  create_table "tournament_clock_states", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "current_blind_level_id", null: false
+    t.integer "overtime_elapsed_seconds", default: 0, null: false
+    t.datetime "overtime_started_at"
+    t.datetime "paused_at"
+    t.integer "remaining_seconds", default: 0, null: false
+    t.datetime "started_at"
+    t.string "status", default: "not_started", null: false
+    t.bigint "tournament_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["current_blind_level_id"], name: "index_tournament_clock_states_on_current_blind_level_id"
+    t.index ["tournament_id"], name: "index_tournament_clock_states_on_tournament_id", unique: true
+    t.check_constraint "overtime_elapsed_seconds >= 0", name: "tournament_clock_states_overtime_elapsed_seconds_non_negative"
+    t.check_constraint "remaining_seconds >= 0", name: "tournament_clock_states_remaining_seconds_non_negative"
+  end
+
   create_table "tournaments", force: :cascade do |t|
     t.bigint "club_id", null: false
     t.datetime "created_at", null: false
@@ -98,5 +115,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_224500) do
   add_foreign_key "tournament_charge_options", "blind_levels", column: "available_from_level_id"
   add_foreign_key "tournament_charge_options", "blind_levels", column: "available_until_level_id"
   add_foreign_key "tournament_charge_options", "tournaments"
+  add_foreign_key "tournament_clock_states", "blind_levels", column: "current_blind_level_id", on_delete: :cascade
+  add_foreign_key "tournament_clock_states", "tournaments", on_delete: :cascade
   add_foreign_key "tournaments", "clubs"
 end

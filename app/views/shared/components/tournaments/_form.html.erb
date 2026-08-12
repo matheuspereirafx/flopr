@@ -29,16 +29,24 @@
                       label_html: { class: "field__label" },
                       input_html: { class: "input" } %>
 
-          <%= f.input :starts_at,
-                      as: :string,
-                      label: "Data e hora de início",
-                      wrapper_html: { class: "field" },
-                      label_html: { class: "field__label" },
-                      input_html: {
-                        class: "input tournament-form__datetime-input",
-                        type: "datetime-local",
-                        value: tournament.starts_at&.strftime("%Y-%m-%dT%H:%M")
-                      } %>
+          <div class="field">
+            <%= f.label :starts_at,
+                        "Data e hora de início",
+                        class: "field__label" %>
+
+            <div class="input-icon">
+              <span class="input-icon__icon" aria-hidden="true">
+                <%= image_tag "icons/Icondate.svg",
+                              class: "input-icon__image",
+                              alt: "" %>
+              </span>
+
+              <%= f.text_field :starts_at,
+                               class: "input input--with-icon tournament-form__datetime-input",
+                               type: "datetime-local",
+                               value: tournament.starts_at&.strftime("%Y-%m-%dT%H:%M") %>
+            </div>
+          </div>
 
           <div class="field">
             <%= f.label :location,
@@ -47,7 +55,9 @@
 
             <div class="input-icon">
               <span class="input-icon__icon" aria-hidden="true">
-                <i data-lucide="map-pin"></i>
+                <%= image_tag "icons/Iconlocation.svg",
+                              class: "input-icon__image",
+                              alt: "" %>
               </span>
 
               <%= f.input_field :location,
@@ -56,15 +66,27 @@
             </div>
           </div>
 
-          <%= f.input :max_players,
-                      label: "Máximo de jogadores",
-                      placeholder: "Ex.: 30",
-                      wrapper_html: { class: "field" },
-                      label_html: { class: "field__label" },
-                      input_html: {
-                        class: "input",
-                        min: 2
-                      } %>
+          <div class="field">
+            <%= f.label :max_players,
+                        "Máximo de jogadores",
+                        class: "field__label" %>
+
+            <div class="input-icon">
+              <span class="input-icon__icon" aria-hidden="true">
+                <%= image_tag "icons/Iconplayer.svg",
+                              class: "input-icon__image",
+                              alt: "" %>
+              </span>
+
+              <%= f.input_field :max_players,
+                                class: "input input--with-icon",
+                                type: "number",
+                                min: 2,
+                                step: 1,
+                                inputmode: "numeric",
+                                placeholder: "Ex.: 30" %>
+            </div>
+          </div>
           </fieldset>
 
           <fieldset class="panel panel--blind-structure"

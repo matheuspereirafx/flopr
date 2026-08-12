@@ -149,6 +149,10 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "input[name='tournament[starts_at]'][type='datetime-local'][value='2026-08-20T19:30'].tournament-form__datetime-input"
+    assert_select ".input-icon img.input-icon__image", count: 3
+    assert_select "img[src*='Icondate']", count: 1
+    assert_select "img[src*='Iconlocation']", count: 1
+    assert_select "img[src*='Iconplayer']", count: 1
   end
 
   test "owner can remove final blind levels while keeping the minimum" do

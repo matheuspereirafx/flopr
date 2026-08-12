@@ -434,9 +434,15 @@ table {
 
     svg { width: 16px; height: 16px; }
   }
+
+  &__image {
+    width: 16px;
+    height: 16px;
+  }
 }
 
 .input--with-icon {
+  // Espaço reservado à esquerda para os ícones de data, local e jogadores.
   padding-left: $space-8 + $space-1; // espaço suficiente para o ícone não sobrepor o texto digitado
 }
 

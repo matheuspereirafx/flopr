@@ -24,10 +24,11 @@ class TournamentsController < ApplicationController
 
   def create
     @tournament = @club.tournaments.build(tournament_params)
-    @tournament.status = :posted
+    @tournament.status = :draft
 
     if @tournament.save
-      redirect_to club_path(@club), notice: "Torneio criado com sucesso."
+      redirect_to new_club_tournament_charge_options_path(@club, @tournament),
+                  notice: "Estrutura do torneio salva. Configure as regras financeiras."
     else
       render :new, status: :unprocessable_entity
     end
@@ -37,8 +38,11 @@ class TournamentsController < ApplicationController
   end
 
   def update
+    @tournament.status = :draft
+
     if @tournament.update(tournament_params)
-      redirect_to club_path(@club), notice: "Torneio atualizado com sucesso."
+      redirect_to edit_club_tournament_charge_options_path(@club, @tournament),
+                  notice: "Estrutura do torneio salva. Revise as regras financeiras."
     else
       render :edit, status: :unprocessable_entity
     end

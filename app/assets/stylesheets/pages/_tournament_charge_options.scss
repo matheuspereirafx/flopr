@@ -1,0 +1,196 @@
+.financial-form {
+  &__step {
+    margin: 0 0 $space-2;
+    color: $color-accent-hover;
+    font-size: $font-size-xs;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  &__grid {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    height: auto;
+    min-height: 680px;
+    margin-bottom: $space-6;
+  }
+}
+
+.financial-panel {
+  width: 100%;
+  height: auto;
+  align-self: start;
+
+  &__description {
+    margin: -$space-3 0 0;
+    color: $color-text-secondary;
+    font-size: $font-size-sm;
+  }
+
+  &--required {
+    border-color: rgba($color-accent, 0.45);
+  }
+}
+
+.financial-period {
+  padding: $space-4;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  background: rgba(#0e0e0f, 0.45);
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: $space-4;
+  }
+
+  &__title {
+    margin: 0;
+    color: $color-text-primary;
+    font-family: $font-primary;
+    font-size: $font-size-base;
+    font-weight: 700;
+  }
+
+  &__field {
+    width: 100%;
+    min-width: 0;
+  }
+
+}
+
+.financial-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.financial-option {
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  background: rgba(#0e0e0f, 0.45);
+  padding: $space-4;
+  transition: border-color $transition-fast, background-color $transition-fast;
+
+  &--active {
+    border-color: rgba($color-accent, 0.55);
+    background: rgba($color-accent, 0.06);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-4;
+  }
+
+  &__title {
+    margin: 0;
+    color: $color-text-primary;
+    font-family: $font-primary;
+    font-size: $font-size-base;
+    font-weight: 700;
+  }
+
+  &__hint {
+    margin: $space-1 0 0;
+    color: $color-text-muted;
+    font-size: $font-size-xs;
+  }
+
+  &__required {
+    flex: 0 0 auto;
+    color: $color-accent-hover;
+    font-size: $font-size-xs;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  &__fields {
+    margin-top: $space-4;
+
+    &[hidden] {
+      display: none;
+    }
+
+    > .field {
+      margin-bottom: $space-4;
+    }
+  }
+}
+
+.financial-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $space-4;
+}
+
+.financial-switch {
+  position: relative;
+  flex: 0 0 auto;
+  cursor: pointer;
+
+  &__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+
+    &:focus-visible + .financial-switch__control {
+      outline: 2px solid $color-accent;
+      outline-offset: 2px;
+    }
+
+    &:checked + .financial-switch__control {
+      background: $color-accent;
+
+      &::after {
+        transform: translateX(20px);
+      }
+    }
+
+    &:disabled + .financial-switch__control {
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+  }
+
+  &__control {
+    display: block;
+    width: 44px;
+    height: 24px;
+    border: 1px solid $color-border-strong;
+    border-radius: $radius-pill;
+    background: $color-surface;
+    transition: background-color $transition-fast;
+
+    &::after {
+      content: "";
+      display: block;
+      width: 18px;
+      height: 18px;
+      margin: 2px;
+      border-radius: 50%;
+      background: #fff;
+      transition: transform $transition-fast;
+    }
+  }
+}
+
+.financial-field-error {
+  margin: 0;
+  color: #f87171;
+  font-size: $font-size-xs;
+}
+
+@media (max-width: $breakpoint-tablet) {
+  .financial-form__grid,
+  .financial-fields-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .financial-form__grid {
+    min-height: 0;
+  }
+}

@@ -1,0 +1,55 @@
+<div class="financial-fields-grid">
+  <div class="field financial-money" data-financial-money>
+    <%= label_tag "#{kind}_amount_display", amount_label, class: "field__label" %>
+    <%= text_field_tag nil,
+                       option.amount.present? ? number_to_currency(
+                         option.amount,
+                         unit: "R$ ",
+                         separator: ",",
+                         delimiter: "."
+                       ) : nil,
+                       id: "#{kind}_amount_display",
+                       class: "input",
+                       placeholder: "R$ 0,00",
+                       inputmode: "numeric",
+                       autocomplete: "off",
+                       data: {
+                         financial_options_target: "moneyDisplay",
+                         financial_option_value: true,
+                         action: "input->financial-options#formatMoney"
+                       } %>
+    <%= hidden_field_tag "financial_configuration[charge_options][#{kind}][amount]",
+                         option.amount,
+                         data: { financial_options_target: "moneyValue" } %>
+    <% if option.errors[:amount].any? %>
+      <p class="financial-field-error"><%= option.errors[:amount].first %></p>
+    <% end %>
+  </div>
+
+  <div class="field financial-chips" data-financial-chips>
+    <%= label_tag "#{kind}_chip_amount_display",
+                  chips_optional ? "#{chips_label} (opcional)" : chips_label,
+                  class: "field__label" %>
+    <%= text_field_tag nil,
+                       option.chip_amount.present? ? number_with_delimiter(
+                         option.chip_amount,
+                         delimiter: "."
+                       ) : nil,
+                       id: "#{kind}_chip_amount_display",
+                       class: "input",
+                       placeholder: "0",
+                       inputmode: "numeric",
+                       autocomplete: "off",
+                       data: {
+                         financial_options_target: "chipsDisplay",
+                         financial_option_value: true,
+                         action: "input->financial-options#formatChips"
+                       } %>
+    <%= hidden_field_tag "financial_configuration[charge_options][#{kind}][chip_amount]",
+                         option.chip_amount,
+                         data: { financial_options_target: "chipsValue" } %>
+    <% if option.errors[:chip_amount].any? %>
+      <p class="financial-field-error"><%= option.errors[:chip_amount].first %></p>
+    <% end %>
+  </div>
+</div>

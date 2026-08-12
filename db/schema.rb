@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_11_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_11_224500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -45,6 +45,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_120000) do
     t.string "whatsapp_contact_number"
   end
 
+  create_table "tournament_charge_options", force: :cascade do |t|
+    t.boolean "active", default: false, null: false
+    t.decimal "amount", precision: 10, scale: 2
+    t.bigint "available_from_level_id"
+    t.bigint "available_until_level_id"
+    t.integer "chip_amount"
+    t.datetime "created_at", null: false
+    t.string "kind", null: false
+    t.bigint "tournament_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["available_from_level_id"], name: "index_tournament_charge_options_on_available_from_level_id"
+    t.index ["available_until_level_id"], name: "index_tournament_charge_options_on_available_until_level_id"
+    t.index ["tournament_id", "kind"], name: "index_tournament_charge_options_on_tournament_id_and_kind", unique: true
+    t.index ["tournament_id"], name: "index_tournament_charge_options_on_tournament_id"
+    t.check_constraint "amount IS NULL OR amount >= 0::numeric", name: "tournament_charge_options_amount_non_negative"
+    t.check_constraint "chip_amount IS NULL OR chip_amount >= 0", name: "tournament_charge_options_chips_non_negative"
+  end
+
   create_table "tournaments", force: :cascade do |t|
     t.bigint "club_id", null: false
     t.datetime "created_at", null: false
@@ -77,5 +95,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_120000) do
   add_foreign_key "blind_levels", "tournaments"
   add_foreign_key "club_memberships", "clubs"
   add_foreign_key "club_memberships", "users"
+  add_foreign_key "tournament_charge_options", "blind_levels", column: "available_from_level_id"
+  add_foreign_key "tournament_charge_options", "blind_levels", column: "available_until_level_id"
+  add_foreign_key "tournament_charge_options", "tournaments"
   add_foreign_key "tournaments", "clubs"
 end

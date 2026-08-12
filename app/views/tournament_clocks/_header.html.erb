@@ -1,0 +1,36 @@
+<header class="tournament-clock-header">
+  <div class="tournament-clock-header__context">
+    <p class="sr-only"><%= club.name %></p>
+    <h1 id="clock-page-title" class="sr-only"><%= tournament.name %></h1>
+    <p class="tournament-clock-header__level">
+      Level <%= current_blind_level.level %> of <%= tournament.blind_levels.size %>
+    </p>
+    <p class="tournament-clock-header__duration">
+      ◷ <%= current_blind_level.duration_minutes %> min duration
+    </p>
+
+    <% if (current_membership.owner? || current_membership.admin?) && clock_state.not_started? %>
+      <%= button_to start_club_tournament_clock_path(club, tournament),
+                    class: "tournament-clock-control tournament-clock-control--primary" do %>
+        <span aria-hidden="true">▶</span><span class="sr-only">Iniciar relógio</span>
+      <% end %>
+    <% elsif (current_membership.owner? || current_membership.admin? || current_membership.dealer?) && (clock_state.running? || clock_state.overtime?) %>
+      <%= button_to pause_club_tournament_clock_path(club, tournament),
+                    method: :patch,
+                    class: "tournament-clock-control" do %>
+        <span aria-hidden="true">Ⅱ</span><span class="sr-only">Pausar relógio</span>
+      <% end %>
+    <% elsif (current_membership.owner? || current_membership.admin?) && clock_state.paused? %>
+      <%= button_to resume_club_tournament_clock_path(club, tournament),
+                    method: :patch,
+                    class: "tournament-clock-control tournament-clock-control--primary" do %>
+        <span aria-hidden="true">▶</span><span class="sr-only">Retomar relógio</span>
+      <% end %>
+    <% end %>
+  </div>
+
+  <span class="tournament-clock-status tournament-clock-status--<%= clock_state.status %>">
+    <span class="tournament-clock-status__dot" aria-hidden="true"></span>
+    <%= clock_in_overtime ? "Tempo extra" : clock_state.status.humanize %>
+  </span>
+</header>

@@ -8,7 +8,19 @@ class TournamentClocksController < ApplicationController
 
   def show
     @clock_state.refresh!
-    head :ok
+    @current_blind_level = @clock_state.current_blind_level
+    @next_blind_level = @tournament.blind_levels.find_by(
+      "level > ?",
+      @current_blind_level.level
+    )
+    @available_charge_options = available_charge_options
+    @clock_in_overtime = @clock_state.overtime? ||
+                         @clock_state.overtime_started_at.present?
+    @clock_display_seconds = if @clock_in_overtime
+                               @clock_state.overtime_seconds
+                             else
+                               @clock_state.remaining_seconds
+                             end
   end
 
   def start
@@ -81,5 +93,13 @@ class TournamentClocksController < ApplicationController
     return if performed? || @current_membership.owner? || @current_membership.admin?
 
     render plain: "Forbidden", status: :forbidden
+  end
+
+  def available_charge_options
+    @tournament.charge_options.where(active: true).reject(&:buy_in?).select do |option|
+      option.available_from_level&.level.to_i <= @current_blind_level.level &&
+        (option.available_until_level.blank? ||
+          option.available_until_level.level >= @current_blind_level.level)
+    end
   end
 end

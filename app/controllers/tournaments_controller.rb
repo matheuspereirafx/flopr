@@ -1,7 +1,7 @@
 class TournamentsController < ApplicationController
   before_action :set_member_club
   before_action :authorize_owner!, only: %i[new create edit update destroy]
-  before_action :set_tournament, only: %i[edit update destroy]
+  before_action :set_tournament, only: %i[show edit update destroy]
   before_action :authorize_tournament_deletion!, only: :destroy
 
   def index
@@ -22,11 +22,17 @@ class TournamentsController < ApplicationController
       Tournament::MINIMUM_BLIND_LEVELS
   end
 
+  def show
+    @buy_in = @tournament.charge_options.find do |option|
+      option.buy_in? && option.active?
+    end
+  end
+
   def create
     @tournament = @club.tournaments.build(tournament_params)
     @tournament.status = :draft
 
-    if @tournament.save
+    if create_tournament_with_clock_state
       redirect_to new_club_tournament_charge_options_path(@club, @tournament),
                   notice: "Estrutura do torneio salva. Configure as regras financeiras."
     else
@@ -99,6 +105,17 @@ class TournamentsController < ApplicationController
         :_destroy
       ]
     )
+  end
+
+  def create_tournament_with_clock_state
+    ApplicationRecord.transaction do
+      @tournament.save!
+      TournamentClockState.create_initial_for!(@tournament)
+    end
+
+    true
+  rescue ActiveRecord::RecordInvalid
+    false
   end
 
   def authorize_owner!

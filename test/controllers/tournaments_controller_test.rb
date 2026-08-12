@@ -39,6 +39,30 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "every club member can view a tournament overview" do
+    tournament = create_tournament(@club)
+
+    [@owner, @admin, @dealer, @player].each do |user|
+      sign_in user
+
+      get club_tournament_path(@club, tournament)
+
+      assert_response :success
+      assert_select "h1", tournament.name
+      assert_select "a[href='#{club_tournament_clock_path(@club, tournament)}']", "Abrir relógio"
+      sign_out user
+    end
+  end
+
+  test "a member cannot view a tournament from another club by changing its id" do
+    tournament = create_tournament(@other_club)
+    sign_in @owner
+
+    get club_tournament_path(@club, tournament)
+
+    assert_response :not_found
+  end
+
   test "owner creates tournament with five blind levels" do
     sign_in @owner
 
@@ -51,6 +75,20 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal [15], tournament.blind_levels.reorder(nil).distinct.pluck(:duration_minutes)
     assert_redirected_to new_club_tournament_charge_options_path(@club, tournament)
     assert_equal "draft", tournament.status
+  end
+
+  test "creating a tournament also creates its initial clock state" do
+    sign_in @owner
+
+    assert_difference ["Tournament.count", "TournamentClockState.count"], 1 do
+      post club_tournaments_path(@club), params: tournament_payload
+    end
+
+    tournament = Tournament.order(:created_at).last
+    assert_equal tournament.blind_levels.first, tournament.clock_state.current_blind_level
+    assert_equal tournament.blind_levels.first.duration_minutes * 60,
+                 tournament.clock_state.remaining_seconds
+    assert tournament.clock_state.not_started?
   end
 
   test "new tournament form presents continue as the primary action" do
@@ -236,6 +274,37 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
 
     assert_difference "Tournament.count", -1 do
       delete club_tournament_path(@club, tournament)
+    end
+
+    assert_redirected_to club_path(@club)
+  end
+
+  test "owner can delete a tournament with charge options linked to blind levels" do
+    tournament = create_tournament(@club)
+    TournamentChargeOption.create!(
+      tournament: tournament,
+      kind: :buy_in,
+      active: true,
+      amount: 50,
+      chip_amount: 10_000
+    )
+    TournamentChargeOption.create!(
+      tournament: tournament,
+      kind: :rebuy,
+      active: true,
+      amount: 50,
+      chip_amount: 10_000,
+      available_from_level: tournament.blind_levels.first,
+      available_until_level: tournament.blind_levels.third
+    )
+    sign_in @owner
+
+    assert_difference "Tournament.count", -1 do
+      assert_difference "TournamentChargeOption.count", -2 do
+        assert_difference "BlindLevel.count", -5 do
+          delete club_tournament_path(@club, tournament)
+        end
+      end
     end
 
     assert_redirected_to club_path(@club)

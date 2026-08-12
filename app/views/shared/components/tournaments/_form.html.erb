@@ -35,8 +35,9 @@
                       wrapper_html: { class: "field" },
                       label_html: { class: "field__label" },
                       input_html: {
-                        class: "input",
-                        type: "datetime-local"
+                        class: "input tournament-form__datetime-input",
+                        type: "datetime-local",
+                        value: tournament.starts_at&.strftime("%Y-%m-%dT%H:%M")
                       } %>
 
           <div class="field">

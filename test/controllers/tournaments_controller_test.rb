@@ -140,6 +140,17 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal original_level.small_blind, tournament.blind_levels.first.small_blind
   end
 
+  test "edit form displays the tournament start date and time" do
+    starts_at = Time.zone.local(2026, 8, 20, 19, 30)
+    tournament = create_tournament(@club, starts_at: starts_at)
+
+    sign_in @owner
+    get edit_club_tournament_path(@club, tournament)
+
+    assert_response :success
+    assert_select "input[name='tournament[starts_at]'][type='datetime-local'][value='2026-08-20T19:30'].tournament-form__datetime-input"
+  end
+
   test "owner can remove final blind levels while keeping the minimum" do
     tournament = create_tournament(
       @club,

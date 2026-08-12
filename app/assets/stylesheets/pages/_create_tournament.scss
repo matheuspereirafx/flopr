@@ -413,6 +413,10 @@ table {
   @include field-surface;
 }
 
+.tournament-form__datetime-input::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
 // Wrapper para inputs com ícone embutido (ex.: campo de localização). O ícone
 // fica posicionado em absoluto sobre o padding-left extra do input, técnica
 // que dispensa JS para alinhar ícone + texto perfeitamente.

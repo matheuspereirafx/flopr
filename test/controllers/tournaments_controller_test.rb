@@ -52,6 +52,19 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to club_path(@club)
   end
 
+  test "owner cannot create a tournament with a name already used in different casing" do
+    create_tournament(@club)
+    sign_in @owner
+
+    assert_no_difference "Tournament.count" do
+      post club_tournaments_path(@club),
+           params: tournament_payload(name: "FRIDAY POKER NIGHT")
+    end
+
+    assert_response :unprocessable_entity
+    assert_includes response.body, "já está em uso"
+  end
+
   test "owner creates exactly ten blind levels when selected count is ten" do
     sign_in @owner
 

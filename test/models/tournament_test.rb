@@ -13,6 +13,18 @@ class TournamentTest < ActiveSupport::TestCase
     assert build_tournament.valid?
   end
 
+  test "does not allow a tournament name already used with different casing" do
+    build_tournament.save!
+    other_club = Club.create!(name: "Another Poker House")
+    tournament = build_tournament(
+      club: other_club,
+      name: "FRIDAY POKER NIGHT"
+    )
+
+    assert_not tournament.valid?
+    assert_includes tournament.errors[:name], "já está em uso"
+  end
+
   test "is invalid with fewer than five blind levels" do
     tournament = build_tournament(blind_levels_attributes: blind_levels_attributes.take(4))
 

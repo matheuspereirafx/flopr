@@ -18,7 +18,10 @@ class Tournament < ApplicationRecord
     finished: "finished"
   }
 
-  validates :name, :location, :max_players, :starts_at, :status, presence: true
+  validates :name,
+            presence: true,
+            uniqueness: { case_sensitive: false }
+  validates :location, :max_players, :starts_at, :status, presence: true
 
   validate :has_minimum_blind_levels
   validate :blind_levels_are_sequential

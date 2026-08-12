@@ -49,6 +49,10 @@
         data-action="scroll->horizontal-scroll#updateButtons"
       >
         <% tournaments.each do |tournament| %>
+          <% buy_in = tournament.charge_options.find do |option|
+               option.buy_in? && option.active?
+             end %>
+
           <article class="tournament-card">
             <div class="tournament-card__image-wrapper">
               <%= image_tag(
@@ -101,7 +105,7 @@
                       tournament-card__information-value--highlight
                     "
                   >
-                    R$ 250
+                    <%= buy_in ? number_to_currency(buy_in.amount) : "A definir" %>
                   </strong>
                 </div>
 

@@ -20,19 +20,7 @@ export default class extends Controller {
   }
 
   toggle(event) {
-    const toggle = event.currentTarget
     const option = event.currentTarget.closest("[data-financial-options-target='option']")
-
-    if (!toggle.checked && this.hasConfiguredValues(option)) {
-      const confirmed = window.confirm(
-        "Esta configuração deixará de ser utilizada pelos jogadores. Deseja continuar?"
-      )
-
-      if (!confirmed) {
-        toggle.checked = true
-        return
-      }
-    }
 
     this.syncOption(option)
     this.syncDoubleRebuy()
@@ -137,11 +125,4 @@ export default class extends Controller {
     return this.periodSelectTarget.value !== ""
   }
 
-  hasConfiguredValues(option) {
-    return Array.from(
-      option.querySelectorAll(
-        "[data-financial-options-target='moneyValue'], [data-financial-options-target='chipsValue'], input[type='text']"
-      )
-    ).some((input) => input.value.trim() !== "")
-  }
 }

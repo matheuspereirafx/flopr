@@ -1,4 +1,15 @@
 .financial-form {
+  &__header-content {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  &__header-content .tournament-form__subtitle,
+  &__header-content .tournament-form__subtitle strong {
+    overflow-wrap: anywhere;
+  }
+
   &__step {
     margin: 0 0 $space-2;
     color: $color-accent-hover;
@@ -13,6 +24,12 @@
     height: auto;
     min-height: 680px;
     margin-bottom: $space-6;
+  }
+
+  @media (max-width: $breakpoint-tablet) {
+    &__header-content {
+      max-width: calc(100vw - #{$space-8});
+    }
   }
 }
 

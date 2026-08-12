@@ -442,8 +442,8 @@ table {
 }
 
 .input--with-icon {
-  // Espaço reservado à esquerda para os ícones de data, local e jogadores.
-  padding-left: $space-8 + $space-1; // espaço suficiente para o ícone não sobrepor o texto digitado
+  // Mantém 8px entre os ícones à esquerda e o texto digitado.
+  padding-left: $space-10;
 }
 
 // <select> nativo perde a seta padrão do navegador (appearance: none) para
@@ -900,6 +900,10 @@ a.button:active {
         height: 52px;
       }
     }
+  }
+
+  .form-grid {
+    margin-inline: $space-4;
   }
 
   .panel {

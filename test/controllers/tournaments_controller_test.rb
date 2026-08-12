@@ -52,6 +52,19 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to club_path(@club)
   end
 
+  test "owner cannot create a tournament with a name already used in different casing" do
+    create_tournament(@club)
+    sign_in @owner
+
+    assert_no_difference "Tournament.count" do
+      post club_tournaments_path(@club),
+           params: tournament_payload(name: "FRIDAY POKER NIGHT")
+    end
+
+    assert_response :unprocessable_entity
+    assert_includes response.body, "já está em uso"
+  end
+
   test "owner creates exactly ten blind levels when selected count is ten" do
     sign_in @owner
 
@@ -125,6 +138,21 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to club_path(@club)
     assert_equal 6, tournament.reload.blind_levels.count
     assert_equal original_level.small_blind, tournament.blind_levels.first.small_blind
+  end
+
+  test "edit form displays the tournament start date and time" do
+    starts_at = Time.zone.local(2026, 8, 20, 19, 30)
+    tournament = create_tournament(@club, starts_at: starts_at)
+
+    sign_in @owner
+    get edit_club_tournament_path(@club, tournament)
+
+    assert_response :success
+    assert_select "input[name='tournament[starts_at]'][type='datetime-local'][value='2026-08-20T19:30'][data-action='click->date-time-picker#open'].tournament-form__datetime-input"
+    assert_select ".input-icon img.input-icon__image", count: 3
+    assert_select "img[src*='Icondate']", count: 1
+    assert_select "img[src*='Iconlocation']", count: 1
+    assert_select "img[src*='Iconplayer']", count: 1
   end
 
   test "owner can remove final blind levels while keeping the minimum" do

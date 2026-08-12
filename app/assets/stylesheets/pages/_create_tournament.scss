@@ -413,6 +413,10 @@ table {
   @include field-surface;
 }
 
+.tournament-form__datetime-input::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
 // Wrapper para inputs com ícone embutido (ex.: campo de localização). O ícone
 // fica posicionado em absoluto sobre o padding-left extra do input, técnica
 // que dispensa JS para alinhar ícone + texto perfeitamente.
@@ -430,10 +434,16 @@ table {
 
     svg { width: 16px; height: 16px; }
   }
+
+  &__image {
+    width: 16px;
+    height: 16px;
+  }
 }
 
 .input--with-icon {
-  padding-left: $space-8 + $space-1; // espaço suficiente para o ícone não sobrepor o texto digitado
+  // Mantém 8px entre os ícones à esquerda e o texto digitado.
+  padding-left: $space-10;
 }
 
 // <select> nativo perde a seta padrão do navegador (appearance: none) para
@@ -890,6 +900,10 @@ a.button:active {
         height: 52px;
       }
     }
+  }
+
+  .form-grid {
+    margin-inline: $space-4;
   }
 
   .panel {

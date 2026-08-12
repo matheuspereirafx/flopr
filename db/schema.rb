@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_07_125420) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_11_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -54,6 +54,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_07_125420) do
     t.datetime "starts_at", null: false
     t.string "status", default: "posted", null: false
     t.datetime "updated_at", null: false
+    t.index "lower((name)::text)", name: "index_tournaments_on_lower_name", unique: true
     t.index ["club_id", "starts_at"], name: "index_tournaments_on_club_id_and_starts_at"
     t.index ["club_id"], name: "index_tournaments_on_club_id"
     t.index ["starts_at"], name: "index_tournaments_on_starts_at"

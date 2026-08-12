@@ -60,23 +60,38 @@
                   <%= label_tag "financial_configuration_period_end_level_id",
                                 "Nível final",
                                 class: "field__label" %>
-                  <div class="select-wrapper">
-                    <%= select_tag "financial_configuration[period_end_level_id]",
-                                   options_from_collection_for_select(
-                                     tournament.blind_levels,
-                                     :id,
-                                     :level,
-                                     period_end_level&.id
-                                   ),
-                                   include_blank: "Selecione",
-                                   class: "select",
-                                   data: {
-                                     financial_options_target: "periodSelect",
-                                     action: "change->financial-options#changePeriod"
-                                   } %>
-                    <span class="select-wrapper__chevron" aria-hidden="true">
-                      <i data-lucide="chevron-down"></i>
-                    </span>
+                  <div class="financial-period__select"
+                       data-action="click@window->financial-options#closePeriodDropdown">
+                    <%= hidden_field_tag "financial_configuration[period_end_level_id]",
+                                         period_end_level&.id,
+                                         data: { financial_options_target: "periodSelect" } %>
+                    <button type="button"
+                            class="financial-period__select-trigger"
+                            aria-haspopup="listbox"
+                            aria-expanded="false"
+                            data-financial-options-target="periodTrigger"
+                            data-action="click->financial-options#togglePeriodDropdown">
+                      <span data-financial-options-target="periodLabel">
+                        <%= period_end_level ? "Nível #{period_end_level.level}" : "Selecione" %>
+                      </span>
+                      <i data-lucide="chevron-down" aria-hidden="true"></i>
+                    </button>
+                    <div class="financial-period__select-options"
+                         role="listbox"
+                         hidden
+                         data-financial-options-target="periodOptions">
+                      <% tournament.blind_levels.each do |blind_level| %>
+                        <button type="button"
+                                class="financial-period__select-option"
+                                role="option"
+                                aria-selected="<%= blind_level.id == period_end_level&.id %>"
+                                data-period-id="<%= blind_level.id %>"
+                                data-period-label="Nível <%= blind_level.level %>"
+                                data-action="click->financial-options#selectPeriod">
+                          Nível <%= blind_level.level %>
+                        </button>
+                      <% end %>
+                    </div>
                   </div>
                 </div>
               </div>

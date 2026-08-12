@@ -9,7 +9,10 @@ export default class extends Controller {
     "moneyValue",
     "chipsDisplay",
     "chipsValue",
-    "periodSelect"
+    "periodSelect",
+    "periodTrigger",
+    "periodLabel",
+    "periodOptions"
   ]
 
   connect() {
@@ -28,6 +31,33 @@ export default class extends Controller {
 
   changePeriod() {
     this.syncPeriodOptions()
+  }
+
+  togglePeriodDropdown(event) {
+    event.stopPropagation()
+    const open = this.periodOptionsTarget.hidden
+
+    this.periodOptionsTarget.hidden = !open
+    this.periodTriggerTarget.setAttribute("aria-expanded", open.toString())
+  }
+
+  closePeriodDropdown(event) {
+    if (event && this.element.contains(event.target)) return
+
+    this.periodOptionsTarget.hidden = true
+    this.periodTriggerTarget.setAttribute("aria-expanded", "false")
+  }
+
+  selectPeriod(event) {
+    const option = event.currentTarget
+
+    this.periodSelectTarget.value = option.dataset.periodId
+    this.periodLabelTarget.textContent = option.dataset.periodLabel
+    this.periodOptionsTarget.querySelectorAll("[role='option']").forEach((item) => {
+      item.setAttribute("aria-selected", (item === option).toString())
+    })
+    this.closePeriodDropdown()
+    this.changePeriod()
   }
 
   formatMoney(event) {

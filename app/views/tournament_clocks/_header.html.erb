@@ -6,9 +6,9 @@
       LEVEL <%= current_blind_level.level %> A <%= tournament.blind_levels.size %>
     </p>
     <p class="tournament-clock-header__duration" data-tournament-clock-target="duration">
-      ◷ <%= current_blind_level.duration_minutes %> min de duração
+      ◷ Blinds <%= current_blind_level.duration_minutes %> minutos
     </p>
-    <div class="tournament-clock-header__actions">
+    <div class="tournament-clock-header__actions <%= "tournament-clock-header__actions--single" if clock_state.not_started? || clock_state.paused? %>">
       <% if (current_membership.owner? || current_membership.admin?) && clock_state.not_started? %>
         <%= button_to start_club_tournament_clock_path(club, tournament),
                       class: "tournament-clock-control tournament-clock-control--primary" do %>

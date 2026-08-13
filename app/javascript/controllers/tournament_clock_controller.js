@@ -13,6 +13,8 @@ export default class extends Controller {
     overtime: Boolean,
     currentLevelId: Number,
     totalLevels: Number,
+    totalLevelSeconds: Number,
+    hasNextLevel: Boolean,
     soundStorageKey: String,
     stateUrl: String
   }
@@ -43,6 +45,7 @@ export default class extends Controller {
     )
     this.playEndingAlert(seconds)
     this.requestTransitionWhenFinished(seconds)
+    this.renderTotalTournamentDuration(seconds)
   }
 
   displaySeconds() {
@@ -86,6 +89,8 @@ export default class extends Controller {
       this.updateLevelDetails(state.current_level, state.next_level)
     }
 
+    this.hasNextLevelValue = Boolean(state.next_level)
+
     this.updateStatus(state.status)
     this.render()
   }
@@ -106,6 +111,13 @@ export default class extends Controller {
       this.nextLevelValuesTarget.textContent = "Último nível configurado"
       this.nextLevelDurationTarget.textContent = ""
     }
+  }
+
+  renderTotalTournamentDuration(overtimeSeconds) {
+    if (this.hasNextLevelValue || !this.overtimeValue) return
+
+    const totalSeconds = this.totalLevelSecondsValue + overtimeSeconds
+    this.nextLevelDurationTarget.textContent = `Total: ${this.formatDuration(totalSeconds)}`
   }
 
   updateStatus(status) {
@@ -164,6 +176,14 @@ export default class extends Controller {
 
   formatNumber(number) {
     return new Intl.NumberFormat("pt-BR").format(number)
+  }
+
+  formatDuration(seconds) {
+    const hours = Math.floor(seconds / 3600).toString().padStart(2, "0")
+    const minutes = Math.floor((seconds % 3600) / 60).toString().padStart(2, "0")
+    const remainder = (seconds % 60).toString().padStart(2, "0")
+
+    return `${hours}:${minutes}:${remainder}`
   }
 
   format(seconds) {

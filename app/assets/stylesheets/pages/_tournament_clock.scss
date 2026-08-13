@@ -63,6 +63,7 @@
   width: 100% !important;
   margin-top: 8px;
 }
+.tournament-clock-header__actions--single { justify-content: center !important; }
 
 /* Força a seta e a tag <form> a ficarem lado a lado sem quebrar linha */
 .tournament-clock-header__actions > *,

@@ -10,6 +10,7 @@
            data-tournament-clock-overtime-value="<%= @clock_in_overtime %>"
            data-tournament-clock-current-level-id-value="<%= @current_blind_level.id %>"
            data-tournament-clock-total-levels-value="<%= @tournament.blind_levels.size %>"
+           data-tournament-clock-sound-storage-key-value="tournament-clock-sound-<%= @tournament.id %>"
            data-tournament-clock-state-url-value="<%= state_club_tournament_clock_path(@club, @tournament) %>">
     <%= render "tournament_clocks/state", clock_state: @clock_state %>
     <%= render "tournament_clocks/header",
@@ -33,6 +34,19 @@
     <audio data-tournament-clock-target="audio" preload="auto">
       <source src="<%= asset_path("timerblind.m4a") %>" type="audio/mp4">
     </audio>
+
+    <dialog class="tournament-clock-sound-dialog"
+            data-tournament-clock-target="soundDialog"
+            aria-labelledby="sound-dialog-title">
+      <h2 id="sound-dialog-title">Ativar alerta sonoro</h2>
+      <p>Ative o som para ouvir o aviso nos últimos 12 segundos de cada nível.</p>
+      <button type="button"
+              class="tournament-clock-sound-dialog__confirm"
+              data-action="tournament-clock#enableSound"
+              data-tournament-clock-target="soundButton">
+        Ativar som
+      </button>
+    </dialog>
 
     <%= render "tournament_clocks/blinds",
                current_blind_level: @current_blind_level,

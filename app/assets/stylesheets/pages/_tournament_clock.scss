@@ -52,7 +52,11 @@
 .tournament-clock-next-level__label { font-size: 12px; }
 .tournament-clock-header__duration { margin: 0; color: #a8adb2; font: 11px $font-primary; }
 .tournament-clock-header__context form { margin-top: 10px; }
-.tournament-clock-sound-control { margin-top: 8px; padding: 4px 8px; border: 1px solid rgba(32,210,115,.35); border-radius: 999px; color: #20d273; background: rgba(7,21,14,.86); font: 600 10px $font-primary; cursor: pointer; }
+.tournament-clock-sound-dialog { width: calc(100% - 32px); max-width: 360px; padding: 24px; border: 1px solid rgba(255,255,255,.1); border-radius: 16px; color: #f5f2f7; background: #131316; box-shadow: 0 12px 40px rgba(0,0,0,.45); }
+.tournament-clock-sound-dialog::backdrop { background: rgba(0,0,0,.68); backdrop-filter: blur(3px); }
+.tournament-clock-sound-dialog h2 { margin: 0; font: 700 24px/1.2 $font-primary; }
+.tournament-clock-sound-dialog p { margin: 10px 0 20px; color: #a8adb2; font: 14px/1.45 $font-primary; }
+.tournament-clock-sound-dialog__confirm { width: 100%; padding: 11px 16px; border: 0; border-radius: 999px; color: #07150e; background: #20d273; font: 700 14px $font-primary; cursor: pointer; }
 .tournament-clock-status { position: fixed; z-index: 2; top: 22px; right: 22px; display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px; border: 1px solid rgba(32,210,115,.18); border-radius: 999px; color: #20d273; background: rgba(7,21,14,.86); font: 600 10px $font-primary; }
 .tournament-clock-status__dot { width: 7px; height: 7px; border-radius: 50%; background: #8d97a0; }
 .tournament-clock-status--running .tournament-clock-status__dot, .tournament-clock-status--overtime .tournament-clock-status__dot { background: #20d273; box-shadow: 0 0 10px #20d273; }

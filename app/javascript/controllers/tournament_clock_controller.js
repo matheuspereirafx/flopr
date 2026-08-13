@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = [
-    "timer", "audio", "soundButton", "level", "duration", "status", "statusLabel",
+    "timer", "audio", "soundDialog", "soundButton", "level", "duration", "status", "statusLabel",
     "smallBlind", "bigBlind", "ante", "nextLevelLabel", "nextLevelValues",
     "nextLevelDuration"
   ]
@@ -13,19 +13,24 @@ export default class extends Controller {
     overtime: Boolean,
     currentLevelId: Number,
     totalLevels: Number,
+    soundStorageKey: String,
     stateUrl: String
   }
 
   connect() {
     this.startedAt = Date.now()
     this.alertedLevelId = null
-    this.soundEnabled = false
+    this.soundEnabled = this.soundWasEnabled()
     this.render()
     this.interval = window.setInterval(() => this.render(), 1000)
+    this.preventSoundDialogClose = (event) => event.preventDefault()
+    this.soundDialogTarget.addEventListener("cancel", this.preventSoundDialogClose)
+    if (!this.soundEnabled) this.soundDialogTarget.showModal()
   }
 
   disconnect() {
     window.clearInterval(this.interval)
+    this.soundDialogTarget.removeEventListener("cancel", this.preventSoundDialogClose)
   }
 
   render() {
@@ -55,8 +60,8 @@ export default class extends Controller {
         this.audioTarget.pause()
         this.audioTarget.currentTime = 0
         this.soundEnabled = true
-        this.soundButtonTarget.textContent = "Som ativado"
-        this.soundButtonTarget.disabled = true
+        this.persistSoundPreference()
+        this.soundDialogTarget.close()
         this.playEndingAlert(this.displaySeconds())
       })
       .catch(() => {})
@@ -139,6 +144,22 @@ export default class extends Controller {
       .catch(() => {
         this.transitionRequestedLevelId = null
       })
+  }
+
+  soundWasEnabled() {
+    try {
+      return localStorage.getItem(this.soundStorageKeyValue) === "enabled"
+    } catch (_) {
+      return false
+    }
+  }
+
+  persistSoundPreference() {
+    try {
+      localStorage.setItem(this.soundStorageKeyValue, "enabled")
+    } catch (_) {
+      // O áudio permanece ativo nesta página quando o armazenamento não está disponível.
+    }
   }
 
   formatNumber(number) {

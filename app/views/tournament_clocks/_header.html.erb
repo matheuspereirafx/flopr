@@ -8,13 +8,6 @@
     <p class="tournament-clock-header__duration" data-tournament-clock-target="duration">
       ◷ <%= current_blind_level.duration_minutes %> min de duração
     </p>
-    <button type="button"
-            class="tournament-clock-sound-control"
-            data-action="tournament-clock#enableSound"
-            data-tournament-clock-target="soundButton">
-      Ativar som
-    </button>
-
     <% if (current_membership.owner? || current_membership.admin?) && clock_state.not_started? %>
       <%= button_to start_club_tournament_clock_path(club, tournament),
                     class: "tournament-clock-control tournament-clock-control--primary" do %>

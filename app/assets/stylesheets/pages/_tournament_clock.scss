@@ -52,6 +52,7 @@
 .tournament-clock-next-level__label { font-size: 12px; }
 .tournament-clock-header__duration { margin: 0; color: #a8adb2; font: 11px $font-primary; }
 .tournament-clock-header__context form { margin-top: 10px; }
+.tournament-clock-sound-control { margin-top: 8px; padding: 4px 8px; border: 1px solid rgba(32,210,115,.35); border-radius: 999px; color: #20d273; background: rgba(7,21,14,.86); font: 600 10px $font-primary; cursor: pointer; }
 .tournament-clock-status { position: fixed; z-index: 2; top: 22px; right: 22px; display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px; border: 1px solid rgba(32,210,115,.18); border-radius: 999px; color: #20d273; background: rgba(7,21,14,.86); font: 600 10px $font-primary; }
 .tournament-clock-status__dot { width: 7px; height: 7px; border-radius: 50%; background: #8d97a0; }
 .tournament-clock-status--running .tournament-clock-status__dot, .tournament-clock-status--overtime .tournament-clock-status__dot { background: #20d273; box-shadow: 0 0 10px #20d273; }
@@ -63,6 +64,7 @@
 .tournament-clock-page__content { display: grid; align-content: center; gap: 18px; min-height: calc(100vh - clamp(48px, 8vw, 128px)); }
 .tournament-clock-timer { text-align: center; }
 .tournament-clock-timer__value { display: block; color: #20d273; font: 700 288px/.82 $font-primary; letter-spacing: -.09em; text-shadow: 0 0 44px rgba(32,210,115,.18); }
+.tournament-clock-timer__value--ending { color: #f3c66a; }
 .tournament-clock-blinds { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr); gap: 20px; width: 100%; max-width: 650px; margin: 0 auto; }
 .tournament-clock-blind { text-align: center; }
 .tournament-clock-blind__value { display: block; margin-top: 8px; font: 700 48px/1 $font-primary; letter-spacing: -.04em; }

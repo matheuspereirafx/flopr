@@ -2,12 +2,18 @@
   <div class="tournament-clock-header__context">
     <p class="sr-only"><%= club.name %></p>
     <h1 id="clock-page-title" class="sr-only"><%= tournament.name %></h1>
-    <p class="tournament-clock-header__level">
+    <p class="tournament-clock-header__level" data-tournament-clock-target="level">
       LEVEL <%= current_blind_level.level %> A <%= tournament.blind_levels.size %>
     </p>
-    <p class="tournament-clock-header__duration">
+    <p class="tournament-clock-header__duration" data-tournament-clock-target="duration">
       ◷ <%= current_blind_level.duration_minutes %> min de duração
     </p>
+    <button type="button"
+            class="tournament-clock-sound-control"
+            data-action="tournament-clock#enableSound"
+            data-tournament-clock-target="soundButton">
+      Ativar som
+    </button>
 
     <% if (current_membership.owner? || current_membership.admin?) && clock_state.not_started? %>
       <%= button_to start_club_tournament_clock_path(club, tournament),
@@ -30,8 +36,9 @@
     <% end %>
   </div>
 
-  <span class="tournament-clock-status tournament-clock-status--<%= clock_state.status %>">
+  <span class="tournament-clock-status tournament-clock-status--<%= clock_state.status %>"
+        data-tournament-clock-target="status">
     <span class="tournament-clock-status__dot" aria-hidden="true"></span>
-    <%= clock_in_overtime ? "Tempo extra" : clock_state.status.humanize %>
+    <span data-tournament-clock-target="statusLabel"><%= clock_in_overtime ? "Tempo extra" : clock_state.status.humanize %></span>
   </span>
 </header>

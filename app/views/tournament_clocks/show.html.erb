@@ -1,11 +1,17 @@
 <main class="tournament-clock-page" aria-labelledby="clock-page-title">
   <div class="tournament-clock-page__background" aria-hidden="true"></div>
 
+  <%= turbo_stream_from [@tournament, :clock] %>
+
   <section class="tournament-clock-page__content"
            data-controller="tournament-clock"
            data-tournament-clock-seconds-value="<%= @clock_display_seconds %>"
            data-tournament-clock-running-value="<%= @clock_state.running? || @clock_state.overtime? %>"
-           data-tournament-clock-overtime-value="<%= @clock_in_overtime %>">
+           data-tournament-clock-overtime-value="<%= @clock_in_overtime %>"
+           data-tournament-clock-current-level-id-value="<%= @current_blind_level.id %>"
+           data-tournament-clock-total-levels-value="<%= @tournament.blind_levels.size %>"
+           data-tournament-clock-state-url-value="<%= state_club_tournament_clock_path(@club, @tournament) %>">
+    <%= render "tournament_clocks/state", clock_state: @clock_state %>
     <%= render "tournament_clocks/header",
                club: @club,
                tournament: @tournament,
@@ -23,6 +29,10 @@
         <%= @clock_in_overtime ? "+" : "" %><%= format("%02d : %02d", @clock_display_seconds / 60, @clock_display_seconds % 60) %>
       </strong>
     </article>
+
+    <audio data-tournament-clock-target="audio" preload="auto">
+      <source src="<%= asset_path("timerblind.m4a") %>" type="audio/mp4">
+    </audio>
 
     <%= render "tournament_clocks/blinds",
                current_blind_level: @current_blind_level,

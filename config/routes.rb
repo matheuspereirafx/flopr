@@ -18,6 +18,7 @@ Rails.application.routes.draw do
         post :start
         patch :pause
         patch :resume
+        get :state
       end
 
       resource :charge_options,

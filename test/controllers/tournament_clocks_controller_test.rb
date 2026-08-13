@@ -159,4 +159,119 @@ class TournamentClocksControllerTest < ActionDispatch::IntegrationTest
     assert state.running?
     assert_not state.finished?
   end
+
+  test "unauthenticated users are redirected from the clock state" do
+    get clock_state_path_for(@club, @tournament)
+
+    assert_redirected_to new_user_session_path
+  end
+
+  test "every club role can read the synchronized clock state" do
+    [@owner, @admin, @dealer, @player].each do |user|
+      sign_in user
+
+      get clock_state_path_for(@club, @tournament)
+
+      assert_response :success
+      assert_equal "application/json", response.media_type
+      sign_out user
+    end
+  end
+
+  test "state synchronization advances every expired level and returns the current state" do
+    state = TournamentClockState.create_initial_for!(@tournament)
+    state.update!(
+      status: :running,
+      remaining_seconds: 15.minutes.to_i,
+      started_at: 46.minutes.ago
+    )
+    sign_in @owner
+
+    assert_difference "TournamentClockEvent.count", 3 do
+      get clock_state_path_for(@club, @tournament)
+    end
+
+    assert_response :success
+    state.reload
+    assert_equal @tournament.blind_levels.fourth, state.current_blind_level
+    assert_equal state.current_blind_level.id, response.parsed_body.fetch("current_blind_level_id")
+    assert_equal state.remaining_seconds, response.parsed_body.fetch("remaining_seconds")
+    assert_equal 4, response.parsed_body.dig("current_level", "level")
+    assert_equal 800, response.parsed_body.dig("current_level", "big_blind")
+    assert_equal 5, response.parsed_body.dig("next_level", "level")
+  end
+
+  test "state synchronization does not persist a running clock before the level ends" do
+    state = TournamentClockState.create_initial_for!(@tournament)
+    state.update!(
+      status: :running,
+      remaining_seconds: 15.minutes.to_i,
+      started_at: 2.minutes.ago
+    )
+    persisted_attributes = state.attributes
+    sign_in @owner
+
+    get clock_state_path_for(@club, @tournament)
+
+    assert_response :success
+    assert_equal persisted_attributes, state.reload.attributes
+    assert_in_delta 780, response.parsed_body.fetch("remaining_seconds"), 2
+  end
+
+  test "a user without membership cannot synchronize the clock state" do
+    state = TournamentClockState.create_initial_for!(@tournament)
+    sign_in @outsider
+
+    assert_no_changes -> { state.reload.attributes } do
+      assert_no_difference "TournamentClockEvent.count" do
+        get clock_state_path_for(@club, @tournament)
+      end
+    end
+
+    assert_response :not_found
+  end
+
+  test "a clock state cannot be exposed by changing the tournament id to another club" do
+    state = TournamentClockState.create_initial_for!(@tournament)
+    sign_in @owner
+
+    assert_no_changes -> { state.reload.attributes } do
+      assert_no_difference "TournamentClockEvent.count" do
+        get clock_state_path_for(@club, @other_tournament)
+      end
+    end
+
+    assert_response :not_found
+  end
+
+  test "state synchronization ignores tampered clock and history attributes" do
+    state = TournamentClockState.create_initial_for!(@tournament)
+    sign_in @owner
+
+    get clock_state_path_for(@club, @tournament), params: {
+      current_blind_level_id: @other_tournament.blind_levels.last.id,
+      remaining_seconds: 1,
+      status: "finished",
+      tournament_clock_event: {
+        tournament_id: @other_tournament.id,
+        from_blind_level_id: @other_tournament.blind_levels.first.id,
+        to_blind_level_id: @other_tournament.blind_levels.last.id,
+        occurred_at: 1.year.from_now
+      }
+    }
+
+    assert_response :success
+    state.reload
+    assert_equal @tournament, state.tournament
+    assert_equal @tournament.blind_levels.first, state.current_blind_level
+    assert_equal 15.minutes.to_i, state.remaining_seconds
+    assert state.not_started?
+    assert_equal 0, TournamentClockEvent.count
+  end
+
+  private
+
+  def clock_state_path_for(club, tournament)
+    "/clubs/#{club.id}/tournaments/#{tournament.id}/clock/state"
+  end
 end

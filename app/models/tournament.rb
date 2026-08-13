@@ -9,6 +9,10 @@ class Tournament < ApplicationRecord
           class_name: "TournamentClockState",
           dependent: :destroy
 
+  has_many :clock_events,
+           class_name: "TournamentClockEvent",
+           dependent: :destroy
+
   has_many :charge_options,
            class_name: "TournamentChargeOption",
            dependent: :destroy

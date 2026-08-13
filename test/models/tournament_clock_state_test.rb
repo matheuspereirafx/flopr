@@ -95,6 +95,21 @@ class TournamentClockStateTest < ActiveSupport::TestCase
     assert_not_nil state.paused_at
   end
 
+  test "refreshing a running level without expiration does not persist a clock update" do
+    state = build_clock_state(
+      status: :running,
+      started_at: 2.minutes.ago,
+      remaining_seconds: 900
+    )
+    state.save!
+
+    assert_no_changes -> { TournamentClockState.find(state.id).attributes } do
+      state.refresh!(at: Time.current)
+    end
+
+    assert_in_delta 780, state.remaining_seconds, 2
+  end
+
   test "resuming preserves the paused time instead of restarting the level" do
     state = build_clock_state(status: :paused, remaining_seconds: 780, paused_at: Time.current)
     now = Time.zone.local(2026, 8, 12, 20, 0, 0)
@@ -122,6 +137,98 @@ class TournamentClockStateTest < ActiveSupport::TestCase
     assert_equal last_level, state.current_blind_level
     assert_not_nil state.overtime_started_at
     assert_operator state.overtime_seconds(at: 5.seconds.from_now), :>=, 5
+  end
+
+  test "automatically advances to the next level with its configured duration" do
+    second_level = @tournament.blind_levels.second
+    finished_at = Time.zone.local(2026, 8, 12, 20, 0, 0)
+    state = build_clock_state(
+      status: :running,
+      remaining_seconds: 1,
+      started_at: 1.second.before(finished_at)
+    )
+
+    assert_difference "TournamentClockEvent.count", 1 do
+      state.refresh!(at: finished_at)
+    end
+
+    assert state.running?
+    assert_equal second_level, state.current_blind_level
+    assert_equal second_level.duration_minutes * 60, state.remaining_seconds
+    assert_equal finished_at, state.started_at
+
+    event = TournamentClockEvent.last
+    assert_equal @first_level, event.from_blind_level
+    assert_equal second_level, event.to_blind_level
+    assert event.automatic_level_advanced?
+    assert_equal finished_at, event.occurred_at
+  end
+
+  test "automatically advances through every expired level and records each transition" do
+    levels = @tournament.blind_levels.to_a
+    started_at = Time.zone.local(2026, 8, 12, 20, 0, 0)
+    refreshed_at = started_at + 46.minutes
+    state = build_clock_state(
+      status: :running,
+      remaining_seconds: 15.minutes.to_i,
+      started_at: started_at
+    )
+
+    assert_difference "TournamentClockEvent.count", 3 do
+      state.refresh!(at: refreshed_at)
+    end
+
+    assert state.running?
+    assert_equal levels.fourth, state.current_blind_level
+    assert_equal 14.minutes.to_i, state.remaining_seconds
+    assert_equal refreshed_at, state.started_at
+
+    events = TournamentClockEvent.order(:occurred_at).last(3)
+    assert_equal [levels.first, levels.second, levels.third], events.map(&:from_blind_level)
+    assert_equal [levels.second, levels.third, levels.fourth], events.map(&:to_blind_level)
+    assert_equal [
+      started_at + 15.minutes,
+      started_at + 30.minutes,
+      started_at + 45.minutes
+    ], events.map(&:occurred_at)
+  end
+
+  test "does not advance or register an event while paused" do
+    paused_at = Time.zone.local(2026, 8, 12, 20, 0, 0)
+    state = build_clock_state(
+      status: :paused,
+      remaining_seconds: 1,
+      paused_at: paused_at
+    )
+    state.save!
+
+    assert_no_difference "TournamentClockEvent.count" do
+      state.refresh!(at: 1.hour.after(paused_at))
+    end
+
+    assert_equal @first_level, state.current_blind_level
+    assert_equal 1, state.remaining_seconds
+    assert state.paused?
+  end
+
+  test "enters overtime without recording an advance when the last level ends" do
+    last_level = @tournament.blind_levels.last
+    finished_at = Time.zone.local(2026, 8, 12, 20, 0, 0)
+    state = build_clock_state(
+      current_blind_level: last_level,
+      status: :running,
+      remaining_seconds: 1,
+      started_at: 1.second.before(finished_at)
+    )
+
+    assert_no_difference "TournamentClockEvent.count" do
+      state.refresh!(at: finished_at)
+    end
+
+    assert state.overtime?
+    assert_equal last_level, state.current_blind_level
+    assert_equal 0, state.remaining_seconds
+    assert_equal finished_at, state.overtime_started_at
   end
 
   private

@@ -8,25 +8,30 @@
     <p class="tournament-clock-header__duration" data-tournament-clock-target="duration">
       ◷ <%= current_blind_level.duration_minutes %> min de duração
     </p>
-    <% if (current_membership.owner? || current_membership.admin?) && clock_state.not_started? %>
-      <%= button_to start_club_tournament_clock_path(club, tournament),
-                    class: "tournament-clock-control tournament-clock-control--primary" do %>
-        <span aria-hidden="true">▶</span><span class="sr-only">Iniciar relógio</span>
+    <div class="tournament-clock-header__actions">
+      <% if (current_membership.owner? || current_membership.admin?) && clock_state.not_started? %>
+        <%= button_to start_club_tournament_clock_path(club, tournament),
+                      class: "tournament-clock-control tournament-clock-control--primary" do %>
+          <span aria-hidden="true">▶</span><span class="sr-only">Iniciar relógio</span>
+        <% end %>
+      <% elsif (current_membership.owner? || current_membership.admin? || current_membership.dealer?) && (clock_state.running? || clock_state.overtime?) %>
+        <div class="tournament-clock-header__action-arrow" aria-hidden="true">&gt;</div>
+        <%= form_with url: pause_club_tournament_clock_path(club, tournament),
+                      method: :patch,
+                      class: "tournament-clock-header__action-form" do %>
+          <button type="submit" class="tournament-clock-control">
+            <%= image_tag "icons/iconpause.svg", class: "tournament-clock-control__icon", alt: "" %>
+            <span class="sr-only">Pausar relógio</span>
+          </button>
+        <% end %>
+      <% elsif (current_membership.owner? || current_membership.admin?) && clock_state.paused? %>
+        <%= button_to resume_club_tournament_clock_path(club, tournament),
+                      method: :patch,
+                      class: "tournament-clock-control tournament-clock-control--primary" do %>
+          <span aria-hidden="true">▶</span><span class="sr-only">Retomar relógio</span>
+        <% end %>
       <% end %>
-    <% elsif (current_membership.owner? || current_membership.admin? || current_membership.dealer?) && (clock_state.running? || clock_state.overtime?) %>
-      <%= button_to pause_club_tournament_clock_path(club, tournament),
-                    method: :patch,
-                    class: "tournament-clock-control" do %>
-        <%= image_tag "icons/iconpause.svg", class: "tournament-clock-control__icon", alt: "" %>
-        <span class="sr-only">Pausar relógio</span>
-      <% end %>
-    <% elsif (current_membership.owner? || current_membership.admin?) && clock_state.paused? %>
-      <%= button_to resume_club_tournament_clock_path(club, tournament),
-                    method: :patch,
-                    class: "tournament-clock-control tournament-clock-control--primary" do %>
-        <span aria-hidden="true">▶</span><span class="sr-only">Retomar relógio</span>
-      <% end %>
-    <% end %>
+    </div>
   </div>
 
   <span class="tournament-clock-status tournament-clock-status--<%= clock_state.status %>"

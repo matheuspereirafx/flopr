@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  attr_accessor :terms
+
   has_many :club_memberships, dependent: :destroy
 
   has_many :clubs,
@@ -14,4 +16,6 @@ class User < ApplicationRecord
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
+
+  validates :terms, acceptance: true, on: :create
 end

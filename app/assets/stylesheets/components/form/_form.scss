@@ -25,9 +25,13 @@
 
   left:13px;
 
-  top:50%;
+  top:24px;
 
   transform:translateY(-50%);
+
+  display:block;
+
+  pointer-events:none;
 
   color:#7b7b89;
 
@@ -60,5 +64,4 @@
   border-color:#A996FF;
 
 }
-
 

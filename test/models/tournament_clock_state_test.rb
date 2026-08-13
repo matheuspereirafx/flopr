@@ -122,6 +122,18 @@ class TournamentClockStateTest < ActiveSupport::TestCase
     assert_nil state.paused_at
   end
 
+  test "calculates total elapsed time from completed and current blind levels" do
+    second_level = @tournament.blind_levels.second
+    state = build_clock_state(
+      current_blind_level: second_level,
+      status: :paused,
+      remaining_seconds: 12.minutes.to_i,
+      paused_at: Time.current
+    )
+
+    assert_equal 18.minutes.to_i, state.tournament_elapsed_seconds
+  end
+
   test "enters overtime at the last level and continues counting elapsed time" do
     last_level = @tournament.blind_levels.last
     state = build_clock_state(
@@ -229,6 +241,45 @@ class TournamentClockStateTest < ActiveSupport::TestCase
     assert_equal last_level, state.current_blind_level
     assert_equal 0, state.remaining_seconds
     assert_equal finished_at, state.overtime_started_at
+  end
+
+  test "manually advances a running clock and resets the next level duration" do
+    second_level = @tournament.blind_levels.second
+    advanced_at = Time.zone.local(2026, 8, 12, 20, 0, 0)
+    state = build_clock_state(
+      status: :running,
+      remaining_seconds: 300,
+      started_at: 10.minutes.before(advanced_at)
+    )
+    state.save!
+
+    assert_difference "TournamentClockEvent.count", 1 do
+      state.advance_manually!(at: advanced_at)
+    end
+
+    assert state.running?
+    assert_equal second_level, state.current_blind_level
+    assert_equal second_level.duration_minutes * 60, state.remaining_seconds
+    assert_equal advanced_at, state.started_at
+    assert TournamentClockEvent.last.manual_level_advanced?
+  end
+
+  test "does not manually advance a paused clock or the last level" do
+    state = build_clock_state(status: :paused, paused_at: Time.current)
+    state.save!
+
+    assert_no_difference "TournamentClockEvent.count" do
+      assert_raises(TournamentClockState::InvalidTransition) { state.advance_manually! }
+
+      state.update!(
+        current_blind_level: @tournament.blind_levels.last,
+        status: :running,
+        started_at: Time.current,
+        paused_at: nil
+      )
+
+      assert_raises(TournamentClockState::InvalidTransition) { state.advance_manually! }
+    end
   end
 
   private

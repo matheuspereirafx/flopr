@@ -4,7 +4,8 @@ class TournamentClockEvent < ApplicationRecord
   belongs_to :to_blind_level, class_name: "BlindLevel"
 
   enum :kind, {
-    automatic_level_advanced: "automatic_level_advanced"
+    automatic_level_advanced: "automatic_level_advanced",
+    manual_level_advanced: "manual_level_advanced"
   }, validate: true
 
   validates :occurred_at, presence: true

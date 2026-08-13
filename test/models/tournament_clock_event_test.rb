@@ -28,6 +28,18 @@ class TournamentClockEventTest < ActiveSupport::TestCase
     assert event.valid?
   end
 
+  test "accepts a manual level advance event" do
+    event = TournamentClockEvent.new(
+      tournament: @tournament,
+      from_blind_level: @from_level,
+      to_blind_level: @to_level,
+      kind: :manual_level_advanced,
+      occurred_at: Time.current
+    )
+
+    assert event.valid?
+  end
+
   test "requires an occurrence time" do
     event = TournamentClockEvent.new(
       tournament: @tournament,
@@ -45,7 +57,7 @@ class TournamentClockEventTest < ActiveSupport::TestCase
       tournament: @tournament,
       from_blind_level: @from_level,
       to_blind_level: @to_level,
-      kind: "manual_level_advanced",
+      kind: "unsupported_event",
       occurred_at: Time.current
     )
 

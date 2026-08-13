@@ -18,15 +18,12 @@
     <% if next_blind_level.present? %>
       <span class="tournament-clock-next-level__label" data-tournament-clock-target="nextLevelLabel">Próximo nível (<%= next_blind_level.level %>)</span>
       <strong data-tournament-clock-target="nextLevelValues"><%= number_with_delimiter(next_blind_level.small_blind, delimiter: ".") %> / <%= number_with_delimiter(next_blind_level.big_blind, delimiter: ".") %> / <%= number_with_delimiter(next_blind_level.ante, delimiter: ".") %></strong>
-      <span class="tournament-clock-next-level__duration" data-tournament-clock-target="nextLevelDuration"><%= next_blind_level.duration_minutes %> min</span>
+      <span class="tournament-clock-next-level__duration" data-tournament-clock-target="nextLevelDuration">Total: <%= format("%02d:%02d:%02d", tournament_elapsed_seconds / 3600, (tournament_elapsed_seconds / 60) % 60, tournament_elapsed_seconds % 60) %></span>
     <% else %>
       <span class="tournament-clock-next-level__label" data-tournament-clock-target="nextLevelLabel">Estrutura de blinds</span>
       <strong data-tournament-clock-target="nextLevelValues">Último nível configurado</strong>
-      <% total_tournament_seconds = tournament.blind_levels.sum(:duration_minutes) * 60 + clock_state.overtime_seconds %>
       <span class="tournament-clock-next-level__duration" data-tournament-clock-target="nextLevelDuration">
-        <% if clock_state.overtime? %>
-          Total: <%= format("%02d:%02d:%02d", total_tournament_seconds / 3600, (total_tournament_seconds / 60) % 60, total_tournament_seconds % 60) %>
-        <% end %>
+        Total: <%= format("%02d:%02d:%02d", tournament_elapsed_seconds / 3600, (tournament_elapsed_seconds / 60) % 60, tournament_elapsed_seconds % 60) %>
       </span>
     <% end %>
   </div>

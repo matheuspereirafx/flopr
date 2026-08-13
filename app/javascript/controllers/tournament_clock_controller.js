@@ -13,7 +13,7 @@ export default class extends Controller {
     overtime: Boolean,
     currentLevelId: Number,
     totalLevels: Number,
-    totalLevelSeconds: Number,
+    tournamentElapsedSeconds: Number,
     hasNextLevel: Boolean,
     soundStorageKey: String,
     stateUrl: String
@@ -45,7 +45,7 @@ export default class extends Controller {
     )
     this.playEndingAlert(seconds)
     this.requestTransitionWhenFinished(seconds)
-    this.renderTotalTournamentDuration(seconds)
+    this.renderTotalTournamentDuration()
   }
 
   displaySeconds() {
@@ -80,6 +80,7 @@ export default class extends Controller {
       : state.remaining_seconds
     this.runningValue = state.status === "running" || state.status === "overtime"
     this.overtimeValue = state.status === "overtime"
+    this.tournamentElapsedSecondsValue = state.tournament_elapsed_seconds
     this.startedAt = Date.now()
 
     if (state.current_level.id !== this.currentLevelIdValue) {
@@ -105,18 +106,18 @@ export default class extends Controller {
     if (nextLevel) {
       this.nextLevelLabelTarget.textContent = `Próximo nível (${nextLevel.level})`
       this.nextLevelValuesTarget.textContent = `${this.formatNumber(nextLevel.small_blind)} / ${this.formatNumber(nextLevel.big_blind)} / ${this.formatNumber(nextLevel.ante)}`
-      this.nextLevelDurationTarget.textContent = `${nextLevel.duration_minutes} min`
     } else {
       this.nextLevelLabelTarget.textContent = "Estrutura de blinds"
       this.nextLevelValuesTarget.textContent = "Último nível configurado"
-      this.nextLevelDurationTarget.textContent = ""
     }
   }
 
-  renderTotalTournamentDuration(overtimeSeconds) {
-    if (this.hasNextLevelValue || !this.overtimeValue) return
+  renderTotalTournamentDuration() {
+    const elapsedSeconds = this.runningValue
+      ? Math.floor((Date.now() - this.startedAt) / 1000)
+      : 0
+    const totalSeconds = this.tournamentElapsedSecondsValue + elapsedSeconds
 
-    const totalSeconds = this.totalLevelSecondsValue + overtimeSeconds
     this.nextLevelDurationTarget.textContent = `Total: ${this.formatDuration(totalSeconds)}`
   }
 

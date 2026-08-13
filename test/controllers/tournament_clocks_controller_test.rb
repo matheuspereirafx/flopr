@@ -140,6 +140,63 @@ class TournamentClocksControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "owner and admin can manually advance a running clock" do
+    [@owner, @admin].each do |user|
+      state = TournamentClockState.create_initial_for!(@tournament)
+      state.start!(at: Time.current)
+      sign_in user
+
+      assert_difference "TournamentClockEvent.count", 1 do
+        patch advance_club_tournament_clock_path(@club, @tournament)
+      end
+
+      assert_redirected_to club_tournament_clock_path(@club, @tournament)
+      assert_equal @tournament.blind_levels.second, state.reload.current_blind_level
+      assert_equal @tournament.blind_levels.second.duration_minutes * 60,
+                   state.remaining_seconds
+      assert TournamentClockEvent.last.manual_level_advanced?
+      sign_out user
+      state.destroy!
+    end
+  end
+
+  test "dealer player and outsider cannot manually advance the clock" do
+    [@dealer, @player, @outsider].each do |user|
+      state = TournamentClockState.create_initial_for!(@tournament)
+      state.start!(at: Time.current)
+      sign_in user
+
+      assert_no_changes -> { state.reload.attributes } do
+        assert_no_difference "TournamentClockEvent.count" do
+          patch advance_club_tournament_clock_path(@club, @tournament)
+        end
+      end
+
+      assert_response(user == @outsider ? :not_found : :forbidden)
+      sign_out user
+      state.destroy!
+    end
+  end
+
+  test "manual advance at the last level does not alter the clock or history" do
+    state = TournamentClockState.create_initial_for!(@tournament)
+    state.update!(
+      current_blind_level: @tournament.blind_levels.last,
+      status: :running,
+      started_at: Time.current
+    )
+    sign_in @owner
+
+    assert_no_changes -> { state.reload.attributes } do
+      assert_no_difference "TournamentClockEvent.count" do
+        patch advance_club_tournament_clock_path(@club, @tournament)
+      end
+    end
+
+    assert_redirected_to club_tournament_clock_path(@club, @tournament)
+    assert_equal "O relógio não pode avançar no estado atual.", flash[:alert]
+  end
+
   test "operation routes ignore tampered clock attributes" do
     state = TournamentClockState.create_initial_for!(@tournament)
     sign_in @owner
@@ -196,6 +253,7 @@ class TournamentClocksControllerTest < ActionDispatch::IntegrationTest
     assert_equal @tournament.blind_levels.fourth, state.current_blind_level
     assert_equal state.current_blind_level.id, response.parsed_body.fetch("current_blind_level_id")
     assert_equal state.remaining_seconds, response.parsed_body.fetch("remaining_seconds")
+    assert response.parsed_body.fetch("tournament_elapsed_seconds").positive?
     assert_equal 4, response.parsed_body.dig("current_level", "level")
     assert_equal 800, response.parsed_body.dig("current_level", "big_blind")
     assert_equal 5, response.parsed_body.dig("next_level", "level")

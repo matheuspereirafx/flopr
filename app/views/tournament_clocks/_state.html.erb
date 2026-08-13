@@ -5,6 +5,7 @@
      current_blind_level_id: current_blind_level.id,
      remaining_seconds: clock_state.remaining_seconds,
      overtime_elapsed_seconds: clock_state.overtime_seconds,
+     tournament_elapsed_seconds: clock_state.tournament_elapsed_seconds,
      current_level: current_blind_level.slice(:id, :level, :duration_minutes, :small_blind, :big_blind, :ante),
      next_level: next_blind_level&.slice(:id, :level, :duration_minutes, :small_blind, :big_blind, :ante)
    } %>

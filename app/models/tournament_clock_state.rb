@@ -85,11 +85,52 @@ class TournamentClockState < ApplicationRecord
     with_lock { refresh_running!(at: at, persist: true) }
   end
 
+  def advance_manually!(at: Time.current)
+    with_lock do
+      raise InvalidTransition unless running?
+
+      next_blind_level = tournament.blind_levels.find_by(
+        "level > ?",
+        current_blind_level.level
+      )
+      raise InvalidTransition if next_blind_level.blank?
+
+      TournamentClockEvent.create!(
+        tournament: tournament,
+        from_blind_level: current_blind_level,
+        to_blind_level: next_blind_level,
+        kind: :manual_level_advanced,
+        occurred_at: at
+      )
+
+      update!(
+        current_blind_level: next_blind_level,
+        remaining_seconds: next_blind_level.duration_minutes * 60,
+        started_at: at,
+        paused_at: nil,
+        overtime_started_at: nil,
+        overtime_elapsed_seconds: 0
+      )
+    end
+  end
+
   def overtime_seconds(at: Time.current)
     elapsed_seconds = overtime_elapsed_seconds
     return elapsed_seconds unless overtime?
 
     elapsed_seconds + (at - overtime_started_at).floor
+  end
+
+  def tournament_elapsed_seconds(at: Time.current)
+    completed_level_seconds = tournament.blind_levels
+                                      .where("level < ?", current_blind_level.level)
+                                      .sum(:duration_minutes) * 60
+
+    return completed_level_seconds if not_started?
+    return completed_level_seconds + overtime_seconds(at: at) if overtime?
+
+    current_level_elapsed_seconds = current_blind_level.duration_minutes * 60 - remaining_seconds
+    completed_level_seconds + current_level_elapsed_seconds
   end
 
   private

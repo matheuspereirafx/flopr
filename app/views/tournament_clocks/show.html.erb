@@ -10,7 +10,7 @@
            data-tournament-clock-overtime-value="<%= @clock_in_overtime %>"
            data-tournament-clock-current-level-id-value="<%= @current_blind_level.id %>"
            data-tournament-clock-total-levels-value="<%= @tournament.blind_levels.size %>"
-           data-tournament-clock-total-level-seconds-value="<%= @tournament.blind_levels.sum(:duration_minutes) * 60 %>"
+           data-tournament-clock-tournament-elapsed-seconds-value="<%= @clock_state.tournament_elapsed_seconds %>"
            data-tournament-clock-has-next-level-value="<%= @next_blind_level.present? %>"
            data-tournament-clock-sound-storage-key-value="tournament-clock-sound-<%= @tournament.id %>"
            data-tournament-clock-state-url-value="<%= state_club_tournament_clock_path(@club, @tournament) %>">
@@ -54,7 +54,8 @@
                current_blind_level: @current_blind_level,
                next_blind_level: @next_blind_level,
                tournament: @tournament,
-               clock_state: @clock_state %>
+               clock_state: @clock_state,
+               tournament_elapsed_seconds: @clock_state.tournament_elapsed_seconds %>
 
     <%= render "tournament_clocks/summary",
                available_charge_options: @available_charge_options %>

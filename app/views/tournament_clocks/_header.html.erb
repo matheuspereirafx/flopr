@@ -8,14 +8,25 @@
     <p class="tournament-clock-header__duration" data-tournament-clock-target="duration">
       ◷ Blinds <%= current_blind_level.duration_minutes %> minutos
     </p>
-    <div class="tournament-clock-header__actions <%= "tournament-clock-header__actions--single" if clock_state.not_started? || clock_state.paused? %>">
+    <% can_advance_clock = current_membership.owner? || current_membership.admin? %>
+    <div class="tournament-clock-header__actions <%= "tournament-clock-header__actions--single" if clock_state.not_started? || clock_state.paused? || !can_advance_clock %>">
       <% if (current_membership.owner? || current_membership.admin?) && clock_state.not_started? %>
         <%= button_to start_club_tournament_clock_path(club, tournament),
                       class: "tournament-clock-control tournament-clock-control--primary" do %>
           <span aria-hidden="true">▶</span><span class="sr-only">Iniciar relógio</span>
         <% end %>
       <% elsif (current_membership.owner? || current_membership.admin? || current_membership.dealer?) && (clock_state.running? || clock_state.overtime?) %>
-        <div class="tournament-clock-header__action-arrow" aria-hidden="true">&gt;</div>
+        <% if can_advance_clock %>
+          <%= form_with url: advance_club_tournament_clock_path(club, tournament),
+                        method: :patch,
+                        class: "tournament-clock-header__action-form" do %>
+            <button type="submit"
+                    class="tournament-clock-header__action-arrow"
+                    aria-label="Avançar nível">
+              &gt;
+            </button>
+          <% end %>
+        <% end %>
         <%= form_with url: pause_club_tournament_clock_path(club, tournament),
                       method: :patch,
                       class: "tournament-clock-header__action-form" do %>

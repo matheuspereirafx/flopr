@@ -18,6 +18,7 @@ Rails.application.routes.draw do
         post :start
         patch :pause
         patch :resume
+        patch :advance
         get :state
       end
 

@@ -12,6 +12,10 @@ Rails.application.routes.draw do
   get "/access", to: "onboarding#access", as: :access
   resources :clubs do
     resources :tournaments, only: %i[index show new create edit update destroy] do
+      resource :invite_link,
+               only: :show,
+               controller: "tournament_invite_links"
+
       resource :clock,
                only: :show,
                controller: "tournament_clocks" do
@@ -26,6 +30,10 @@ Rails.application.routes.draw do
       resources :blind_levels, only: %i[new create]
     end
   end
+
+  patch "tournament-invitations/:token/confirm",
+        to: "tournament_invitation_links#confirm",
+        as: :confirm_tournament_invitation
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest

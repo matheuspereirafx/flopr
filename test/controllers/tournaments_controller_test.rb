@@ -54,6 +54,28 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "only owner and admin see the button that copies the invite link" do
+    tournament = create_tournament(@club)
+
+    [@owner, @admin].each do |user|
+      sign_in user
+      get club_tournament_path(@club, tournament)
+
+      assert_select "button[data-controller='copy-invite-link'][data-copy-invite-link-url-value=?]",
+                    club_tournament_url(@club, tournament, invite_token: tournament.invite_token)
+      assert_select "button[data-copied-message='Link copiado']", count: 1
+      sign_out user
+    end
+
+    [@dealer, @player].each do |user|
+      sign_in user
+      get club_tournament_path(@club, tournament)
+
+      assert_select "button[data-controller='copy-invite-link']", count: 0
+      sign_out user
+    end
+  end
+
   test "a member cannot view a tournament from another club by changing its id" do
     tournament = create_tournament(@other_club)
     sign_in @owner

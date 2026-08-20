@@ -6,9 +6,18 @@
 <main class="tournament-overview-page" aria-labelledby="tournament-title">
   <header class="tournament-overview-page__header overview-header">
     <%= link_to "← Voltar ao clube", club_path(@club), class: "overview-header__back" %>
-    <span class="overview-header__invite" aria-label="Convites estarão disponíveis em breve" title="Convites estarão disponíveis em breve">
-      <%= image_tag "icons/iconshare.svg", alt: "compartilhar" %>
-    </span>
+    <% if @current_membership&.owner? || @current_membership&.admin? %>
+      <button class="overview-header__invite"
+              type="button"
+              aria-label="Copiar link de convite"
+              title="Copiar link de convite"
+              data-controller="copy-invite-link"
+              data-copy-invite-link-url-value="<%= @invite_url %>"
+              data-copied-message="Link copiado"
+              data-action="click->copy-invite-link#copy">
+        <%= image_tag "icons/iconshare.svg", alt: "" %>
+      </button>
+    <% end %>
 
     <div class="overview-header__content">
       <div class="overview-header__information">
@@ -36,3 +45,15 @@
   </section>
 </main>
 </div>
+
+<% if @invite_token_access && !@invite_registration&.confirmed? %>
+  <div class="tournament-invitation-overlay" role="dialog" aria-modal="true" aria-labelledby="tournament-invitation-title">
+    <section class="tournament-invitation-overlay__card">
+      <h2 id="tournament-invitation-title">Convite para torneio</h2>
+      <%= button_to "Confirmar presença",
+                    confirm_tournament_invitation_path(@tournament.invite_token),
+                    method: :patch,
+                    class: "tournament-invitation-overlay__button" %>
+    </section>
+  </div>
+<% end %>

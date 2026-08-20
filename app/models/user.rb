@@ -1,5 +1,8 @@
 class User < ApplicationRecord
+  attribute :terms, :boolean, default: false
+
   has_many :club_memberships, dependent: :destroy
+  has_many :tournament_registrations, dependent: :destroy
 
   has_many :clubs,
            through: :club_memberships

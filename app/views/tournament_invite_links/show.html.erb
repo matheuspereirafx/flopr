@@ -1,0 +1,23 @@
+<main class="tournament-invitation-page" aria-labelledby="invite-link-title">
+  <%= link_to "← Voltar ao torneio", club_tournament_path(@club, @tournament), class: "tournament-invitation-page__back" %>
+
+  <section class="tournament-invitation-card">
+    <p class="tournament-invitation-card__eyebrow">Convite do torneio</p>
+    <h1 id="invite-link-title">Compartilhe o convite</h1>
+    <p>Qualquer usuário pode se candidatar por este link. A vaga é garantida somente após a confirmação de presença.</p>
+
+    <label class="tournament-invitation-card__label" for="invite-link-url">Link exclusivo</label>
+    <input id="invite-link-url" class="tournament-invitation-card__input" type="url" value="<%= @invite_url %>" readonly>
+
+    <dl class="tournament-invitation-card__capacity">
+      <div>
+        <dt>Presenças confirmadas</dt>
+        <dd><%= @tournament.confirmed_registrations_count %> / <%= @tournament.max_players %></dd>
+      </div>
+      <div>
+        <dt>Status do link</dt>
+        <dd><%= @tournament.invite_link_valid? ? "Disponível" : "Indisponível" %></dd>
+      </div>
+    </dl>
+  </section>
+</main>

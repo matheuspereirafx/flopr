@@ -1,0 +1,11 @@
+<section class="overview-participation" aria-labelledby="overview-participation-title">
+  <h2 id="overview-participation-title" class="sr-only">Participação no torneio</h2>
+  <div class="overview-participation__grid">
+    <% ["Convidados", "Confirmados", "Pendentes", "Declinados"].each do |status| %>
+      <article class="overview-participation__item">
+        <strong aria-label="Dados de <%= status.downcase %> indisponíveis">—</strong>
+        <p><%= status %></p>
+      </article>
+    <% end %>
+  </div>
+</section>

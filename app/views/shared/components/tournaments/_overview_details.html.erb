@@ -1,0 +1,31 @@
+<% charge_options = tournament.charge_options.index_by(&:kind) %>
+<% level_duration = tournament.blind_levels.first&.duration_minutes %>
+
+<section class="overview-details" aria-labelledby="overview-details-title">
+  <h2 id="overview-details-title">Detalhes do torneio</h2>
+
+  <dl class="overview-details__list">
+    <% { "Buy-in" => charge_options["buy_in"], "Rebuy" => charge_options["rebuy"], "Add-on" => charge_options["addon"], "Taxa extra" => charge_options["fee"] }.each do |label, option| %>
+      <div class="overview-details__item">
+        <dt><%= label %></dt>
+        <dd><%= option&.active? ? number_to_currency(option.amount) : "Não configurado" %></dd>
+      </div>
+    <% end %>
+
+    <div class="overview-details__item">
+      <dt>Níveis</dt>
+      <dd>
+        <% if level_duration.present? %>
+          <%= tournament.blind_levels.size %>
+        <% else %>
+          Estrutura não configurada
+        <% end %>
+      </dd>
+    </div>
+
+    <div class="overview-details__item">
+      <dt>Duração</dt>
+      <dd><%= level_duration.present? ? "#{level_duration} min" : "Não configurada" %></dd>
+    </div>
+  </dl>
+</section>

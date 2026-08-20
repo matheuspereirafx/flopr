@@ -180,7 +180,7 @@
   min-height: 121px;
   padding: 0;
 
-  &__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); min-height: 121px; gap: 0; overflow: hidden; border: 1px solid rgba(255, 255, 255, .08); border-radius: 10px; background: #151516; }
+  &__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); min-height: 121px; gap: 0; overflow: hidden; border: 1px solid rgba(255, 255, 255, .08); border-radius: 10px; background: #151516; }
   &__item { display: grid; min-height: 121px; align-content: center; padding: 14px; text-align: center; }
   &__item strong { display: block; color: #988fd7; font: 700 26px/1 $font-primary; }
   &__item p { margin: 7px 0 0; color: #c9c4d3; font-size: 9px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }

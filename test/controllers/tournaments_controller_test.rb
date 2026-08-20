@@ -54,6 +54,19 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "overview participation displays registration statuses and available slots" do
+    tournament = create_tournament(@club, max_players: 3)
+    TournamentRegistration.create!(tournament: tournament, user: @dealer, status: :confirmed)
+    TournamentRegistration.create!(tournament: tournament, user: @player, status: :pending)
+    sign_in @owner
+
+    get club_tournament_path(@club, tournament)
+
+    assert_select "[data-participation-status='confirmed'] strong", "1"
+    assert_select "[data-participation-status='pending'] strong", "1"
+    assert_select "[data-participation-status='available-slots'] strong", "2"
+  end
+
   test "only owner and admin see the button that copies the invite link" do
     tournament = create_tournament(@club)
 

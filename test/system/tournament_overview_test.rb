@@ -21,10 +21,9 @@ class TournamentOverviewTest < ApplicationSystemTestCase
     assert_text "Detalhes"
     assert_text "Buy-in"
     assert_text "Premiação disponível após a finalização do torneio."
-    assert_text "Convidados"
     assert_text "Confirmados"
     assert_text "Pendentes"
-    assert_text "Declinados"
+    assert_text "Vagas disponíveis"
     assert_no_text "Abrir relógio"
   end
 

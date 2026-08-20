@@ -35,6 +35,13 @@ class TournamentsController < ApplicationController
       @tournament,
       invite_token: @tournament.invite_token
     )
+    registration_counts = @tournament.tournament_registrations.group(:status).count
+    @confirmed_registrations_count = registration_counts.fetch("confirmed", 0)
+    @pending_registrations_count = registration_counts.fetch("pending", 0)
+    @available_slots_count = [
+      @tournament.max_players - @confirmed_registrations_count,
+      0
+    ].max
   end
 
   def create

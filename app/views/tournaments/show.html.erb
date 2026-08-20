@@ -37,7 +37,10 @@
     </div>
   </header>
 
-  <%= render "shared/components/tournaments/overview_participation" %>
+  <%= render "shared/components/tournaments/overview_participation",
+             confirmed_registrations_count: @confirmed_registrations_count,
+             pending_registrations_count: @pending_registrations_count,
+             available_slots_count: @available_slots_count %>
 
   <section class="tournament-overview-page__main" aria-label="Resumo do torneio">
     <%= render "shared/components/tournaments/overview_prize_pool" %>

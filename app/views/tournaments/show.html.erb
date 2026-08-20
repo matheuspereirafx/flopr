@@ -6,10 +6,16 @@
 <main class="tournament-overview-page" aria-labelledby="tournament-title">
   <header class="tournament-overview-page__header overview-header">
     <%= link_to "← Voltar ao clube", club_path(@club), class: "overview-header__back" %>
+    <span class="overview-header__invite" aria-label="Convites estarão disponíveis em breve" title="Convites estarão disponíveis em breve">
+      <%= image_tag "icons/iconshare.svg", alt: "compartilhar" %>
+    </span>
 
     <div class="overview-header__content">
       <div class="overview-header__information">
-        <p class="overview-header__address"><%= @tournament.location %></p>
+        <p class="overview-header__address">
+          <%= image_tag "icons/Iconlocation.svg", alt: "" %>
+          <span><%= @tournament.location %></span>
+        </p>
         <h1 id="tournament-title"><%= @tournament.name %></h1>
         <div class="overview-header__meta">
           <span class="overview-header__status"><%= @tournament.status.humanize %></span>
@@ -17,9 +23,6 @@
             <%= image_tag "icons/Icondate.svg", alt: "" %>
             <%= l(@tournament.starts_at, format: :short) %>
           </time>
-          <span class="overview-header__invite" aria-label="Convites estarão disponíveis em breve" title="Convites estarão disponíveis em breve">
-            <%= image_tag "icons/iconshare.svg", alt: "compartilhar" %>
-          </span>
         </div>
       </div>
     </div>

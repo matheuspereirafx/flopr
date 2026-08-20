@@ -6,6 +6,10 @@ class TournamentsController < ApplicationController
 
   def index
     @tournaments = @club.tournaments.order(starts_at: :asc)
+    @confirmed_registrations_by_tournament = TournamentRegistration.confirmed
+                                                               .where(tournament_id: @tournaments.select(:id))
+                                                               .group(:tournament_id)
+                                                               .count
   end
   def new
     @tournament = @club.tournaments.build

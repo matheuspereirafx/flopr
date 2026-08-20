@@ -52,6 +52,7 @@
           <% buy_in = tournament.charge_options.find do |option|
                option.buy_in? && option.active?
              end %>
+          <% confirmed_registrations_count = confirmed_registrations_by_tournament.fetch(tournament.id, 0) %>
 
           <article class="tournament-card">
             <%= link_to club_tournament_path(tournament.club, tournament),
@@ -117,7 +118,7 @@
 
                   <div class="tournament-card__players-value">
                     <strong>
-                      0
+                      <%= confirmed_registrations_count %>
                     </strong>
 
                     <span>

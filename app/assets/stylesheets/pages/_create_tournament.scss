@@ -318,6 +318,13 @@ table {
   }
 }
 
+@media (min-width: 1281px) and (max-width: 1510px) {
+  .page {
+    box-sizing: border-box;
+    padding-inline: 48px;
+  }
+}
+
 
 // -----------------------------------------------------------------------------
 // 5. COMPONENTES

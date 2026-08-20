@@ -33,6 +33,17 @@ class TournamentChargeOptionsControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='financial_configuration[charge_options][buy_in][amount]']", count: 1
   end
 
+  test "editing financial configuration uses patch and saves changes" do
+    sign_in @owner
+
+    get edit_club_tournament_charge_options_path(@club, @tournament)
+
+    assert_response :success
+    assert_select "form[method='post'][action=?]",
+                  club_tournament_charge_options_path(@club, @tournament)
+    assert_select "button[type='submit'][title='Salvar alterações'][aria-label='Salvar alterações']"
+  end
+
   test "owner publishes tournament with buy in and no recharge period" do
     sign_in @owner
 

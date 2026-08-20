@@ -67,8 +67,8 @@ class TournamentsController < ApplicationController
     @tournament.status = :draft
 
     if @tournament.update(tournament_params)
-      redirect_to club_tournament_path(@club, @tournament),
-                  notice: "Torneio atualizado com sucesso."
+      redirect_to edit_club_tournament_charge_options_path(@club, @tournament),
+                  notice: "Dados do torneio salvos. Configure as opções financeiras."
     else
       render :edit, status: :unprocessable_entity
     end

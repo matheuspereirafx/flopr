@@ -240,7 +240,7 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
             end + blind_levels_attributes(1, start_level: 6)
           )
 
-    assert_redirected_to club_tournament_path(@club, tournament)
+    assert_redirected_to edit_club_tournament_charge_options_path(@club, tournament)
     assert_equal "draft", tournament.reload.status
     assert_equal 6, tournament.reload.blind_levels.count
     assert_equal original_level.small_blind, tournament.blind_levels.first.small_blind
@@ -259,6 +259,7 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_select "img[src*='Icondate']", count: 1
     assert_select "img[src*='Iconlocation']", count: 1
     assert_select "img[src*='Iconplayer']", count: 1
+    assert_select "button[type='submit'][title='Avançar'][aria-label='Avançar']"
     assert_select "a.tournament-form__cancel[href=?]",
                   club_tournament_path(@club, tournament)
   end
@@ -282,7 +283,7 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
             end
           )
 
-    assert_redirected_to club_tournament_path(@club, tournament)
+    assert_redirected_to edit_club_tournament_charge_options_path(@club, tournament)
     assert_equal [1, 2, 3, 4, 5], tournament.reload.blind_levels.pluck(:level)
   end
 

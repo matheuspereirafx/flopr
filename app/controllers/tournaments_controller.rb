@@ -71,8 +71,6 @@ class TournamentsController < ApplicationController
     render plain: "Not found", status: :not_found
   end
 
-    render plain: "Forbidden", status: :forbidden
-
   def set_tournament
     @tournament = @club.tournaments.find(params[:id])
   rescue ActiveRecord::RecordNotFound

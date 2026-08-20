@@ -1,0 +1,56 @@
+<% items = tournament_navigation_items(
+     club: club,
+     tournament: tournament,
+     membership: current_membership,
+     registration: current_registration,
+     active_page: active_page
+   ) %>
+
+<aside class="tournament-navigation"
+       aria-label="Navegação do torneio"
+       data-controller="tournament-navigation"
+       data-action="mouseenter->tournament-navigation#expand mouseleave->tournament-navigation#collapse">
+  <div class="tournament-navigation__brand" aria-label="Flopr">
+    <span class="tournament-navigation__brand-name">FLOPR<span>.</span></span>
+  </div>
+
+  <div class="tournament-navigation__context">
+    <span class="tournament-navigation__context-label">Torneio</span>
+    <strong class="tournament-navigation__tournament-name" title="<%= tournament.name %>">
+      <%= tournament.name %>
+    </strong>
+  </div>
+
+  <nav id="tournament-navigation-menu"
+       class="tournament-navigation__menu"
+       data-tournament-navigation-target="menu">
+    <ul class="tournament-navigation__list">
+      <% items.each do |item| %>
+        <li class="tournament-navigation__list-item">
+          <% if item[:disabled] %>
+            <span class="tournament-navigation__item tournament-navigation__item--disabled"
+                  aria-disabled="true"
+                  title="Área ainda não disponível">
+              <%= image_tag item[:icon], class: "tournament-navigation__icon", alt: "" if item[:icon] %>
+              <span><%= item[:label] %></span>
+            </span>
+          <% else %>
+            <% link_attributes = {
+                 class: class_names(
+                   "tournament-navigation__item",
+                   "tournament-navigation__item--active" => item[:active]
+                 )
+               } %>
+            <% link_attributes[:aria] = { current: "page" } if item[:active] %>
+            <%= link_to safe_join([
+                          (item[:icon] ? image_tag(item[:icon], class: "tournament-navigation__icon", alt: "") : content_tag(:span, "⚙", class: "tournament-navigation__icon tournament-navigation__icon--settings", aria: { hidden: true })),
+                          content_tag(:span, item[:label])
+                        ]),
+                        item[:path],
+                        link_attributes %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </nav>
+</aside>

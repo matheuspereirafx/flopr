@@ -39,7 +39,7 @@ class TournamentChargeOptionsControllerTest < ActionDispatch::IntegrationTest
     post club_tournament_charge_options_path(@club, @tournament),
          params: financial_configuration_payload(nil, optional_options: false)
 
-    assert_redirected_to club_path(@club)
+    assert_redirected_to club_tournament_path(@club, @tournament)
     assert_equal "posted", @tournament.reload.status
     assert @tournament.charge_options.find_by!(kind: :buy_in).active?
     assert_not @tournament.charge_options.find_by!(kind: :rebuy).active?
@@ -65,7 +65,7 @@ class TournamentChargeOptionsControllerTest < ActionDispatch::IntegrationTest
     post club_tournament_charge_options_path(@club, @tournament),
          params: financial_configuration_payload(period_end.id)
 
-    assert_redirected_to club_path(@club)
+    assert_redirected_to club_tournament_path(@club, @tournament)
     assert_equal "posted", @tournament.reload.status
 
     buy_in = @tournament.charge_options.find_by!(kind: :buy_in)
@@ -94,10 +94,10 @@ class TournamentChargeOptionsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "não pode ficar em branco"
   end
 
-  test "admin and outsider cannot access the financial configuration" do
+  test "admin can access financial configuration and outsider cannot" do
     sign_in @admin
     get new_club_tournament_charge_options_path(@club, @tournament)
-    assert_response :forbidden
+    assert_response :success
 
     sign_out @admin
     sign_in @outsider

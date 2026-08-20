@@ -1,5 +1,13 @@
-<main class="tournament-clock-page" aria-labelledby="clock-page-title">
-  <div class="tournament-clock-page__background" aria-hidden="true"></div>
+<div class="tournament-clock-shell">
+  <%= render "shared/components/tournaments/navigation",
+             club: @club,
+             tournament: @tournament,
+             current_membership: @current_membership,
+             current_registration: @current_registration,
+             active_page: :clock %>
+
+  <main class="tournament-clock-page" aria-labelledby="clock-page-title">
+    <div class="tournament-clock-page__background" aria-hidden="true"></div>
 
   <section class="tournament-clock-page__content"
            data-controller="tournament-clock"
@@ -30,5 +38,6 @@
 
     <%= render "tournament_clocks/summary",
                available_charge_options: @available_charge_options %>
-  </section>
-</main>
+    </section>
+  </main>
+</div>

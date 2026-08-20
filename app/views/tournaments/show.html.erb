@@ -1,7 +1,10 @@
 <div class="tournament-show-shell">
-  <aside class="tournament-show-shell__sidebar" aria-label="Área de navegação do torneio">
-    <%= image_tag "icons/flopr.png", class: "tournament-show-shell__logo", alt: "Flopr" %>
-  </aside>
+  <%= render "shared/components/tournaments/navigation",
+             club: @club,
+             tournament: @tournament,
+             current_membership: @current_membership,
+             current_registration: @invite_registration,
+             active_page: :overview %>
 
 <main class="tournament-overview-page" aria-labelledby="tournament-title">
   <header class="tournament-overview-page__header overview-header">

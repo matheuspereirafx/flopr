@@ -352,7 +352,10 @@
         </div>
 
         <div class="tournament-form__actions">
-          <%= link_to club_path(club),
+          <% cancel_path = tournament.persisted? ?
+                             club_tournament_path(club, tournament) :
+                             club_path(club) %>
+          <%= link_to cancel_path,
                       class: "button button--ghost tournament-form__cancel",
                       aria: { label: "Cancelar" },
                       title: "Cancelar" do %>

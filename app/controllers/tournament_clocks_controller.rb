@@ -9,6 +9,9 @@ class TournamentClocksController < ApplicationController
   before_action :authorize_clock_resume!, only: :resume
 
   def show
+    @current_registration = current_user.tournament_registrations.find_by(
+      tournament: @tournament
+    )
     @clock_state.refresh!
     @current_blind_level = @clock_state.current_blind_level
     @next_blind_level = @tournament.blind_levels.find_by(

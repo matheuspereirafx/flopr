@@ -1,13 +1,30 @@
+.tournament-show-shell {
+  display: grid;
+  grid-template-columns: 256px minmax(0, 1fr);
+  column-gap: 48px;
+  min-height: 100vh;
+  background: #08090a;
+
+  &__sidebar {
+    min-height: 1095px;
+    padding: 32px 24px;
+    border-right: 1px solid rgba(255, 255, 255, .08);
+    background: #111214;
+  }
+
+  &__logo { width: 94px; height: auto; }
+}
+
 .tournament-overview-page {
   min-height: 100vh;
-  padding: 0 48px;
+  padding: 0 48px 72px 0;
   color: #f0eff4;
   background: #08090a;
   font-family: $font-secondary;
 
   &__header,
   &__main,
-  > .overview-participation { width: 100%; max-width: 928px; margin: 0 auto; }
+  > .overview-participation { width: 100%; max-width: none; margin: 0; }
 
   &__main { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(260px, 1fr); gap: 28px; margin-top: 48px; }
 }
@@ -94,8 +111,17 @@
   &__item p { margin: 7px 0 0; color: #c9c4d3; font-size: 9px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
 }
 
+@media (max-width: 900px) {
+  .tournament-show-shell { display: block; }
+  .tournament-show-shell__sidebar { display: none; }
+  .tournament-overview-page { padding: 24px 16px 40px; }
+  .tournament-overview-page__header,
+  .tournament-overview-page__main,
+  .tournament-overview-page > .overview-participation { margin: 0 auto; }
+}
+
 @media (max-width: 600px) {
-  .tournament-overview-page { padding: 24px 16px 40px; &__main { grid-template-columns: 1fr; margin-top: 28px; } }
+  .tournament-overview-page { &__main { grid-template-columns: 1fr; margin-top: 28px; } }
   .overview-header__back { margin-bottom: 24px; }
   .overview-details, .overview-prize-pool { min-height: auto; }
   .overview-prize-pool { height: auto; overflow-y: visible; }

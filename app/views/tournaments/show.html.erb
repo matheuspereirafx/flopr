@@ -1,3 +1,8 @@
+<div class="tournament-show-shell">
+  <aside class="tournament-show-shell__sidebar" aria-label="Área de navegação do torneio">
+    <%= image_tag "icons/flopr.png", class: "tournament-show-shell__logo", alt: "Flopr" %>
+  </aside>
+
 <main class="tournament-overview-page" aria-labelledby="tournament-title">
   <header class="tournament-overview-page__header overview-header">
     <%= link_to "← Voltar ao clube", club_path(@club), class: "overview-header__back" %>
@@ -25,3 +30,4 @@
     <%= render "shared/components/tournaments/overview_details", tournament: @tournament %>
   </section>
 </main>
+</div>

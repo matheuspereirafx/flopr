@@ -49,7 +49,7 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
 
       assert_response :success
       assert_select "h1", tournament.name
-      assert_select "a[href='#{club_tournament_clock_path(@club, tournament)}']", "Abrir relógio"
+      assert_select ".overview-prize-pool__hint", "Premiação disponível após a finalização do torneio."
       sign_out user
     end
   end

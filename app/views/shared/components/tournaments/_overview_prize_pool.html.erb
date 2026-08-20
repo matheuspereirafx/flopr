@@ -1,0 +1,24 @@
+<section class="overview-prize-pool" aria-labelledby="overview-prize-pool-title">
+  <h2 id="overview-prize-pool-title">Resultados do torneio</h2>
+
+  <div class="overview-prize-pool__winner" aria-label="Campeão ainda não definido">
+    <span class="overview-prize-pool__trophy" aria-hidden="true">♛</span>
+    <div class="overview-prize-pool__winner-player">
+      <span>Campeão</span>
+      <strong>Jogador não definido</strong>
+    </div>
+    <strong class="overview-prize-pool__winner-value">—</strong>
+  </div>
+
+  <div class="overview-prize-pool__placements" aria-label="Próximas colocações">
+    <% ["2º", "3º"].each do |position| %>
+      <article class="overview-prize-pool__placement">
+        <strong class="overview-prize-pool__position"><%= position %></strong>
+        <span>Jogador não definido</span>
+        <strong>—</strong>
+      </article>
+    <% end %>
+  </div>
+
+  <p class="overview-prize-pool__hint">Premiação disponível após a finalização do torneio.</p>
+</section>

@@ -1,31 +1,27 @@
-<main class="tournament-show-page" aria-labelledby="tournament-title">
-  <header class="tournament-show-page__header">
-    <%= link_to "← Voltar ao clube", club_path(@club), class: "tournament-show-page__back" %>
-    <span class="tournament-show-page__status"><%= @tournament.status.humanize %></span>
+<main class="tournament-overview-page" aria-labelledby="tournament-title">
+  <header class="tournament-overview-page__header overview-header">
+    <%= link_to "← Voltar ao clube", club_path(@club), class: "overview-header__back" %>
+
+    <div class="overview-header__content">
+      <div class="overview-header__information">
+        <p class="overview-header__address"><%= @tournament.location %></p>
+        <h1 id="tournament-title"><%= @tournament.name %></h1>
+        <div class="overview-header__meta">
+          <span class="overview-header__status"><%= @tournament.status.humanize %></span>
+          <time datetime="<%= @tournament.starts_at.iso8601 %>"><%= l(@tournament.starts_at, format: :short) %></time>
+        </div>
+      </div>
+
+      <span class="overview-header__invite" aria-label="Convites estarão disponíveis em breve" title="Convites estarão disponíveis em breve">
+        <span aria-hidden="true">✉</span>
+      </span>
+    </div>
   </header>
 
-  <section class="tournament-show-page__hero">
-    <p class="tournament-show-page__club"><%= @club.name %></p>
-    <h1 id="tournament-title"><%= @tournament.name %></h1>
-    <p><%= @tournament.location %> <span aria-hidden="true">·</span> <%= l(@tournament.starts_at, format: :short) %></p>
-  </section>
+  <%= render "shared/components/tournaments/overview_participation" %>
 
-  <section class="tournament-show-page__details" aria-label="Informações do torneio">
-    <article>
-      <span>Buy-in</span>
-      <strong><%= @buy_in ? number_to_currency(@buy_in.amount) : "A definir" %></strong>
-    </article>
-    <article>
-      <span>Capacidade</span>
-      <strong><%= @tournament.max_players %> jogadores</strong>
-    </article>
-    <article>
-      <span>Estrutura</span>
-      <strong><%= @tournament.blind_levels.count %> níveis</strong>
-    </article>
-  </section>
-
-  <section class="tournament-show-page__actions" aria-label="Áreas do torneio">
-    <%= link_to "Abrir relógio", club_tournament_clock_path(@club, @tournament), class: "tournament-show-page__clock-link" %>
+  <section class="tournament-overview-page__main" aria-label="Resumo do torneio">
+    <%= render "shared/components/tournaments/overview_prize_pool" %>
+    <%= render "shared/components/tournaments/overview_details", tournament: @tournament %>
   </section>
 </main>

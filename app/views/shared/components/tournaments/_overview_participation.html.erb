@@ -1,11 +1,19 @@
 <section class="overview-participation" aria-labelledby="overview-participation-title">
   <h2 id="overview-participation-title" class="sr-only">Participação no torneio</h2>
   <div class="overview-participation__grid">
-    <% ["Convidados", "Confirmados", "Pendentes", "Declinados"].each do |status| %>
-      <article class="overview-participation__item">
-        <strong aria-label="Dados de <%= status.downcase %> indisponíveis">—</strong>
-        <p><%= status %></p>
-      </article>
-    <% end %>
+    <article class="overview-participation__item" data-participation-status="confirmed">
+      <strong><%= confirmed_registrations_count %></strong>
+      <p>Confirmados</p>
+    </article>
+
+    <article class="overview-participation__item" data-participation-status="pending">
+      <strong><%= pending_registrations_count %></strong>
+      <p>Pendentes</p>
+    </article>
+
+    <article class="overview-participation__item" data-participation-status="available-slots">
+      <strong><%= available_slots_count %></strong>
+      <p>Vagas disponíveis</p>
+    </article>
   </div>
 </section>

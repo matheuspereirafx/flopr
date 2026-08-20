@@ -6,6 +6,10 @@ class TournamentsController < ApplicationController
 
   def index
     @tournaments = @club.tournaments.order(starts_at: :asc)
+    @confirmed_registrations_by_tournament = TournamentRegistration.confirmed
+                                                               .where(tournament_id: @tournaments.select(:id))
+                                                               .group(:tournament_id)
+                                                               .count
   end
   def new
     @tournament = @club.tournaments.build
@@ -26,6 +30,22 @@ class TournamentsController < ApplicationController
     @buy_in = @tournament.charge_options.find do |option|
       option.buy_in? && option.active?
     end
+    @invite_token_access = invitation_show_request?
+    @invite_registration = current_user.tournament_registrations.find_by(
+      tournament: @tournament
+    )
+    @invite_url = club_tournament_url(
+      @club,
+      @tournament,
+      invite_token: @tournament.invite_token
+    )
+    registration_counts = @tournament.tournament_registrations.group(:status).count
+    @confirmed_registrations_count = registration_counts.fetch("confirmed", 0)
+    @pending_registrations_count = registration_counts.fetch("pending", 0)
+    @available_slots_count = [
+      @tournament.max_players - @confirmed_registrations_count,
+      0
+    ].max
   end
 
   def create
@@ -68,11 +88,19 @@ class TournamentsController < ApplicationController
     @club = current_user.clubs.find(params[:club_id])
     @current_membership = @club.club_memberships.find_by!(user: current_user)
   rescue ActiveRecord::RecordNotFound
+    return set_invited_tournament if invitation_show_request?
+
     render plain: "Not found", status: :not_found
   end
 
   def set_tournament
+    return if @tournament.present?
+
     @tournament = @club.tournaments.find(params[:id])
+    return unless invitation_show_request?
+    return if @tournament.invite_token == params[:invite_token] && @tournament.invite_link_valid?
+
+    raise ActiveRecord::RecordNotFound
   rescue ActiveRecord::RecordNotFound
     render plain: "Not found", status: :not_found
   end
@@ -121,5 +149,21 @@ class TournamentsController < ApplicationController
     return if @current_membership.owner?
 
     render plain: "Forbidden", status: :forbidden
+  end
+
+  def invitation_show_request?
+    action_name == "show" && params[:invite_token].present?
+  end
+
+  def set_invited_tournament
+    @tournament = Tournament.find_by!(invite_token: params[:invite_token])
+    raise ActiveRecord::RecordNotFound unless @tournament.club_id == params[:club_id].to_i
+    raise ActiveRecord::RecordNotFound unless @tournament.id == params[:id].to_i
+    raise ActiveRecord::RecordNotFound unless @tournament.invite_link_valid?
+
+    @club = @tournament.club
+    @current_membership = @club.club_memberships.find_by(user: current_user)
+  rescue ActiveRecord::RecordNotFound
+    render plain: "Not found", status: :not_found
   end
 end

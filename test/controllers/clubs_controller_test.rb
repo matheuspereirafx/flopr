@@ -38,6 +38,36 @@ class ClubsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".tournament-card__information-value--highlight", "A definir"
   end
 
+  test "shows confirmed registrations and tournament capacity in the tournament card" do
+    tournament = create_tournament
+    confirmed_player = User.create!(
+      email: "confirmed@example.com",
+      password: "password123",
+      name: "Confirmed"
+    )
+    pending_player = User.create!(
+      email: "pending@example.com",
+      password: "password123",
+      name: "Pending"
+    )
+    TournamentRegistration.create!(
+      tournament: tournament,
+      user: confirmed_player,
+      status: :confirmed
+    )
+    TournamentRegistration.create!(
+      tournament: tournament,
+      user: pending_player,
+      status: :pending
+    )
+
+    sign_in @owner
+    get club_path(@club)
+
+    assert_select ".tournament-card__players-value strong", "1"
+    assert_select ".tournament-card__players-value span", "/ 24"
+  end
+
   private
 
   def create_tournament

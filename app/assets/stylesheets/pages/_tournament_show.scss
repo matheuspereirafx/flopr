@@ -15,6 +15,48 @@
   &__logo { width: 94px; height: auto; }
 }
 
+.tournament-show-shell:has(+ .tournament-invitation-overlay) {
+  filter: blur(7px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.tournament-invitation-overlay {
+  position: fixed;
+  z-index: 10;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(8, 9, 10, .44);
+}
+
+.tournament-invitation-overlay__card {
+  width: 100%;
+  max-width: 390px;
+  padding: 32px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 16px;
+  text-align: center;
+  color: #f0eff4;
+  background: #201f20;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+
+  h2 { margin: 0 0 24px; font-family: $font-primary; font-size: 28px; }
+}
+
+.tournament-invitation-overlay__button {
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  background: #52489c;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .tournament-overview-page {
   min-height: 100vh;
   padding: 0 48px 72px 0;
@@ -72,8 +114,9 @@
   &__status { padding: 6px 10px; border: 1px solid rgba(255, 179, 180, .35); border-radius: 999px; color: #ffb3b4; background: rgba(255, 179, 180, .08); font-weight: 700; }
   &__date { display: inline-flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 8px; color: #c9c4d3; background: #201f20; font-size: 13px; }
   &__date img { width: 14px; height: 14px; object-fit: contain; }
-  &__invite { display: grid; flex: 0 0 33px; width: 34px; height: 34px; place-items: center; border: 1px solid rgba(152, 143, 215, .42); border-radius: 8px; color: #988fd7; background: rgba(152, 143, 215, .08); font-size: 20px; }
+  &__invite { position: relative; display: grid; flex: 0 0 33px; width: 34px; height: 34px; place-items: center; border: 1px solid rgba(152, 143, 215, .42); border-radius: 8px; color: #988fd7; background: rgba(152, 143, 215, .08); font-size: 20px; }
   &__invite img { width: 16px; height: 16px; object-fit: contain; }
+  &__invite.is-copied::after { position: absolute; top: calc(100% + 10px); right: 0; padding: 8px 12px; border: 1px solid rgba(199, 191, 255, .25); border-radius: 8px; color: #e4dfff; background: #201f20; box-shadow: 0 4px 12px rgba(0, 0, 0, .15); content: attr(data-copied-message); font: 700 12px/1 $font-secondary; white-space: nowrap; }
 }
 
 
@@ -137,7 +180,7 @@
   min-height: 121px;
   padding: 0;
 
-  &__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); min-height: 121px; gap: 0; overflow: hidden; border: 1px solid rgba(255, 255, 255, .08); border-radius: 10px; background: #151516; }
+  &__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); min-height: 121px; gap: 0; overflow: hidden; border: 1px solid rgba(255, 255, 255, .08); border-radius: 10px; background: #151516; }
   &__item { display: grid; min-height: 121px; align-content: center; padding: 14px; text-align: center; }
   &__item strong { display: block; color: #988fd7; font: 700 26px/1 $font-primary; }
   &__item p { margin: 7px 0 0; color: #c9c4d3; font-size: 9px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }

@@ -45,6 +45,7 @@
   <%# Cards de torneio sem ligacao Backend %>
 <%= render "shared/components/tournaments/card_tournaments",
            tournaments: @tournaments,
-           current_membership: @current_membership %>
+           current_membership: @current_membership,
+           confirmed_registrations_by_tournament: @confirmed_registrations_by_tournament %>
 
 </main>

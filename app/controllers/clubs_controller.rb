@@ -8,6 +8,7 @@ class ClubsController < ApplicationController
 
   def show
     @tournaments = @club.tournaments.includes(:charge_options).order(starts_at: :asc)
+    @confirmed_registrations_by_tournament = confirmed_registrations_by_tournament
   end
 
   def new
@@ -74,5 +75,12 @@ class ClubsController < ApplicationController
     true
   rescue ActiveRecord::RecordInvalid
     false
+  end
+
+  def confirmed_registrations_by_tournament
+    TournamentRegistration.confirmed
+                          .where(tournament_id: @tournaments.select(:id))
+                          .group(:tournament_id)
+                          .count
   end
 end

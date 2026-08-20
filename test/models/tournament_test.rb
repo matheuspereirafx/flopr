@@ -9,6 +9,32 @@ class TournamentTest < ActiveSupport::TestCase
     assert_equal :belongs_to, Tournament.reflect_on_association(:club).macro
   end
 
+  test "has tournament registrations" do
+    assert_equal :has_many,
+                 Tournament.reflect_on_association(:tournament_registrations).macro
+  end
+
+  test "generates a unique invite token when created" do
+    first_tournament = build_tournament
+    second_tournament = build_tournament(name: "Saturday Poker Night")
+
+    first_tournament.save!
+    second_tournament.save!
+
+    assert_predicate first_tournament.invite_token, :present?
+    assert_not_equal first_tournament.invite_token, second_tournament.invite_token
+  end
+
+  test "invite link is unavailable when confirmed registrations reach capacity" do
+    tournament = build_tournament(max_players: 1)
+    tournament.save!
+    user = User.create!(name: "Player", email: "player@example.com", password: "password123")
+    TournamentRegistration.create!(tournament: tournament, user: user, status: :confirmed)
+
+    assert_predicate tournament, :capacity_reached?
+    assert_not_predicate tournament, :invite_link_valid?
+  end
+
   test "is valid with five sequential blind levels of the same duration" do
     assert build_tournament.valid?
   end

@@ -5,6 +5,9 @@ class Tournament < ApplicationRecord
 
   belongs_to :club
 
+  has_many :tournament_registrations,
+           dependent: :destroy
+
   has_one :clock_state,
           class_name: "TournamentClockState",
           dependent: :destroy
@@ -40,6 +43,19 @@ class Tournament < ApplicationRecord
   validate :active_charge_options_have_valid_period, if: :posted?
 
   before_validation :renumber_blind_levels
+  before_validation :generate_invite_token, on: :create
+
+  def confirmed_registrations_count
+    tournament_registrations.confirmed.count
+  end
+
+  def capacity_reached?
+    confirmed_registrations_count >= max_players
+  end
+
+  def invite_link_valid?
+    !finished? && !capacity_reached?
+  end
 
   private
 
@@ -86,6 +102,10 @@ class Tournament < ApplicationRecord
     active_blind_levels.each_with_index do |blind_level, index|
       blind_level.level = index + 1
     end
+  end
+
+  def generate_invite_token
+    self.invite_token ||= SecureRandom.urlsafe_base64(24)
   end
 
   def has_required_charge_options

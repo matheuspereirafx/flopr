@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_12_201000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_20_121000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -63,6 +63,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_12_201000) do
     t.check_constraint "chip_amount IS NULL OR chip_amount >= 0", name: "tournament_charge_options_chips_non_negative"
   end
 
+  create_table "tournament_clock_events", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "from_blind_level_id", null: false
+    t.string "kind", null: false
+    t.datetime "occurred_at", null: false
+    t.bigint "to_blind_level_id", null: false
+    t.bigint "tournament_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["from_blind_level_id"], name: "index_tournament_clock_events_on_from_blind_level_id"
+    t.index ["to_blind_level_id"], name: "index_tournament_clock_events_on_to_blind_level_id"
+    t.index ["tournament_id", "occurred_at"], name: "index_tournament_clock_events_on_tournament_id_and_occurred_at"
+    t.index ["tournament_id"], name: "index_tournament_clock_events_on_tournament_id"
+  end
+
   create_table "tournament_clock_states", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "current_blind_level_id", null: false
@@ -80,9 +94,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_12_201000) do
     t.check_constraint "remaining_seconds >= 0", name: "tournament_clock_states_remaining_seconds_non_negative"
   end
 
+  create_table "tournament_registrations", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "status", default: "pending", null: false
+    t.bigint "tournament_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["status"], name: "index_tournament_registrations_on_status"
+    t.index ["tournament_id", "user_id"], name: "index_tournament_registrations_on_tournament_id_and_user_id", unique: true
+    t.index ["tournament_id"], name: "index_tournament_registrations_on_tournament_id"
+    t.index ["user_id"], name: "index_tournament_registrations_on_user_id"
+  end
+
   create_table "tournaments", force: :cascade do |t|
     t.bigint "club_id", null: false
     t.datetime "created_at", null: false
+    t.string "invite_token", null: false
     t.string "location", null: false
     t.integer "max_players", null: false
     t.string "name", null: false
@@ -92,6 +119,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_12_201000) do
     t.index "lower((name)::text)", name: "index_tournaments_on_lower_name", unique: true
     t.index ["club_id", "starts_at"], name: "index_tournaments_on_club_id_and_starts_at"
     t.index ["club_id"], name: "index_tournaments_on_club_id"
+    t.index ["invite_token"], name: "index_tournaments_on_invite_token", unique: true
     t.index ["starts_at"], name: "index_tournaments_on_starts_at"
     t.index ["status"], name: "index_tournaments_on_status"
   end
@@ -115,7 +143,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_12_201000) do
   add_foreign_key "tournament_charge_options", "blind_levels", column: "available_from_level_id"
   add_foreign_key "tournament_charge_options", "blind_levels", column: "available_until_level_id"
   add_foreign_key "tournament_charge_options", "tournaments"
+  add_foreign_key "tournament_clock_events", "blind_levels", column: "from_blind_level_id"
+  add_foreign_key "tournament_clock_events", "blind_levels", column: "to_blind_level_id"
+  add_foreign_key "tournament_clock_events", "tournaments"
   add_foreign_key "tournament_clock_states", "blind_levels", column: "current_blind_level_id", on_delete: :cascade
   add_foreign_key "tournament_clock_states", "tournaments", on_delete: :cascade
+  add_foreign_key "tournament_registrations", "tournaments"
+  add_foreign_key "tournament_registrations", "users"
   add_foreign_key "tournaments", "clubs"
 end

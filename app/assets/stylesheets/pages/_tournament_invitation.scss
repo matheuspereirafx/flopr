@@ -1,0 +1,47 @@
+.tournament-invitation-page {
+  display: grid;
+  min-height: 100vh;
+  align-content: center;
+  gap: 24px;
+  padding: 32px 16px;
+  color: #f0eff4;
+  background: #08090a;
+}
+
+.tournament-invitation-page__back {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  color: #c7bfff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.tournament-invitation-card {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 32px;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 16px;
+  background: #151516;
+
+  h1 { margin: 0; font-family: $font-primary; font-size: clamp(32px, 6vw, 48px); }
+  h2 { margin-top: 0; font-family: $font-primary; }
+  p { color: #c9c4d3; line-height: 1.6; }
+}
+
+.tournament-invitation-card__eyebrow { margin: 0 0 8px; color: #c7bfff; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.tournament-invitation-card__meta { font-weight: 700; }
+.tournament-invitation-card__label { display: block; margin: 28px 0 8px; color: #c9c4d3; font-size: 14px; }
+.tournament-invitation-card__input { width: 100%; padding: 12px; border: 1px solid rgba(255, 255, 255, .12); border-radius: 8px; color: #f0eff4; background: #201f20; }
+.tournament-invitation-card__notice { padding: 12px; border-radius: 8px; color: #e4dfff; background: rgba(199, 191, 255, .12); }
+.tournament-invitation-card__button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 18px; border: 0; border-radius: 999px; color: #fff; background: #52489c; font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; }
+.tournament-invitation-card__capacity { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 28px 0 0; }
+.tournament-invitation-card__capacity div { padding: 16px; border-radius: 8px; background: #201f20; }
+.tournament-invitation-card__capacity dt { color: #c9c4d3; font-size: 13px; }
+.tournament-invitation-card__capacity dd { margin: 8px 0 0; font-weight: 700; }
+@media (max-width: 480px) {
+  .tournament-invitation-card { padding: 24px; }
+  .tournament-invitation-card__capacity { grid-template-columns: 1fr; }
+}

@@ -97,6 +97,51 @@
 .tournament-clock-summary-card__title-icon { flex: 0 0 auto; width: 13px; max-height: 13px; object-fit: contain; }
 .tournament-clock-summary-card__prize-value { margin-left: 10px; color: #20d273; font: 700 32px/1 $font-primary; letter-spacing: -.03em; vertical-align: middle; }
 .tournament-clock-summary-card__empty { display: block; margin: 28px 0 8px; font: 700 24px/1.2 $font-primary; }
+.tournament-clock-players {
+  height: 184px;
+  margin-top: 18px;
+  overflow: hidden;
+}
+
+.tournament-clock-players__track {
+  display: grid;
+}
+
+.tournament-clock-players__track--scrolling {
+  animation: tournament-clock-players-roll 18s linear infinite;
+}
+
+.tournament-clock-players__list {
+  display: grid;
+  gap: 8px;
+  padding: 0 4px;
+  margin: 0;
+  list-style: none;
+}
+
+.tournament-clock-players__player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 26px;
+  color: #f0eff4;
+  font: 500 15px/1.2 $font-secondary;
+}
+
+.tournament-clock-players__position {
+  color: #20d273;
+  font-size: 20px;
+  line-height: 1;
+}
+
+@keyframes tournament-clock-players-roll {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tournament-clock-players__track--scrolling { animation: none; }
+}
 .tournament-clock-summary-card--prize
 .tournament-clock-summary-card__empty { color: #20d273; }
 .tournament-clock-summary-card__hint,

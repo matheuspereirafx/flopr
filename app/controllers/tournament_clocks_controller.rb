@@ -19,6 +19,10 @@ class TournamentClocksController < ApplicationController
       @current_blind_level.level
     )
     @available_charge_options = available_charge_options
+    @confirmed_registrations = @tournament.tournament_registrations
+                                              .confirmed
+                                              .includes(:user)
+                                              .order(:created_at)
     @clock_in_overtime = @clock_state.overtime? ||
                          @clock_state.overtime_started_at.present?
     @clock_display_seconds = if @clock_in_overtime

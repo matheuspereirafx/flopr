@@ -30,9 +30,35 @@
 }
 
 .overview-header {
+  position: relative;
   min-height: 198px;
   padding: 38px 0 28px;
-  background: linear-gradient(90deg, #090a0b 0%, rgba(9, 10, 11, .52) 46%, #090a0b 100%), image-url("backgroundshow.png") right center / cover no-repeat;
+  overflow: hidden;
+  background: #08090a;
+
+  &::before,
+  &::after {
+    position: absolute;
+    content: "";
+    pointer-events: none;
+  }
+
+  &::before {
+    z-index: 0;
+    inset: -8px;
+    background: image-url("backgroundfichas2.jpg") center top / 92% auto no-repeat;
+    filter: blur(4px) grayscale(1);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 12%, #000 88%, transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0, #000 12%, #000 88%, transparent 100%);
+  }
+
+  &::after {
+    z-index: 1;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(8, 9, 10, .9) 10%, rgba(8, 9, 10, .42) 80%, rgba(8, 9, 10, .9) 100%);
+  }
+
+  > * { position: relative; z-index: 2; }
 
   &__back { display: inline-flex; margin-bottom: 32px; color: #988fd7; font-size: 14px; font-weight: 700; text-decoration: none; }
   &__back:focus-visible { outline: 2px solid #ffb3b4; outline-offset: 4px; }
@@ -42,7 +68,10 @@
   h1 { margin: 0; color: #f0eff4; font-family: $font-primary; font-size: clamp(36px, 6vw, 48px); font-weight: 700; letter-spacing: -.04em; line-height: 1; }
   &__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 20px; color: #c9c4d3; font-size: 14px; }
   &__status { padding: 6px 10px; border: 1px solid rgba(255, 179, 180, .35); border-radius: 999px; color: #ffb3b4; background: rgba(255, 179, 180, .08); font-weight: 700; }
-  &__invite { display: grid; flex: 0 0 auto; width: 44px; height: 44px; place-items: center; border: 1px solid rgba(152, 143, 215, .42); border-radius: 50%; color: #988fd7; background: rgba(152, 143, 215, .08); font-size: 20px; }
+  &__date { display: inline-flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 8px; color: #c9c4d3; background: #201f20; font-size: 13px; }
+  &__date img { width: 14px; height: 14px; object-fit: contain; }
+  &__invite { display: grid; flex: 0 0 auto; width: 44px; height: 34px; place-items: center; border: 1px solid rgba(152, 143, 215, .42); border-radius: 50%; color: #988fd7; background: rgba(152, 143, 215, .08); font-size: 20px; }
+  &__invite img { width: 18px; height: 18px; object-fit: contain; }
 }
 
 
@@ -87,10 +116,10 @@
 
   &__trophy { display: grid; width: 86px; height: 86px; place-items: center; border-radius: 50%; color: #ffb3b4; background: rgba(255, 179, 180, .1); font-size: 42px; }
   &__winner { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 16px; min-height: 114px; padding: 18px 24px; border: 1px solid rgba(152, 143, 215, .5); border-radius: 10px; background: linear-gradient(105deg, rgba(152, 143, 215, .85), rgba(57, 52, 78, .78)); }
-  &__winner .overview-prize-pool__trophy { width: 52px; height: 52px; font-size: 26px; }
+  &__winner .overview-prize-pool__trophy { width: 52px; height: 52px; font-size: 30px; }
   &__winner-player { display: grid; gap: 4px; min-width: 0; }
   &__winner-player span, &__hint { color: #e8e3ff; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
-  &__winner-player strong { overflow: hidden; color: #f0eff4; font-family: $font-primary; font-size: 20px; text-overflow: ellipsis; white-space: nowrap; }
+  &__winner-player strong { overflow: hidden; color: #f0eff4; font-family: $font-secondary; font-size: 30px; text-overflow: ellipsis; white-space: nowrap; }
   &__winner-value { color: #e1dcff; font-family: $font-primary; font-size: 28px; }
   &__placements { display: grid; gap: 8px; margin-top: 12px; }
   &__placement { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; min-height: 62px; align-items: center; gap: 12px; padding: 12px 16px; border: 1px solid rgba(255, 255, 255, .06); border-radius: 10px; background: rgba(19, 19, 20, .5); }
@@ -114,7 +143,7 @@
 @media (max-width: 900px) {
   .tournament-show-shell { display: block; }
   .tournament-show-shell__sidebar { display: none; }
-  .tournament-overview-page { padding: 24px 16px 40px; }
+  .tournament-overview-page { padding: 0px 16px 40px; }
   .tournament-overview-page__header,
   .tournament-overview-page__main,
   .tournament-overview-page > .overview-participation { margin: 0 auto; }
@@ -122,14 +151,15 @@
 
 @media (max-width: 600px) {
   .tournament-overview-page { &__main { grid-template-columns: 1fr; margin-top: 28px; } }
-  .overview-header__back { margin-bottom: 24px; }
+  .overview-header { padding-top: 0; }
+  .overview-header::before { background-size: 140% auto; }
+  .overview-header__back { margin-bottom: 24px; margin-top: 48px; }
   .overview-details, .overview-prize-pool { min-height: auto; }
   .overview-prize-pool { height: auto; overflow-y: visible; }
   .overview-participation, .overview-participation__grid, .overview-participation__item { min-height: 0; }
   .overview-prize-pool { min-height: 360px; }
   .overview-participation__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-
 @media (max-width: 420px) {
   .overview-header__content { gap: 16px; }
   .overview-header h1 { font-size: 36px; }

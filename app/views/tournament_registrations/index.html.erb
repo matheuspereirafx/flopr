@@ -1,0 +1,63 @@
+<div class="tournament-show-shell">
+  <%= render "shared/components/tournaments/navigation",
+             club: @club,
+             tournament: @tournament,
+             current_membership: @current_membership,
+             current_registration: @current_registration,
+             active_page: :players %>
+
+  <main class="tournament-registrations-page" aria-labelledby="tournament-registrations-title">
+    <header class="tournament-registrations-page__header">
+      <p class="tournament-registrations-page__eyebrow">Inscrições do torneio</p>
+      <h1 id="tournament-registrations-title">Players</h1>
+      <p class="tournament-registrations-page__description">
+        Acompanhe os jogadores convidados e o status atual de cada inscrição.
+      </p>
+    </header>
+
+    <section class="registration-summary" aria-label="Resumo das inscrições">
+      <article class="registration-summary__card">
+        <strong><%= @registrations.size %></strong>
+        <span>Total de jogadores</span>
+      </article>
+
+      <article class="registration-summary__card registration-summary__card--confirmed">
+        <strong><%= @confirmed_registrations_count %></strong>
+        <span>Confirmados</span>
+      </article>
+
+      <article class="registration-summary__card registration-summary__card--pending">
+        <strong><%= @pending_registrations_count %></strong>
+        <span>Pendentes</span>
+      </article>
+    </section>
+
+    <section class="registrations-section" aria-labelledby="registrations-section-title">
+
+      <% if @registrations.any? %>
+        <div class="registrations-table-wrapper">
+          <table class="registrations-table">
+            <thead>
+              <tr>
+                <th scope="col">Jogador</th>
+                <th scope="col">Status da inscrição</th>
+                <th scope="col">Pagamento</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @registrations.each do |registration| %>
+                <%= render "shared/components/tournament_registrations/registration_row",
+                           registration: registration %>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <div class="registrations-empty-state" role="status">
+          <span class="registrations-empty-state__icon" aria-hidden="true">♧</span>
+          <p>Nenhum jogador foi convidado para este torneio.</p>
+        </div>
+      <% end %>
+    </section>
+  </main>
+</div>

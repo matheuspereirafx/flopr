@@ -6,6 +6,7 @@ module ApplicationHelper
       tournament_clocks
       tournament_invitation_links
       tournament_invite_links
+      tournament_registrations
       tournaments
     ].include?(controller_name)
   end
@@ -15,7 +16,8 @@ module ApplicationHelper
 
     items = [
       overview_navigation_item(club, tournament, active_page),
-      navigation_item("Jogadores", "icons/Iconplayer.svg", :players, active_page),
+      navigation_item("Jogadores", "icons/Iconplayer.svg", :players, active_page,
+                      club_tournament_registrations_path(club, tournament)),
       navigation_item("Relógio", "icons/icontimermenu.svg", :clock, active_page,
                       club_tournament_clock_path(club, tournament))
     ]

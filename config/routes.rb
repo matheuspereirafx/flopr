@@ -30,6 +30,9 @@ Rails.application.routes.draw do
                only: %i[new create edit update],
                controller: "tournament_charge_options"
       resources :blind_levels, only: %i[new create]
+      resources :registrations,
+                only: :index,
+                controller: "tournament_registrations"
     end
   end
 

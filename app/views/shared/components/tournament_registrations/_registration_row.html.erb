@@ -1,0 +1,19 @@
+<tr class="registrations-table__row">
+  <th class="registrations-table__player" scope="row">
+    <span class="registrations-table__avatar" aria-hidden="true">
+      <%= registration.user.name.to_s.first(2).upcase %>
+    </span>
+    <span class="registrations-table__player-name"><%= registration.user.name %></span>
+  </th>
+  <td>
+    <span class="registration-status registration-status--<%= registration.status %>"
+          data-status="<%= registration.status %>">
+      <%= registration.confirmed? ? "Confirmado" : "Pendente" %>
+    </span>
+  </td>
+  <td>
+    <span class="registration-payment" data-payment-status="unavailable">
+      Não informado
+    </span>
+  </td>
+</tr>

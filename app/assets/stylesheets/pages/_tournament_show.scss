@@ -1,18 +1,13 @@
 .tournament-show-shell {
   display: grid;
-  grid-template-columns: 256px minmax(0, 1fr);
+  grid-template-columns: 264px minmax(0, 1fr);
   column-gap: 48px;
   min-height: 100vh;
   background: #08090a;
+}
 
-  &__sidebar {
-    min-height: 1095px;
-    padding: 32px 24px;
-    border-right: 1px solid rgba(255, 255, 255, .08);
-    background: #111214;
-  }
-
-  &__logo { width: 94px; height: auto; }
+.tournament-show-shell:has(.tournament-navigation.is-collapsed) {
+  grid-template-columns: 76px minmax(0, 1fr);
 }
 
 .tournament-show-shell:has(+ .tournament-invitation-overlay) {
@@ -188,11 +183,14 @@
 
 @media (max-width: 900px) {
   .tournament-show-shell { display: block; }
-  .tournament-show-shell__sidebar { display: none; }
   .tournament-overview-page { padding: 0px 16px 40px; }
   .tournament-overview-page__header,
   .tournament-overview-page__main,
   .tournament-overview-page > .overview-participation { margin: 0 auto; }
+}
+
+@media (max-width: 680px) {
+  .tournament-overview-page { padding-bottom: 112px; }
 }
 
 @media (max-width: 600px) {

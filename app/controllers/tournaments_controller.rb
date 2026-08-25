@@ -68,7 +68,7 @@ class TournamentsController < ApplicationController
 
     if @tournament.update(tournament_params)
       redirect_to edit_club_tournament_charge_options_path(@club, @tournament),
-                  notice: "Estrutura do torneio salva. Revise as regras financeiras."
+                  notice: "Dados do torneio salvos. Configure as opções financeiras."
     else
       render :edit, status: :unprocessable_entity
     end
@@ -146,7 +146,7 @@ class TournamentsController < ApplicationController
 
   def authorize_owner!
     return if performed?
-    return if @current_membership.owner?
+    return if @current_membership.owner? || @current_membership.admin?
 
     render plain: "Forbidden", status: :forbidden
   end

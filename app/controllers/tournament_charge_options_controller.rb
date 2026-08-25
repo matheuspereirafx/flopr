@@ -28,7 +28,7 @@ class TournamentChargeOptionsController < ApplicationController
   end
 
   def authorize_owner!
-    return if performed? || @current_membership.owner?
+    return if performed? || @current_membership.owner? || @current_membership.admin?
 
     render plain: "Forbidden", status: :forbidden
   end
@@ -60,8 +60,8 @@ class TournamentChargeOptionsController < ApplicationController
         @tournament.update!(status: :posted)
       end
 
-      redirect_to club_path(@club),
-                  notice: "Regras financeiras do torneio salvas com sucesso."
+      redirect_to club_tournament_path(@club, @tournament),
+                  notice: "Configurações financeiras do torneio salvas com sucesso."
     else
       @tournament.status = @tournament.status_in_database
       render action_name == "create" ? :new : :edit,

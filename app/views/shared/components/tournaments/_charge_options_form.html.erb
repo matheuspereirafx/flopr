@@ -1,4 +1,5 @@
-<% form_method = tournament.posted? ? :patch : :post %>
+<% form_method = action_name == "edit" ? :patch : :post %>
+<% editing_financial_configuration = action_name == "edit" %>
 
 <div class="page">
   <main class="tournament-form financial-form" aria-labelledby="page-title">
@@ -177,12 +178,16 @@
 
           <%= button_tag type: "submit",
                          class: "button button--primary",
-                         aria: { label: "Finalizar criação do torneio" },
-                         title: "Finalizar criação do torneio" do %>
+                         aria: {
+                           label: editing_financial_configuration ? "Salvar alterações" : "Finalizar criação do torneio"
+                         },
+                         title: editing_financial_configuration ? "Salvar alterações" : "Finalizar criação do torneio" do %>
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="m5 12 4 4L19 6" />
             </svg>
-            <span class="sr-only">Finalizar criação</span>
+            <span class="sr-only">
+              <%= editing_financial_configuration ? "Salvar alterações" : "Finalizar criação" %>
+            </span>
           <% end %>
         </div>
       </div>

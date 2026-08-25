@@ -17,12 +17,15 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     create_membership(@outsider, @other_club, :owner)
   end
 
-  test "only owner can access new tournament form" do
-    sign_in @owner
-    get new_club_tournament_path(@club)
-    assert_response :success
+  test "owner and admin can access new tournament form" do
+    [@owner, @admin].each do |user|
+      sign_in user
+      get new_club_tournament_path(@club)
+      assert_response :success
+      sign_out user
+    end
 
-    [@admin, @dealer, @player].each do |user|
+    [@dealer, @player].each do |user|
       sign_out @owner
       sign_in user
       get new_club_tournament_path(@club)
@@ -50,6 +53,25 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
       assert_response :success
       assert_select "h1", tournament.name
       assert_select ".overview-prize-pool__hint", "Premiação disponível após a finalização do torneio."
+      sign_out user
+    end
+  end
+
+  test "tournament navigation follows each member role" do
+    tournament = create_tournament(@club)
+    TournamentRegistration.create!(tournament: tournament, user: @player, status: :confirmed)
+
+    {
+      @owner => %w[Visão geral Jogadores Pagamentos Relógio],
+      @admin => %w[Visão geral Jogadores Pagamentos Relógio],
+      @dealer => %w[Visão geral Jogadores Recargas Relógio],
+      @player => %w[Visão geral Jogadores Histórico Solicitações Relógio]
+    }.each do |user, visible_items|
+      sign_in user
+      get club_tournament_path(@club, tournament)
+
+      visible_items.each { |item| assert_select ".tournament-navigation", text: /#{item}/ }
+      assert_select ".tournament-navigation__item--active[aria-current='page']", text: /Visão geral/
       sign_out user
     end
   end
@@ -162,8 +184,8 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal (1..10).to_a, tournament.blind_levels.pluck(:level)
   end
 
-  test "non owners cannot create tournaments" do
-    [@admin, @dealer, @player].each do |user|
+  test "dealer and player cannot create tournaments" do
+    [@dealer, @player].each do |user|
       sign_in user
 
       assert_no_difference "Tournament.count" do
@@ -237,6 +259,9 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_select "img[src*='Icondate']", count: 1
     assert_select "img[src*='Iconlocation']", count: 1
     assert_select "img[src*='Iconplayer']", count: 1
+    assert_select "button[type='submit'][title='Avançar'][aria-label='Avançar']"
+    assert_select "a.tournament-form__cancel[href=?]",
+                  club_tournament_path(@club, tournament)
   end
 
   test "owner can remove final blind levels while keeping the minimum" do
@@ -281,10 +306,10 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 5, tournament.reload.blind_levels.count
   end
 
-  test "non owners cannot edit update or delete a tournament" do
+  test "dealer and player cannot edit update or delete a tournament" do
     tournament = create_tournament(@club)
 
-    [@admin, @dealer, @player].each do |user|
+    [@dealer, @player].each do |user|
       sign_in user
 
       get edit_club_tournament_path(@club, tournament)

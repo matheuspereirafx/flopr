@@ -4,8 +4,34 @@
       <%= image_tag "icons/Iconplayer.svg", class: "tournament-clock-summary-card__title-icon", alt: "" %>
       JOGADORES
     </p>
-    <strong class="tournament-clock-summary-card__empty">Aguardando inscrições</strong>
-    <p class="tournament-clock-summary-card__hint">Ativos e eliminados aparecerão aqui.</p>
+    <% if confirmed_registrations.any? %>
+      <div class="tournament-clock-players" aria-label="Jogadores confirmados">
+        <div class="tournament-clock-players__track <%= "tournament-clock-players__track--scrolling" if confirmed_registrations.size > 5 %>">
+          <ul class="tournament-clock-players__list">
+            <% confirmed_registrations.each do |registration| %>
+              <li class="tournament-clock-players__player">
+                <span class="tournament-clock-players__position" aria-hidden="true">•</span>
+                <span><%= registration.user.name %></span>
+              </li>
+            <% end %>
+          </ul>
+
+          <% if confirmed_registrations.size > 5 %>
+            <ul class="tournament-clock-players__list" aria-hidden="true">
+              <% confirmed_registrations.each do |registration| %>
+                <li class="tournament-clock-players__player">
+                  <span class="tournament-clock-players__position" aria-hidden="true">•</span>
+                  <span><%= registration.user.name %></span>
+                </li>
+              <% end %>
+            </ul>
+          <% end %>
+        </div>
+      </div>
+    <% else %>
+      <strong class="tournament-clock-summary-card__empty">Aguardando inscrições</strong>
+      <p class="tournament-clock-summary-card__hint">Ativos e eliminados aparecerão aqui.</p>
+    <% end %>
   </article>
 
   <article class="tournament-clock-summary-card tournament-clock-summary-card--prize">

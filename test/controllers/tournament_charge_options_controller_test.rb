@@ -33,13 +33,24 @@ class TournamentChargeOptionsControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='financial_configuration[charge_options][buy_in][amount]']", count: 1
   end
 
+  test "editing financial configuration uses patch and saves changes" do
+    sign_in @owner
+
+    get edit_club_tournament_charge_options_path(@club, @tournament)
+
+    assert_response :success
+    assert_select "form[method='post'][action=?]",
+                  club_tournament_charge_options_path(@club, @tournament)
+    assert_select "button[type='submit'][title='Salvar alterações'][aria-label='Salvar alterações']"
+  end
+
   test "owner publishes tournament with buy in and no recharge period" do
     sign_in @owner
 
     post club_tournament_charge_options_path(@club, @tournament),
          params: financial_configuration_payload(nil, optional_options: false)
 
-    assert_redirected_to club_path(@club)
+    assert_redirected_to club_tournament_path(@club, @tournament)
     assert_equal "posted", @tournament.reload.status
     assert @tournament.charge_options.find_by!(kind: :buy_in).active?
     assert_not @tournament.charge_options.find_by!(kind: :rebuy).active?
@@ -65,7 +76,7 @@ class TournamentChargeOptionsControllerTest < ActionDispatch::IntegrationTest
     post club_tournament_charge_options_path(@club, @tournament),
          params: financial_configuration_payload(period_end.id)
 
-    assert_redirected_to club_path(@club)
+    assert_redirected_to club_tournament_path(@club, @tournament)
     assert_equal "posted", @tournament.reload.status
 
     buy_in = @tournament.charge_options.find_by!(kind: :buy_in)
@@ -94,10 +105,10 @@ class TournamentChargeOptionsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "não pode ficar em branco"
   end
 
-  test "admin and outsider cannot access the financial configuration" do
+  test "admin can access financial configuration and outsider cannot" do
     sign_in @admin
     get new_club_tournament_charge_options_path(@club, @tournament)
-    assert_response :forbidden
+    assert_response :success
 
     sign_out @admin
     sign_in @outsider

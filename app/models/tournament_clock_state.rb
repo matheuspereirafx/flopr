@@ -78,18 +78,37 @@ class TournamentClockState < ApplicationRecord
   def refresh!(at: Time.current)
     return self unless running?
 
-    elapsed_seconds = (at - started_at).floor
-    if elapsed_seconds < remaining_seconds
-      return update!(
-        remaining_seconds: remaining_seconds - elapsed_seconds,
-        started_at: at
-      )
-    end
+    return refresh_running!(at: at, persist: false) if elapsed_seconds(at) < remaining_seconds
 
-    if current_blind_level == tournament.blind_levels.last
-      enter_overtime!(at: started_at + remaining_seconds.seconds)
-    else
-      update!(remaining_seconds: 0, started_at: at)
+    with_lock { refresh_running!(at: at, persist: true) }
+  end
+
+  def advance_manually!(at: Time.current)
+    with_lock do
+      raise InvalidTransition unless running?
+
+      next_blind_level = tournament.blind_levels.find_by(
+        "level > ?",
+        current_blind_level.level
+      )
+      raise InvalidTransition if next_blind_level.blank?
+
+      TournamentClockEvent.create!(
+        tournament: tournament,
+        from_blind_level: current_blind_level,
+        to_blind_level: next_blind_level,
+        kind: :manual_level_advanced,
+        occurred_at: at
+      )
+
+      update!(
+        current_blind_level: next_blind_level,
+        remaining_seconds: next_blind_level.duration_minutes * 60,
+        started_at: at,
+        paused_at: nil,
+        overtime_started_at: nil,
+        overtime_elapsed_seconds: 0
+      )
     end
   end
 
@@ -100,13 +119,74 @@ class TournamentClockState < ApplicationRecord
     elapsed_seconds + (at - overtime_started_at).floor
   end
 
+  def tournament_elapsed_seconds(at: Time.current)
+    completed_level_seconds = tournament.blind_levels
+                                      .where("level < ?", current_blind_level.level)
+                                      .sum(:duration_minutes) * 60
+
+    return completed_level_seconds if not_started?
+    return completed_level_seconds + overtime_seconds(at: at) if overtime?
+
+    current_level_elapsed_seconds = current_blind_level.duration_minutes * 60 - remaining_seconds
+    completed_level_seconds + current_level_elapsed_seconds
+  end
+
   private
+
+  def refresh_running!(at:, persist:)
+    return self unless running?
+
+    if elapsed_seconds(at) < remaining_seconds
+      attributes = {
+        remaining_seconds: remaining_seconds - elapsed_seconds(at),
+        started_at: at
+      }
+
+      return persist ? update!(attributes) : assign_attributes(attributes)
+    end
+
+    advance_expired_levels!(at: at)
+  end
+
+  def advance_expired_levels!(at:)
+    transition_at = started_at + remaining_seconds.seconds
+
+    loop do
+      next_blind_level = tournament.blind_levels.find_by("level > ?", current_blind_level.level)
+      return enter_overtime!(at: transition_at) if next_blind_level.blank?
+
+      TournamentClockEvent.create!(
+        tournament: tournament,
+        from_blind_level: current_blind_level,
+        to_blind_level: next_blind_level,
+        kind: :automatic_level_advanced,
+        occurred_at: transition_at
+      )
+
+      self.current_blind_level = next_blind_level
+      self.remaining_seconds = next_blind_level.duration_minutes * 60
+      self.started_at = transition_at
+
+      if elapsed_seconds(at) < remaining_seconds
+        return update!(
+          remaining_seconds: remaining_seconds - elapsed_seconds(at),
+          started_at: at
+        )
+      end
+
+      transition_at = started_at + remaining_seconds.seconds
+    end
+  end
 
   def current_blind_level_belongs_to_tournament
     return if current_blind_level.blank? || tournament.blank?
     return if current_blind_level.tournament_id == tournament_id
 
     errors.add(:current_blind_level, "deve pertencer ao torneio")
+  end
+
+  def elapsed_seconds(at)
+    (at - started_at).floor
   end
 
   def enter_overtime!(at:)

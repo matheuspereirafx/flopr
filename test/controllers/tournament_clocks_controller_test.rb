@@ -37,6 +37,50 @@ class TournamentClocksControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "clock renders the sound activation prompt and timer audio" do
+    sign_in @player
+
+    get club_tournament_clock_path(@club, @tournament)
+
+    assert_response :success
+    assert_select "dialog[data-tournament-clock-target='soundDialog']", count: 1
+    assert_select "button[data-action='tournament-clock#enableSound']", text: "Ativar som", count: 1
+    assert_select "audio[data-tournament-clock-target='audio'] source[type='audio/mp4']", count: 1
+  end
+
+  test "owner and admin can manually advance a running clock" do
+    [@owner, @admin].each do |user|
+      state = TournamentClockState.create_initial_for!(@tournament)
+      state.start!(at: Time.current)
+      sign_in user
+
+      assert_difference "TournamentClockEvent.count", 1 do
+        patch advance_club_tournament_clock_path(@club, @tournament)
+      end
+
+      assert_redirected_to club_tournament_clock_path(@club, @tournament)
+      assert_equal @tournament.blind_levels.second, state.reload.current_blind_level
+      assert_equal 15.minutes.to_i, state.remaining_seconds
+      sign_out user
+      state.destroy!
+    end
+  end
+
+  test "clock state automatically advances expired blind levels" do
+    state = TournamentClockState.create_initial_for!(@tournament)
+    state.update!(status: :running, remaining_seconds: 15.minutes.to_i, started_at: 46.minutes.ago)
+    sign_in @owner
+
+    assert_difference "TournamentClockEvent.count", 3 do
+      get "/clubs/#{@club.id}/tournaments/#{@tournament.id}/clock/state"
+    end
+
+    assert_response :success
+    assert_equal @tournament.blind_levels.fourth, state.reload.current_blind_level
+    assert_equal 14.minutes.to_i, state.remaining_seconds
+    assert_equal 4, response.parsed_body.dig("current_level", "level")
+  end
+
   test "clock displays confirmed tournament players" do
     confirmed_player = User.create!(
       name: "Confirmed Player",

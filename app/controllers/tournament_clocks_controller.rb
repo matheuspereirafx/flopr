@@ -7,6 +7,7 @@ class TournamentClocksController < ApplicationController
   before_action :authorize_clock_operation!, only: :start
   before_action :authorize_clock_pause!, only: :pause
   before_action :authorize_clock_resume!, only: :resume
+  before_action :authorize_clock_advance!, only: :advance
 
   def show
     @current_registration = current_user.tournament_registrations.find_by(
@@ -52,6 +53,12 @@ class TournamentClocksController < ApplicationController
                 alert: "O relógio não pode ser pausado no estado atual."
   end
 
+  def state
+    @clock_state.refresh!
+
+    render json: clock_state_payload
+  end
+
   def resume
     @clock_state.resume!
 
@@ -62,7 +69,48 @@ class TournamentClocksController < ApplicationController
                 alert: "O relógio não pode ser retomado no estado atual."
   end
 
+  def advance
+    @clock_state.advance_manually!
+
+    redirect_to club_tournament_clock_path(@club, @tournament),
+                notice: "Nível avançado com sucesso."
+  rescue TournamentClockState::InvalidTransition
+    redirect_to club_tournament_clock_path(@club, @tournament),
+                alert: "O relógio não pode avançar no estado atual."
+  end
+
   private
+
+  def clock_state_payload
+    current_blind_level = @clock_state.current_blind_level
+    next_blind_level = @tournament.blind_levels.find_by(
+      "level > ?",
+      current_blind_level.level
+    )
+
+    {
+      status: @clock_state.status,
+      current_blind_level_id: @clock_state.current_blind_level_id,
+      remaining_seconds: @clock_state.remaining_seconds,
+      overtime_elapsed_seconds: @clock_state.overtime_seconds,
+      tournament_elapsed_seconds: @clock_state.tournament_elapsed_seconds,
+      current_level: blind_level_payload(current_blind_level),
+      next_level: blind_level_payload(next_blind_level)
+    }
+  end
+
+  def blind_level_payload(blind_level)
+    return if blind_level.blank?
+
+    blind_level.slice(
+      :id,
+      :level,
+      :duration_minutes,
+      :small_blind,
+      :big_blind,
+      :ante
+    )
+  end
 
   def set_member_club
     @club = current_user.clubs.find(params[:club_id])
@@ -99,6 +147,12 @@ class TournamentClocksController < ApplicationController
   end
 
   def authorize_clock_resume!
+    return if performed? || @current_membership.owner? || @current_membership.admin?
+
+    render plain: "Forbidden", status: :forbidden
+  end
+
+  def authorize_clock_advance!
     return if performed? || @current_membership.owner? || @current_membership.admin?
 
     render plain: "Forbidden", status: :forbidden

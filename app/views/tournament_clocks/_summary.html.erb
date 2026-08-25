@@ -11,7 +11,7 @@
             <% confirmed_registrations.each do |registration| %>
               <li class="tournament-clock-players__player">
                 <span class="tournament-clock-players__position" aria-hidden="true">•</span>
-                <span><%= registration.user.name %></span>
+                <span><%= registration.user.username.presence || "Username não informado" %></span>
               </li>
             <% end %>
           </ul>
@@ -21,7 +21,7 @@
               <% confirmed_registrations.each do |registration| %>
                 <li class="tournament-clock-players__player">
                   <span class="tournament-clock-players__position" aria-hidden="true">•</span>
-                  <span><%= registration.user.name %></span>
+                  <span><%= registration.user.username.presence || "Username não informado" %></span>
                 </li>
               <% end %>
             </ul>

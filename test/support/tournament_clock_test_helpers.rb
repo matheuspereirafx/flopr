@@ -1,9 +1,12 @@
 module TournamentClockTestHelpers
   def create_user(email: "user-#{SecureRandom.uuid}@example.com")
+    username = email.split("@").first.gsub(/[^a-zA-Z0-9_.]/, "_")
+
     User.create!(
       email: email,
       password: "password123",
-      name: email.split("@").first
+      name: email.split("@").first,
+      username: username
     )
   end
 

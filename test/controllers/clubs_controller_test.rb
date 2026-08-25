@@ -6,12 +6,13 @@ class ClubsControllerTest < ActionDispatch::IntegrationTest
     @owner = User.create!(
       email: "owner@example.com",
       password: "password123",
-      name: "Owner"
+      name: "Owner",
+      username: "owner"
     )
     ClubMembership.create!(user: @owner, club: @club, role: :owner)
-    @admin = User.create!(email: "admin@example.com", password: "password123", name: "Admin")
-    @dealer = User.create!(email: "dealer@example.com", password: "password123", name: "Dealer")
-    @player = User.create!(email: "player@example.com", password: "password123", name: "Player")
+    @admin = User.create!(email: "admin@example.com", password: "password123", name: "Admin", username: "admin")
+    @dealer = User.create!(email: "dealer@example.com", password: "password123", name: "Dealer", username: "dealer")
+    @player = User.create!(email: "player@example.com", password: "password123", name: "Player", username: "player")
     ClubMembership.create!(user: @admin, club: @club, role: :admin)
     ClubMembership.create!(user: @dealer, club: @club, role: :dealer)
     ClubMembership.create!(user: @player, club: @club, role: :player)
@@ -65,12 +66,14 @@ class ClubsControllerTest < ActionDispatch::IntegrationTest
     confirmed_player = User.create!(
       email: "confirmed@example.com",
       password: "password123",
-      name: "Confirmed"
+      name: "Confirmed",
+      username: "confirmed"
     )
     pending_player = User.create!(
       email: "pending@example.com",
       password: "password123",
-      name: "Pending"
+      name: "Pending",
+      username: "pending"
     )
     TournamentRegistration.create!(
       tournament: tournament,

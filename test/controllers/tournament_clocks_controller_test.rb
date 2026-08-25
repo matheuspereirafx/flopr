@@ -84,6 +84,7 @@ class TournamentClocksControllerTest < ActionDispatch::IntegrationTest
   test "clock displays confirmed tournament players" do
     confirmed_player = User.create!(
       name: "Confirmed Player",
+      username: "confirmed.player",
       email: "confirmed-player@example.com",
       password: "password123"
     )
@@ -98,7 +99,7 @@ class TournamentClocksControllerTest < ActionDispatch::IntegrationTest
     get club_tournament_clock_path(@club, @tournament)
 
     assert_response :success
-    assert_select ".tournament-clock-players__player", text: /Confirmed Player/
+    assert_select ".tournament-clock-players__player", text: /confirmed\.player/
   end
 
   test "a user without club membership receives not found" do

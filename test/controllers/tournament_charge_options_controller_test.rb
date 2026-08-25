@@ -125,7 +125,8 @@ class TournamentChargeOptionsControllerTest < ActionDispatch::IntegrationTest
   private
 
   def create_user(email)
-    User.create!(email: email, password: "password123", name: email.split("@").first)
+    username = email.split("@").first.gsub(/[^a-zA-Z0-9_.]/, "_")
+    User.create!(email: email, password: "password123", name: email.split("@").first, username: username)
   end
 
   def create_draft_tournament

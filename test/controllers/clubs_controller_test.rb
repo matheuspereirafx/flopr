@@ -26,6 +26,7 @@ class ClubsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".tournament-card__information-value--highlight", "R$ 125,50"
     assert_not_select ".tournament-card__information-value--highlight", "R$ 250"
+    assert_select ".tournament-card__link[data-turbo-prefetch='false']", count: 1
   end
 
   test "shows buy in as pending when the tournament has no financial configuration" do

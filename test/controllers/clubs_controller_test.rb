@@ -9,6 +9,27 @@ class ClubsControllerTest < ActionDispatch::IntegrationTest
       name: "Owner"
     )
     ClubMembership.create!(user: @owner, club: @club, role: :owner)
+    @admin = User.create!(email: "admin@example.com", password: "password123", name: "Admin")
+    @dealer = User.create!(email: "dealer@example.com", password: "password123", name: "Dealer")
+    @player = User.create!(email: "player@example.com", password: "password123", name: "Player")
+    ClubMembership.create!(user: @admin, club: @club, role: :admin)
+    ClubMembership.create!(user: @dealer, club: @club, role: :dealer)
+    ClubMembership.create!(user: @player, club: @club, role: :player)
+  end
+
+  test "owner, admin and dealer can view the club but player cannot" do
+    [@owner, @admin, @dealer].each do |user|
+      sign_in user
+      get club_path(@club)
+
+      assert_response :success
+      sign_out user
+    end
+
+    sign_in @player
+    get club_path(@club)
+
+    assert_response :forbidden
   end
 
   test "shows the configured buy in amount in the tournament card" do

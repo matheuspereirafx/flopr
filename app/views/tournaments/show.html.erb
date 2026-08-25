@@ -8,7 +8,9 @@
 
 <main class="tournament-overview-page" aria-labelledby="tournament-title">
   <header class="tournament-overview-page__header overview-header">
-    <%= link_to "← Voltar ao clube", club_path(@club), class: "overview-header__back" %>
+    <% unless @current_membership&.player? %>
+      <%= link_to "← Voltar ao clube", club_path(@club), class: "overview-header__back" %>
+    <% end %>
     <% if @current_membership&.owner? || @current_membership&.admin? %>
       <button class="overview-header__invite"
               type="button"
@@ -30,7 +32,11 @@
         </p>
         <h1 id="tournament-title"><%= @tournament.name %></h1>
         <div class="overview-header__meta">
-          <span class="overview-header__status"><%= @tournament.status.humanize %></span>
+          <% if @current_membership&.owner? ||
+                @current_membership&.admin? ||
+                @current_membership&.dealer? %>
+            <span class="overview-header__status"><%= @tournament.status.humanize %></span>
+          <% end %>
           <time class="overview-header__date" datetime="<%= @tournament.starts_at.iso8601 %>">
             <%= image_tag "icons/Icondate.svg", alt: "" %>
             <%= l(@tournament.starts_at, format: :short) %>

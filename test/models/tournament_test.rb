@@ -28,7 +28,7 @@ class TournamentTest < ActiveSupport::TestCase
   test "invite link is unavailable when confirmed registrations reach capacity" do
     tournament = build_tournament(max_players: 1)
     tournament.save!
-    user = User.create!(name: "Player", email: "player@example.com", password: "password123")
+    user = User.create!(name: "Player", username: "player", email: "player@example.com", password: "password123")
     TournamentRegistration.create!(tournament: tournament, user: user, status: :confirmed)
 
     assert_predicate tournament, :capacity_reached?

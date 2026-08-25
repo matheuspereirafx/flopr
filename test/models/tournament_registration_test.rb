@@ -10,10 +10,10 @@ class TournamentRegistrationTest < ActiveSupport::TestCase
 
   test "accepts pending and confirmed statuses" do
     tournament = create_tournament
-    user = User.create!(name: "Player", email: "player@example.com", password: "password123")
+    user = User.create!(name: "Player", username: "player", email: "player@example.com", password: "password123")
 
     pending = TournamentRegistration.create!(tournament: tournament, user: user, status: :pending)
-    confirmed_user = User.create!(name: "Confirmed", email: "confirmed@example.com", password: "password123")
+    confirmed_user = User.create!(name: "Confirmed", username: "confirmed", email: "confirmed@example.com", password: "password123")
     confirmed = TournamentRegistration.create!(tournament: tournament, user: confirmed_user, status: :confirmed)
 
     assert_predicate pending, :pending?
@@ -22,7 +22,7 @@ class TournamentRegistrationTest < ActiveSupport::TestCase
 
   test "does not accept an unsupported status" do
     tournament = create_tournament
-    user = User.create!(name: "Player", email: "player@example.com", password: "password123")
+    user = User.create!(name: "Player", username: "player", email: "player@example.com", password: "password123")
     registration = TournamentRegistration.new(tournament: tournament, user: user)
 
     error = assert_raises ArgumentError do
@@ -34,7 +34,7 @@ class TournamentRegistrationTest < ActiveSupport::TestCase
 
   test "requires a status" do
     tournament = create_tournament
-    user = User.create!(name: "Player", email: "player@example.com", password: "password123")
+    user = User.create!(name: "Player", username: "player", email: "player@example.com", password: "password123")
     registration = TournamentRegistration.new(tournament: tournament, user: user, status: nil)
 
     assert_not registration.valid?
@@ -43,7 +43,7 @@ class TournamentRegistrationTest < ActiveSupport::TestCase
 
   test "does not allow the same user to register twice for a tournament" do
     tournament = create_tournament
-    user = User.create!(name: "Player", email: "player@example.com", password: "password123")
+    user = User.create!(name: "Player", username: "player", email: "player@example.com", password: "password123")
     TournamentRegistration.create!(tournament: tournament, user: user)
 
     duplicate = TournamentRegistration.new(tournament: tournament, user: user)
@@ -54,7 +54,7 @@ class TournamentRegistrationTest < ActiveSupport::TestCase
 
   test "persists a status change from pending to confirmed" do
     tournament = create_tournament
-    user = User.create!(name: "Player", email: "player@example.com", password: "password123")
+    user = User.create!(name: "Player", username: "player", email: "player@example.com", password: "password123")
     registration = TournamentRegistration.create!(tournament: tournament, user: user, status: :pending)
 
     registration.update!(status: :confirmed)

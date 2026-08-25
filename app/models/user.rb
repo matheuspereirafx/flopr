@@ -15,6 +15,11 @@ class User < ApplicationRecord
            through: :owner_club_memberships,
            source: :club
 
+  validates :username, presence: true, on: :create
+  validates :username,
+            format: { with: /\A[a-zA-Z0-9_.]+\z/, allow_nil: true },
+            uniqueness: { allow_nil: true }
+
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 end

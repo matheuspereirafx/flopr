@@ -5,6 +5,7 @@ class TournamentInvitationTest < ApplicationSystemTestCase
     @club = Club.create!(name: "Poker House")
     @candidate = User.create!(
       name: "Candidate",
+      username: "candidate",
       email: "candidate@example.com",
       password: "password123"
     )

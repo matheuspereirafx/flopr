@@ -57,6 +57,7 @@
           <article class="tournament-card">
             <%= link_to club_tournament_path(tournament.club, tournament),
                         class: "tournament-card__link",
+                        data: { turbo_prefetch: false },
                         aria: { label: "Ver detalhes do torneio #{tournament.name}" } do %>
             <div class="tournament-card__image-wrapper">
               <%= image_tag(

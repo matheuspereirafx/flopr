@@ -1,5 +1,6 @@
 class ClubsController < ApplicationController
   before_action :set_member_club, only: :show
+  before_action :authorize_club_overview!, only: :show
   before_action :set_owned_club, only: %i[edit update destroy]
 
   def index
@@ -49,6 +50,14 @@ class ClubsController < ApplicationController
   def set_member_club
     @club = current_user.clubs.find(params[:id])
     @current_membership = @club.club_memberships.find_by!(user: current_user)
+  end
+
+  def authorize_club_overview!
+    return if @current_membership.owner? ||
+              @current_membership.admin? ||
+              @current_membership.dealer?
+
+    render plain: "Forbidden", status: :forbidden
   end
 
   def set_owned_club

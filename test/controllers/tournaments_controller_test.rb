@@ -128,6 +128,23 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".overview-header__status", count: 0
   end
 
+  test "only non-players see the link back to the club" do
+    tournament = create_tournament(@club)
+
+    [@owner, @admin, @dealer].each do |user|
+      sign_in user
+      get club_tournament_path(@club, tournament)
+
+      assert_select ".overview-header__back", text: "← Voltar ao clube", count: 1
+      sign_out user
+    end
+
+    sign_in @player
+    get club_tournament_path(@club, tournament)
+
+    assert_select ".overview-header__back", count: 0
+  end
+
   test "a member cannot view a tournament from another club by changing its id" do
     tournament = create_tournament(@other_club)
     sign_in @owner

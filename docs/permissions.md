@@ -165,7 +165,6 @@ Não possui acesso administrativo ao clube ou aos torneios.
 
 ### Pode
 
-* visualizar o clube;
 * visualizar torneios disponíveis;
 * receber convites;
 * aceitar ou recusar convites;

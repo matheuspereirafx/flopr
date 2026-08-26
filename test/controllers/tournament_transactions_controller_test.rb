@@ -17,7 +17,7 @@ class TournamentTransactionsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, payment.amount.to_s
     assert_includes response.body, @player.name
     assert_includes response.body, "paid"
-    assert_includes response.body, @owner.name
+    assert_not_includes response.body, "Responsável"
   end
 
   test "admin can view all transactions for the tournament" do

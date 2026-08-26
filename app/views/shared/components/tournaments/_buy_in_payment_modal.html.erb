@@ -1,0 +1,40 @@
+<div class="tournament-buy-in-modal"
+     data-buy-in-payment-target="overlay"
+     <%= "hidden" unless open %>>
+  <section class="tournament-buy-in-modal__card"
+           role="dialog"
+           aria-modal="true"
+           aria-labelledby="buy-in-payment-title">
+    <button type="button"
+            class="tournament-buy-in-modal__close"
+            aria-label="Fechar pagamento"
+            data-action="buy-in-payment#close">×</button>
+
+    <p class="tournament-buy-in-modal__eyebrow">Próximo passo</p>
+    <h2 id="buy-in-payment-title">Pague o buy-in</h2>
+    <p class="tournament-buy-in-modal__description">
+      Confirme o pagamento para garantir sua inscrição neste torneio.
+    </p>
+
+    <dl class="tournament-buy-in-modal__details">
+      <div>
+        <dt>Valor</dt>
+        <dd><%= number_to_currency(buy_in.amount) %></dd>
+      </div>
+      <div>
+        <dt>Total de fichas</dt>
+        <dd><%= number_with_delimiter(buy_in.chip_amount) %></dd>
+      </div>
+    </dl>
+
+    <%= button_to "Pagar buy-in",
+                  club_tournament_buy_in_payment_path(club, tournament),
+                  method: :post,
+                  class: "tournament-buy-in-modal__pay" %>
+    <button type="button"
+            class="tournament-buy-in-modal__later"
+            data-action="buy-in-payment#close">
+      Pagar depois
+    </button>
+  </section>
+</div>

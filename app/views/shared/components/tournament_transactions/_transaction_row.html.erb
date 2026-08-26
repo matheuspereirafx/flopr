@@ -25,7 +25,7 @@
   </td>
   <td>
     <span class="transactions-status transactions-status--<%= transaction.status %>">
-      <%= transaction.status.humanize %>
+      <%= transaction.paid? ? "Pago" : transaction.status.humanize %>
     </span>
   </td>
   <td class="transactions-table__date">

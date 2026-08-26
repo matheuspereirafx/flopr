@@ -65,7 +65,7 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
       @owner => %w[Visão geral Jogadores Transações Relógio],
       @admin => %w[Visão geral Jogadores Transações Relógio],
       @dealer => %w[Visão geral Jogadores Recargas Relógio],
-      @player => %w[Visão geral Jogadores Histórico Solicitações Relógio]
+      @player => %w[Visão geral Jogadores Recargas Relógio]
     }.each do |user, visible_items|
       sign_in user
       get club_tournament_path(@club, tournament)

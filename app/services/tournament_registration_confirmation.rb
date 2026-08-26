@@ -18,7 +18,7 @@ class TournamentRegistrationConfirmation
       raise CapacityReached if @tournament.finished?
       raise CapacityReached if @tournament.capacity_reached?
 
-      registration.update!(status: :confirmed)
+      registration.update!(status: :pending)
       registration
     end
   end

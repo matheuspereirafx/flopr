@@ -58,7 +58,7 @@
 </main>
 </div>
 
-<% if @invite_token_access && !@invite_registration&.confirmed? %>
+<% if @invite_token_access && @invite_registration.blank? %>
   <div class="tournament-invitation-overlay" role="dialog" aria-modal="true" aria-labelledby="tournament-invitation-title">
     <section class="tournament-invitation-overlay__card">
       <h2 id="tournament-invitation-title">Convite para torneio</h2>
@@ -67,5 +67,23 @@
                     method: :patch,
                     class: "tournament-invitation-overlay__button" %>
     </section>
+  </div>
+<% end %>
+
+<% if @invite_registration&.pending? && @buy_in.present? %>
+  <div data-controller="buy-in-payment"
+       data-buy-in-payment-open-value="<%= @buy_in_payment_modal_open %>">
+    <button type="button"
+            class="tournament-buy-in-trigger"
+            data-buy-in-payment-target="trigger"
+            data-action="buy-in-payment#open">
+      Pagar buy-in
+    </button>
+
+    <%= render "shared/components/tournaments/buy_in_payment_modal",
+               club: @club,
+               tournament: @tournament,
+               buy_in: @buy_in,
+               open: @buy_in_payment_modal_open %>
   </div>
 <% end %>

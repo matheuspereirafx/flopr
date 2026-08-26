@@ -24,7 +24,9 @@ class TournamentInvitationTest < ApplicationSystemTestCase
 
     click_button "Confirmar presença"
 
-    assert_text "Sua presença está confirmada."
+    assert_text "Pague o buy-in"
+    click_button "Pagar buy-in"
+    assert_text "Sua inscrição está confirmada."
   end
 
   private

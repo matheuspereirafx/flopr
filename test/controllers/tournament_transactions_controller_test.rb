@@ -16,7 +16,7 @@ class TournamentTransactionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes response.body, payment.amount.to_s
     assert_includes response.body, @player.name
-    assert_includes response.body, "paid"
+    assert_includes response.body, "Pago"
     assert_not_includes response.body, "Responsável"
   end
 

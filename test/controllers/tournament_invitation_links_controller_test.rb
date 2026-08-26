@@ -36,7 +36,7 @@ class TournamentInvitationLinksControllerTest < ActionDispatch::IntegrationTest
     assert_select "button", "Confirmar presença"
   end
 
-  test "confirming from the invite modal creates membership and confirmed registration" do
+  test "confirming from the invite modal creates membership and pending registration" do
     sign_in @candidate
 
     assert_difference ["TournamentRegistration.count", "ClubMembership.count"], 1 do
@@ -44,9 +44,9 @@ class TournamentInvitationLinksControllerTest < ActionDispatch::IntegrationTest
     end
 
     registration = TournamentRegistration.find_by!(tournament: @tournament, user: @candidate)
-    assert_predicate registration, :confirmed?
+    assert_predicate registration, :pending?
     assert_equal "player", @candidate.club_memberships.find_by!(club: @club).role
-    assert_redirected_to club_tournament_path(@club, @tournament)
+    assert_redirected_to club_tournament_path(@club, @tournament, payment: "buy_in")
   end
 
   test "confirming preserves an existing club role" do
@@ -58,7 +58,7 @@ class TournamentInvitationLinksControllerTest < ActionDispatch::IntegrationTest
       end
     end
 
-    assert_predicate TournamentRegistration.find_by!(tournament: @tournament, user: @dealer), :confirmed?
+    assert_predicate TournamentRegistration.find_by!(tournament: @tournament, user: @dealer), :pending?
     assert_predicate @dealer.club_memberships.find_by!(club: @club), :dealer?
   end
 

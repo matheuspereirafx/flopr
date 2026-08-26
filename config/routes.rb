@@ -41,6 +41,8 @@ Rails.application.routes.draw do
       resources :recharges,
                 only: %i[index create],
                 controller: "tournament_recharges"
+      post :buy_in_payment,
+           to: "tournament_buy_in_payments#create"
     end
   end
 

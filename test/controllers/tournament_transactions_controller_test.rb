@@ -29,6 +29,19 @@ class TournamentTransactionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "displays the exact payment approval time" do
+    payment = create_payment_for(@player)
+    payment_time = Time.zone.local(2026, 8, 20, 15, 45, 12)
+    payment.update!(paid_at: payment_time)
+    sign_in @owner
+
+    get transactions_path(@club, @tournament)
+
+    assert_response :success
+    assert_includes response.body, payment_time.iso8601
+    assert_includes response.body, payment_time.strftime("%H:%M")
+  end
+
   test "dealer cannot view administrative transactions" do
     sign_in @dealer
 

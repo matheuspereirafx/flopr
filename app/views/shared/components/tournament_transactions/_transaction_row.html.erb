@@ -1,5 +1,6 @@
 <% registration = transaction.tournament_registration %>
 <% charge_option = transaction.tournament_charge_option %>
+<% transaction_time = (transaction.paid_at || transaction.created_at).in_time_zone("America/Sao_Paulo") %>
 <tr class="transactions-table__row">
   <th scope="row" class="transactions-table__player">
     <span class="transactions-table__player-content">
@@ -29,8 +30,8 @@
     </span>
   </td>
   <td class="transactions-table__date">
-    <time datetime="<%= transaction.created_at.iso8601 %>">
-      <%= l(transaction.created_at, format: :short) %>
+    <time datetime="<%= transaction_time.iso8601 %>">
+      <%= l(transaction_time, format: :short) %>
     </time>
   </td>
 </tr>

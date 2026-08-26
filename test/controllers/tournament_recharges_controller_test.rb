@@ -15,7 +15,7 @@ class TournamentRechargesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_includes response.body, "Rebuy"
-    assert_includes response.body, recharge.created_at.strftime("%H:%M")
+    assert_includes response.body, recharge.created_at.in_time_zone("America/Sao_Paulo").strftime("%H:%M")
     assert_not_includes response.body, @other_player.name
   end
 

@@ -1,10 +1,11 @@
+<% recharge_time = recharge.created_at.in_time_zone("America/Sao_Paulo") %>
 <article class="recharge-history-item">
   <div class="recharge-history-item__details">
     <span class="recharge-history-item__icon" aria-hidden="true">+</span>
     <div>
       <strong><%= recharge.tournament_charge_option.kind.humanize %></strong>
-      <time datetime="<%= recharge.created_at.iso8601 %>">
-        <%= l(recharge.created_at, format: :short) %>
+      <time datetime="<%= recharge_time.iso8601 %>">
+        <%= l(recharge_time, format: :short) %>
       </time>
     </div>
   </div>

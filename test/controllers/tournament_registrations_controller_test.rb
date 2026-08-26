@@ -91,12 +91,13 @@ class TournamentRegistrationsControllerTest < ActionDispatch::IntegrationTest
       status: :confirmed
     )
 
-    sign_in @owner
+    sign_in @player
     get registrations_path
 
     assert_response :success
     assert_includes response.body, @player.name
     assert_includes response.body, "@#{@player.username}"
+    assert_includes response.body, "Você"
     assert_includes response.body, pending_player.name
     assert_includes response.body, "@#{pending_player.username}"
     assert_includes response.body, "pending"

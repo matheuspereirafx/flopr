@@ -4,7 +4,12 @@
       <%= registration.user.name.to_s.first(2).upcase %>
     </span>
     <span class="registrations-table__player-details">
-      <span class="registrations-table__player-name"><%= registration.user.name %></span>
+      <span class="registrations-table__player-name-line">
+        <span class="registrations-table__player-name"><%= registration.user.name %></span>
+        <% if registration.user == current_user %>
+          <span class="registrations-table__current-user">Você</span>
+        <% end %>
+      </span>
       <span class="registrations-table__player-username">
         <%= registration.user.username.present? ? "@#{registration.user.username}" : "Username não informado" %>
       </span>

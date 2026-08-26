@@ -164,6 +164,24 @@
   white-space: nowrap;
 }
 
+.registrations-table__player-name-line {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+.registrations-table__current-user {
+  flex: 0 0 auto;
+  padding: 3px 7px;
+  border-radius: 999px;
+  color: #2e2176;
+  background: #c7bfff;
+  font: 700 10px/1 $font-secondary;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
 .registrations-table__player-username {
   overflow: hidden;
   color: #a1a1aa;

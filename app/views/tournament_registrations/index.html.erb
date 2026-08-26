@@ -47,7 +47,8 @@
             <tbody>
               <% @registrations.each do |registration| %>
                 <%= render "shared/components/tournament_registrations/registration_row",
-                           registration: registration %>
+                           registration: registration,
+                           current_user: current_user %>
               <% end %>
             </tbody>
           </table>

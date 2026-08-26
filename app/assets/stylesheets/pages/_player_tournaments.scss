@@ -1,0 +1,48 @@
+.player-tournaments-page {
+  min-height: 100vh;
+  padding: 48px;
+  background: $backgroundclub;
+}
+
+.player-tournaments-page__header {
+  max-width: 760px;
+  margin: 0 auto 48px;
+}
+
+.player-tournaments-page__eyebrow {
+  margin: 0 0 8px;
+  color: #a1a1aa;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.player-tournaments-page__title {
+  margin: 0;
+  color: #ffffff;
+  font-family: $font-primary;
+  font-size: $font-display-lg-size;
+}
+
+.player-tournaments-page__description {
+  max-width: 620px;
+  margin: 16px 0 0;
+  color: #c9c4d3;
+  font-family: $font-secondary;
+  font-size: $font-body-md-size;
+}
+
+.player-tournaments-page__section {
+  max-width: 1440px;
+  margin: 0 auto 56px;
+}
+
+@media (max-width: 768px) {
+  .player-tournaments-page {
+    padding: 32px 16px;
+  }
+
+  .player-tournaments-page__title {
+    font-size: 42px;
+  }
+}

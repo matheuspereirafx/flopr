@@ -1,7 +1,6 @@
 <main class="player-tournaments-page">
   <header class="player-tournaments-page__header">
     <p class="player-tournaments-page__eyebrow">Sua agenda</p>
-    <h1 class="player-tournaments-page__title">Meus torneios</h1>
     <p class="player-tournaments-page__description">
       Acompanhe os próximos torneios dos clubes dos quais você participa e suas inscrições.
     </p>
@@ -10,10 +9,10 @@
   <section class="player-tournaments-page__section" aria-labelledby="upcoming-tournaments-title">
     <%= render "shared/components/tournaments/card_tournaments",
                tournaments: @upcoming_tournaments,
-               section_title: "Próximos torneios",
+               section_title: "Torneios",
                section_id: "upcoming-tournaments-title",
-               empty_message: "Nenhum próximo torneio encontrado.",
-               show_filters: false,
+               empty_message: "Nenhum torneio encontrado.",
+               show_filters: true,
                current_membership: nil,
                current_memberships_by_club_id: @current_memberships_by_club_id,
                confirmed_registrations_by_tournament: @confirmed_registrations_by_tournament %>

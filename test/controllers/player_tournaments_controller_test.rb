@@ -23,7 +23,11 @@ class PlayerTournamentsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select ".player-tournaments-page__section:nth-of-type(1) .club-events__title",
-                  text: "Próximos torneios"
+                  text: "Torneios"
+    assert_select ".player-tournaments-page__section:nth-of-type(1) .club-events__filters",
+                  count: 1
+    assert_select ".player-tournaments-page__section:nth-of-type(2) .club-events__filters",
+                  count: 0
     assert_select ".player-tournaments-page__section:nth-of-type(1) .tournament-card__title", 2
     assert_operator response.body.index(earliest.name), :<, response.body.index(latest.name)
     assert_not_includes response.body, "Private Tournament"

@@ -1,6 +1,6 @@
 .player-tournaments-page {
   min-height: 100vh;
-  padding: 48px;
+  padding: 48px 48px 72px;
   background: $backgroundclub;
 }
 
@@ -39,7 +39,16 @@
 
 @media (max-width: 768px) {
   .player-tournaments-page {
-    padding: 32px 16px;
+    padding: 48px 48px 72px;
+  }
+
+  .player-tournaments-page .club-events__grid {
+    justify-content: flex-start;
+  }
+
+  .player-tournaments-page .club-events__grid .tournament-card {
+    margin-right: 0;
+    margin-left: 0;
   }
 
   .player-tournaments-page__title {

@@ -62,8 +62,8 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     TournamentRegistration.create!(tournament: tournament, user: @player, status: :confirmed)
 
     {
-      @owner => %w[Visão geral Jogadores Pagamentos Relógio],
-      @admin => %w[Visão geral Jogadores Pagamentos Relógio],
+      @owner => %w[Visão geral Jogadores Transações Relógio],
+      @admin => %w[Visão geral Jogadores Transações Relógio],
       @dealer => %w[Visão geral Jogadores Recargas Relógio],
       @player => %w[Visão geral Jogadores Histórico Solicitações Relógio]
     }.each do |user, visible_items|

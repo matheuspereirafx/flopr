@@ -1,0 +1,82 @@
+<div class="tournament-show-shell">
+  <%= render "shared/components/tournaments/navigation",
+             club: @club,
+             tournament: @tournament,
+             current_membership: @current_membership,
+             current_registration: nil,
+             active_page: :transactions %>
+
+  <main class="tournament-transactions-page" aria-labelledby="tournament-transactions-title">
+    <header class="tournament-transactions-page__header">
+      <div class="tournament-transactions-page__identity">
+        <p class="tournament-transactions-page__eyebrow">Gestão financeira</p>
+        <h1 id="tournament-transactions-title">Transações</h1>
+        <p class="tournament-transactions-page__description">
+          Acompanhe as compras realizadas pelos jogadores neste torneio.
+        </p>
+      </div>
+
+      <section class="transactions-summary" aria-label="Resumo financeiro">
+        <article class="transactions-summary__item transactions-summary__item--featured">
+          <span class="transactions-summary__label">Total recebido</span>
+          <strong class="transactions-summary__value"><%= number_to_currency(@paid_total) %></strong>
+        </article>
+
+        <article class="transactions-summary__item">
+          <span class="transactions-summary__label">Buy-ins</span>
+          <strong class="transactions-summary__value"><%= @paid_counts_by_kind.fetch("buy_in", 0) %></strong>
+        </article>
+
+        <article class="transactions-summary__item">
+          <span class="transactions-summary__label">Rebuys</span>
+          <strong class="transactions-summary__value"><%= @paid_counts_by_kind.fetch("rebuy", 0) %></strong>
+        </article>
+
+        <article class="transactions-summary__item">
+          <span class="transactions-summary__label">Add-ons</span>
+          <strong class="transactions-summary__value"><%= @paid_counts_by_kind.fetch("addon", 0) %></strong>
+        </article>
+      </section>
+    </header>
+
+    <section class="transactions-section" aria-labelledby="transactions-section-title">
+      <header class="transactions-section__header">
+        <div>
+          <p class="transactions-section__eyebrow">Histórico financeiro</p>
+          <h2 id="transactions-section-title">Todas as transações</h2>
+        </div>
+        <span class="transactions-section__count"><%= @transactions.size %> registros</span>
+      </header>
+
+      <% if @transactions.any? %>
+        <div class="transactions-table-wrapper">
+          <table class="transactions-table">
+            <caption class="sr-only">Transações do torneio <%= @tournament.name %></caption>
+            <thead>
+              <tr>
+                <th scope="col">Jogador</th>
+                <th scope="col">Produto</th>
+                <th scope="col">Valor</th>
+                <th scope="col">Status</th>
+                <th scope="col">Data</th>
+                <th scope="col">Responsável</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @transactions.each do |transaction| %>
+                <%= render "shared/components/tournament_transactions/transaction_row",
+                           transaction: transaction %>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <div class="transactions-empty-state" role="status">
+          <span class="transactions-empty-state__icon" aria-hidden="true">◌</span>
+          <p>Nenhuma transação registrada neste torneio.</p>
+          <span>As compras aparecerão aqui após a confirmação pelo gateway.</span>
+        </div>
+      <% end %>
+    </section>
+  </main>
+</div>

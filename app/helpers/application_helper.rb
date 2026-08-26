@@ -7,6 +7,7 @@ module ApplicationHelper
       tournament_invitation_links
       tournament_invite_links
       tournament_registrations
+      tournament_transactions
       tournaments
     ].include?(controller_name)
   end
@@ -23,7 +24,16 @@ module ApplicationHelper
     ]
 
     if membership.owner? || membership.admin?
-      items.insert(2, navigation_item("Pagamentos", "icons/iconcash.png", :payments, active_page))
+      items.insert(
+        2,
+        navigation_item(
+          "Transações",
+          "icons/iconcash.png",
+          :transactions,
+          active_page,
+          club_tournament_transactions_path(club, tournament)
+        )
+      )
       items << navigation_item(
         "Configurações",
         "icons/iconconfiguracoes.svg",

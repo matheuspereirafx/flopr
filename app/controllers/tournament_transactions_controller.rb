@@ -11,7 +11,13 @@ class TournamentTransactionsController < ApplicationController
                                     recorded_by: {}
                                   )
                                   .order(created_at: :desc)
-    @paid_total = @transactions.paid.sum(:amount)
+    paid_transactions = @transactions.paid
+    @paid_total = paid_transactions.sum(:amount)
+    @paid_counts_by_kind = paid_transactions
+                            .unscope(:order)
+                            .joins(:tournament_charge_option)
+                            .group("tournament_charge_options.kind")
+                            .count
   end
 
   private

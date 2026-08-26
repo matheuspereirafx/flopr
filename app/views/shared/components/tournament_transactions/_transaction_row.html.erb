@@ -1,0 +1,38 @@
+<% registration = transaction.tournament_registration %>
+<% charge_option = transaction.tournament_charge_option %>
+<tr class="transactions-table__row">
+  <th scope="row" class="transactions-table__player">
+    <span class="transactions-table__avatar" aria-hidden="true">
+      <%= registration.user.name.to_s.first(2).upcase %>
+    </span>
+    <span class="transactions-table__player-details">
+      <span class="transactions-table__player-name"><%= registration.user.name %></span>
+      <% if registration.user.username.present? %>
+        <span class="transactions-table__player-username">@<%= registration.user.username %></span>
+      <% end %>
+    </span>
+  </th>
+  <td class="transactions-table__product">
+    <%= charge_option.kind.humanize %>
+  </td>
+  <td class="transactions-table__amount">
+    <strong data-amount="<%= transaction.amount %>"><%= number_to_currency(transaction.amount) %></strong>
+    <% if charge_option.chip_amount.present? %>
+      <small><%= number_with_delimiter(charge_option.chip_amount) %> fichas</small>
+    <% end %>
+  </td>
+  <td>
+    <span class="transactions-status transactions-status--<%= transaction.status %>">
+      <%= transaction.status.humanize %>
+    </span>
+  </td>
+  <td class="transactions-table__date">
+    <time datetime="<%= transaction.created_at.iso8601 %>">
+      <%= l(transaction.created_at, format: :short) %>
+    </time>
+  </td>
+  <td class="transactions-table__source">
+    <span><%= transaction.recorded_by.name %></span>
+    <small><%= transaction.provider.humanize %></small>
+  </td>
+</tr>

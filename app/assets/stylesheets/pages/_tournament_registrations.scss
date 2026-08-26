@@ -138,6 +138,12 @@
   font: 600 14px/1.3 $font-secondary;
 }
 
+.registrations-table__player-details {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
 .registrations-table__avatar {
   display: inline-grid;
   width: 30px;
@@ -154,6 +160,14 @@
 .registrations-table__player-name {
   min-width: 0;
   overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.registrations-table__player-username {
+  overflow: hidden;
+  color: #a1a1aa;
+  font: 400 12px/1.2 $font-secondary;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

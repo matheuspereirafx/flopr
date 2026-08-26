@@ -1,0 +1,33 @@
+<article class="recharge-option-card">
+  <div class="recharge-option-card__icon" aria-hidden="true">+</div>
+
+  <div class="recharge-option-card__content">
+    <h3><%= charge_option.kind.humanize %></h3>
+    <p>
+      <%= charge_option.addon? ?
+            "Aumente seu stack durante o período do add-on." :
+            "Reponha seu stack enquanto esta opção estiver disponível." %>
+    </p>
+  </div>
+
+  <div class="recharge-option-card__details">
+    <div>
+      <span>Chips</span>
+      <strong><%= number_with_delimiter(charge_option.chip_amount) %></strong>
+    </div>
+    <div>
+      <span>Custo</span>
+      <strong><%= number_to_currency(charge_option.amount) %></strong>
+    </div>
+  </div>
+
+  <%= button_to "Solicitar",
+                club_tournament_recharges_path(club, tournament),
+                method: :post,
+                params: {
+                  registration_payment: {
+                    tournament_charge_option_id: charge_option.id
+                  }
+                },
+                class: "recharge-option-card__button" %>
+</article>

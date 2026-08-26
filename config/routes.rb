@@ -38,6 +38,9 @@ Rails.application.routes.draw do
       resources :transactions,
                 only: :index,
                 controller: "tournament_transactions"
+      resources :recharges,
+                only: %i[index create],
+                controller: "tournament_recharges"
     end
   end
 

@@ -1,0 +1,15 @@
+<article class="recharge-history-item">
+  <div class="recharge-history-item__details">
+    <span class="recharge-history-item__icon" aria-hidden="true">+</span>
+    <div>
+      <strong><%= recharge.tournament_charge_option.kind.humanize %></strong>
+      <time datetime="<%= recharge.created_at.iso8601 %>">
+        <%= l(recharge.created_at, format: :short) %>
+      </time>
+    </div>
+  </div>
+
+  <span class="recharge-request-status recharge-request-status--<%= recharge.status %>">
+    <%= recharge.status.humanize %>
+  </span>
+</article>

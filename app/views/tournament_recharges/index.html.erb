@@ -1,0 +1,63 @@
+<div class="tournament-show-shell">
+  <%= render "shared/components/tournaments/navigation",
+             club: @club,
+             tournament: @tournament,
+             current_membership: @current_membership,
+             current_registration: @registration,
+             active_page: :recharges %>
+
+  <main class="tournament-recharges-page" aria-labelledby="tournament-recharges-title">
+    <header class="tournament-recharges-page__header">
+      <p class="tournament-recharges-page__eyebrow">Recargas do torneio</p>
+      <h1 id="tournament-recharges-title">Solicitar recarga</h1>
+      <p class="tournament-recharges-page__description">
+        Escolha uma opção disponível para solicitar novas fichas neste torneio.
+      </p>
+    </header>
+
+    <section class="recharge-actions-section" aria-labelledby="recharge-actions-title">
+      <header class="recharge-section__header">
+        <p class="recharge-section__eyebrow">Request actions</p>
+        <h2 id="recharge-actions-title">Recargas disponíveis</h2>
+      </header>
+
+      <% if @available_charge_options.any? %>
+        <div class="recharge-options-grid">
+          <% @available_charge_options.each do |charge_option| %>
+            <%= render "shared/components/tournament_recharges/charge_option_card",
+                       charge_option: charge_option,
+                       club: @club,
+                       tournament: @tournament %>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="recharge-empty-state" role="status">
+          <span class="recharge-empty-state__icon" aria-hidden="true">+</span>
+          <p>Nenhuma recarga disponível no momento.</p>
+        </div>
+      <% end %>
+    </section>
+
+    <section class="recharge-history-section" aria-labelledby="recharge-history-title">
+      <header class="recharge-section__header">
+        <p class="recharge-section__eyebrow">Request history</p>
+        <h2 id="recharge-history-title">Histórico de solicitações</h2>
+      </header>
+
+      <% if @recharge_history.any? %>
+        <div class="recharge-history-list">
+          <% @recharge_history.each do |recharge| %>
+            <%= render "shared/components/tournament_recharges/request_history_item",
+                       recharge: recharge %>
+          <% end %>
+        </div>
+        <p class="recharge-history-section__footer">Suas solicitações aparecem aqui após o envio.</p>
+      <% else %>
+        <div class="recharge-empty-state" role="status">
+          <span class="recharge-empty-state__icon" aria-hidden="true">◌</span>
+          <p>Você ainda não solicitou nenhuma recarga.</p>
+        </div>
+      <% end %>
+    </section>
+  </main>
+</div>

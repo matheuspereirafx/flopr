@@ -3,7 +3,12 @@
     <span class="registrations-table__avatar" aria-hidden="true">
       <%= registration.user.name.to_s.first(2).upcase %>
     </span>
-    <span class="registrations-table__player-name"><%= registration.user.name %></span>
+    <span class="registrations-table__player-details">
+      <span class="registrations-table__player-name"><%= registration.user.name %></span>
+      <span class="registrations-table__player-username">
+        <%= registration.user.username.present? ? "@#{registration.user.username}" : "Username não informado" %>
+      </span>
+    </span>
   </th>
   <td>
     <span class="registration-status registration-status--<%= registration.status %>"

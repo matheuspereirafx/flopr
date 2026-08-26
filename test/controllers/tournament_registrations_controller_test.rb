@@ -96,7 +96,9 @@ class TournamentRegistrationsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_includes response.body, @player.name
+    assert_includes response.body, "@#{@player.username}"
     assert_includes response.body, pending_player.name
+    assert_includes response.body, "@#{pending_player.username}"
     assert_includes response.body, "pending"
     assert_includes response.body, "confirmed"
     assert_not_includes response.body, other_player.name

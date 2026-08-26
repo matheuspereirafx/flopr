@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_25_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_26_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -43,6 +43,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_25_120000) do
     t.string "name"
     t.datetime "updated_at", null: false
     t.string "whatsapp_contact_number"
+  end
+
+  create_table "registration_payments", force: :cascade do |t|
+    t.decimal "amount", precision: 10, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "paid_at"
+    t.string "payment_method", null: false
+    t.string "provider", null: false
+    t.string "provider_payment_id"
+    t.string "provider_status"
+    t.bigint "recorded_by_id", null: false
+    t.string "status", default: "pending", null: false
+    t.bigint "tournament_charge_option_id", null: false
+    t.bigint "tournament_registration_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider", "provider_payment_id"], name: "idx_on_provider_provider_payment_id_d5c7638595", unique: true, where: "(provider_payment_id IS NOT NULL)"
+    t.index ["recorded_by_id"], name: "index_registration_payments_on_recorded_by_id"
+    t.index ["status"], name: "index_registration_payments_on_status"
+    t.index ["tournament_charge_option_id"], name: "index_registration_payments_on_tournament_charge_option_id"
+    t.index ["tournament_registration_id"], name: "index_registration_payments_on_tournament_registration_id"
+    t.check_constraint "amount >= 0::numeric", name: "registration_payments_amount_non_negative"
   end
 
   create_table "tournament_charge_options", force: :cascade do |t|
@@ -142,6 +163,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_25_120000) do
   add_foreign_key "blind_levels", "tournaments"
   add_foreign_key "club_memberships", "clubs"
   add_foreign_key "club_memberships", "users"
+  add_foreign_key "registration_payments", "tournament_charge_options"
+  add_foreign_key "registration_payments", "tournament_registrations"
+  add_foreign_key "registration_payments", "users", column: "recorded_by_id"
   add_foreign_key "tournament_charge_options", "blind_levels", column: "available_from_level_id"
   add_foreign_key "tournament_charge_options", "blind_levels", column: "available_until_level_id"
   add_foreign_key "tournament_charge_options", "tournaments"

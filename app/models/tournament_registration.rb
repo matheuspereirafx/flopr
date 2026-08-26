@@ -2,6 +2,9 @@ class TournamentRegistration < ApplicationRecord
   belongs_to :tournament
   belongs_to :user
 
+  has_many :registration_payments,
+           dependent: :destroy
+
   enum :status, {
     pending: "pending",
     confirmed: "confirmed"

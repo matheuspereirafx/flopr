@@ -8,6 +8,9 @@ class Tournament < ApplicationRecord
   has_many :tournament_registrations,
            dependent: :destroy
 
+  has_many :registration_payments,
+           through: :tournament_registrations
+
   has_one :clock_state,
           class_name: "TournamentClockState",
           dependent: :destroy

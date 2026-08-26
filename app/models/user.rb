@@ -4,6 +4,11 @@ class User < ApplicationRecord
   has_many :club_memberships, dependent: :destroy
   has_many :tournament_registrations, dependent: :destroy
 
+  has_many :recorded_registration_payments,
+           class_name: "RegistrationPayment",
+           foreign_key: :recorded_by_id,
+           dependent: :restrict_with_exception
+
   has_many :clubs,
            through: :club_memberships
 

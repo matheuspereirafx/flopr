@@ -35,6 +35,9 @@ Rails.application.routes.draw do
       resources :registrations,
                 only: :index,
                 controller: "tournament_registrations"
+      resources :transactions,
+                only: :index,
+                controller: "tournament_transactions"
     end
   end
 

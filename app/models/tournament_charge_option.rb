@@ -2,6 +2,9 @@ class TournamentChargeOption < ApplicationRecord
   KINDS = %w[buy_in rebuy double_rebuy addon fee].freeze
 
   belongs_to :tournament
+
+  has_many :registration_payments,
+           dependent: :restrict_with_exception
   belongs_to :available_from_level,
              class_name: "BlindLevel",
              optional: true

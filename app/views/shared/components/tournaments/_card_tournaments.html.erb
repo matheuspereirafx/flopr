@@ -3,32 +3,34 @@
   data-controller="horizontal-scroll"
 >
   <header class="club-events__header">
-    <h2 class="club-events__title">
-      Eventos
+    <h2<%= " id=\"#{local_assigns[:section_id]}\"" if local_assigns[:section_id].present? %> class="club-events__title">
+      <%= local_assigns.fetch(:section_title, "Eventos") %>
     </h2>
 
-    <div class="club-events__filters">
-      <button
-        type="button"
-        class="club-events__filter club-events__filter--active"
-      >
-        Todos
-      </button>
+    <% if local_assigns.fetch(:show_filters, true) %>
+      <div class="club-events__filters">
+        <button
+          type="button"
+          class="club-events__filter club-events__filter--active"
+        >
+          Todos
+        </button>
 
-      <button
-        type="button"
-        class="club-events__filter"
-      >
-        Ao vivo
-      </button>
+        <button
+          type="button"
+          class="club-events__filter"
+        >
+          Ao vivo
+        </button>
 
-      <button
-        type="button"
-        class="club-events__filter"
-      >
-        Próximos
-      </button>
-    </div>
+        <button
+          type="button"
+          class="club-events__filter"
+        >
+          Próximos
+        </button>
+      </div>
+    <% end %>
   </header>
 
   <% if tournaments.any? %>
@@ -49,6 +51,8 @@
         data-action="scroll->horizontal-scroll#updateButtons"
       >
         <% tournaments.each do |tournament| %>
+          <% membership = local_assigns[:current_membership] ||
+                          local_assigns.fetch(:current_memberships_by_club_id, {})[tournament.club_id] %>
           <% buy_in = tournament.charge_options.find do |option|
                option.buy_in? && option.active?
              end %>
@@ -143,11 +147,11 @@
             </div>
             <% end %>
 
-            <% if current_membership.owner? || current_membership.admin? %>
+            <% if membership&.owner? || membership&.admin? %>
               <div class="tournament-card__menu">
                 <%= render "shared/components/tournaments/tournament_menu_card",
                            tournament: tournament,
-                           can_destroy: current_membership.owner? %>
+                           can_destroy: membership.owner? %>
               </div>
             <% end %>
           </article>
@@ -166,7 +170,7 @@
     </div>
   <% else %>
     <p class="club-events__empty">
-      Nenhum torneio criado ainda.
+      <%= local_assigns.fetch(:empty_message, "Nenhum torneio criado ainda.") %>
     </p>
   <% end %>
 </section>

@@ -1,0 +1,33 @@
+<main class="player-tournaments-page">
+  <header class="player-tournaments-page__header">
+    <p class="player-tournaments-page__eyebrow">Sua agenda</p>
+    <h1 class="player-tournaments-page__title">Meus torneios</h1>
+    <p class="player-tournaments-page__description">
+      Acompanhe os próximos torneios dos clubes dos quais você participa e suas inscrições.
+    </p>
+  </header>
+
+  <section class="player-tournaments-page__section" aria-labelledby="upcoming-tournaments-title">
+    <%= render "shared/components/tournaments/card_tournaments",
+               tournaments: @upcoming_tournaments,
+               section_title: "Próximos torneios",
+               section_id: "upcoming-tournaments-title",
+               empty_message: "Nenhum próximo torneio encontrado.",
+               show_filters: false,
+               current_membership: nil,
+               current_memberships_by_club_id: @current_memberships_by_club_id,
+               confirmed_registrations_by_tournament: @confirmed_registrations_by_tournament %>
+  </section>
+
+  <section class="player-tournaments-page__section" aria-labelledby="my-tournaments-title">
+    <%= render "shared/components/tournaments/card_tournaments",
+               tournaments: @my_tournaments,
+               section_title: "Meus torneios",
+               section_id: "my-tournaments-title",
+               empty_message: "Você ainda não está inscrito em nenhum torneio.",
+               show_filters: false,
+               current_membership: nil,
+               current_memberships_by_club_id: @current_memberships_by_club_id,
+               confirmed_registrations_by_tournament: @confirmed_registrations_by_tournament %>
+  </section>
+</main>

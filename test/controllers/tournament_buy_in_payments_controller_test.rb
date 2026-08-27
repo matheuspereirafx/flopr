@@ -1,22 +1,37 @@
 require "test_helper"
 
 class TournamentBuyInPaymentsControllerTest < ActionDispatch::IntegrationTest
-  test "player can pay the buy-in and confirm the pending registration" do
+  class GatewayStub
+    def create_customer(_user)
+      { id: "cus_buy_in_player" }
+    end
+
+    def create_payment(_registration, _charge_option, _customer_id)
+      { id: "pay_buy_in_pix", status: "PENDING" }
+    end
+  end
+
+  test "player can create a pending Pix buy-in payment" do
+    @player.update!(cpf: "52998224725")
     sign_in @player
 
-    assert_difference "RegistrationPayment.count", 1 do
-      post payment_path
+    with_gateway_stub do
+      assert_difference "RegistrationPayment.count", 1 do
+        post payment_path
+      end
     end
 
     payment = RegistrationPayment.order(:created_at).last
-    assert_predicate payment, :paid?
+    assert_predicate payment, :pending?
     assert_equal @buy_in.amount, payment.amount
+    assert_equal "pay_buy_in_pix", payment.provider_payment_id
     assert_equal @player, payment.tournament_registration.user
-    assert_predicate @registration.reload, :confirmed?
+    assert_predicate @registration.reload, :pending?
     assert_redirected_to club_tournament_path(@club, @tournament)
   end
 
   test "a second payment does not create a duplicate transaction" do
+    @player.update!(cpf: "52998224725")
     @registration.update!(status: :confirmed)
     sign_in @player
 
@@ -74,5 +89,13 @@ class TournamentBuyInPaymentsControllerTest < ActionDispatch::IntegrationTest
 
   def payment_path
     club_tournament_buy_in_payment_path(@club, @tournament)
+  end
+
+  def with_gateway_stub
+    original_new = AsaasClient.method(:new)
+    AsaasClient.define_singleton_method(:new) { GatewayStub.new }
+    yield
+  ensure
+    AsaasClient.define_singleton_method(:new, original_new)
   end
 end

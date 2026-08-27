@@ -49,6 +49,7 @@ Rails.application.routes.draw do
   patch "tournament-invitations/:token/confirm",
         to: "tournament_invitation_links#confirm",
         as: :confirm_tournament_invitation
+  post "/webhooks/asaas", to: "payment_webhooks#asaas"
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest

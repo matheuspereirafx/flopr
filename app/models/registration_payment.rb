@@ -16,6 +16,7 @@ class RegistrationPayment < ApplicationRecord
             presence: true,
             numericality: { greater_than_or_equal_to: 0 }
   validates :provider, :payment_method, presence: true
+  validates :provider_payment_id, uniqueness: { scope: :provider }, allow_blank: true
   validate :payment_resources_belong_to_same_tournament
 
   private

@@ -24,7 +24,31 @@ class User < ApplicationRecord
   validates :username,
             format: { with: /\A[a-zA-Z0-9_.]+\z/, allow_nil: true },
             uniqueness: { allow_nil: true }
+  validate :cpf_must_be_valid, if: -> { cpf.present? }
+  validates :cpf, uniqueness: true, allow_blank: true
+
+  before_validation :normalize_cpf
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
+
+  private
+
+  def normalize_cpf
+    self.cpf = cpf.to_s.gsub(/\D/, "") if cpf.present?
+  end
+
+  def cpf_must_be_valid
+    digits = cpf.to_s
+    invalid = digits.length != 11 || digits.chars.uniq.one?
+    invalid ||= cpf_digit(digits.first(9)) != digits[9].to_i
+    invalid ||= cpf_digit(digits.first(10)) != digits[10].to_i
+    errors.add(:cpf, "não é válido") if invalid
+  end
+
+  def cpf_digit(digits)
+    factor = digits.length + 1
+    remainder = digits.chars.sum { |digit| digit.to_i * factor.tap { factor -= 1 } } % 11
+    remainder < 2 ? 0 : 11 - remainder
+  end
 end

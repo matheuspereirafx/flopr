@@ -13,8 +13,22 @@
     <p class="tournament-buy-in-modal__eyebrow">Próximo passo</p>
     <h2 id="buy-in-payment-title">Pague o buy-in</h2>
     <p class="tournament-buy-in-modal__description">
-      Confirme o pagamento para garantir sua inscrição neste torneio.
+      Informe seus dados e pague via Pix para garantir sua inscrição neste torneio.
     </p>
+
+    <%= form_with url: club_tournament_buy_in_payment_path(club, tournament),
+                  method: :post,
+                  scope: :user,
+                  local: true,
+                  class: "tournament-buy-in-modal__form" do |form| %>
+      <% if current_user.cpf.blank? %>
+        <%= form.label :cpf, "CPF" %>
+        <%= form.text_field :cpf,
+                            required: true,
+                            inputmode: "numeric",
+                            autocomplete: "off",
+                            placeholder: "000.000.000-00" %>
+      <% end %>
 
     <dl class="tournament-buy-in-modal__details">
       <div>
@@ -27,10 +41,8 @@
       </div>
     </dl>
 
-    <%= button_to "Pagar buy-in",
-                  club_tournament_buy_in_payment_path(club, tournament),
-                  method: :post,
-                  class: "tournament-buy-in-modal__pay" %>
+      <%= form.submit "Pagar buy-in via Pix", class: "tournament-buy-in-modal__pay" %>
+    <% end %>
     <button type="button"
             class="tournament-buy-in-modal__later"
             data-action="buy-in-payment#close">

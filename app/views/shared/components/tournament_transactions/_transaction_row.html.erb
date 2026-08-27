@@ -1,7 +1,9 @@
 <% registration = transaction.tournament_registration %>
 <% charge_option = transaction.tournament_charge_option %>
 <% transaction_time = (transaction.paid_at || transaction.created_at).in_time_zone("America/Sao_Paulo") %>
-<tr class="transactions-table__row">
+<tr class="transactions-table__row"
+    data-transaction-filter-target="transaction"
+    data-player-search="<%= [registration.user.name, registration.user.username].compact.join(" ").downcase %>">
   <th scope="row" class="transactions-table__player">
     <span class="transactions-table__player-content">
       <span class="transactions-table__avatar" aria-hidden="true">

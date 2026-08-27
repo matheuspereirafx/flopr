@@ -115,6 +115,16 @@
 .transactions-section__eyebrow { margin-bottom: 7px; }
 .transactions-section__header h2 { margin: 0; color: #f0eff4; font: 700 25px/1.1 $font-primary; letter-spacing: -.03em; }
 .transactions-section__count { color: #a1a1aa; font-size: 12px; white-space: nowrap; }
+.transactions-player-filter { position: relative; padding: 16px 24px; border-bottom: 1px solid rgba(255, 255, 255, .08); }
+.transactions-player-filter label { display: block; margin-bottom: 7px; color: #a1a1aa; font: 700 9px/1.2 $font-secondary; letter-spacing: .12em; text-transform: uppercase; }
+.transactions-player-filter input { width: 320px; max-width: 100%; height: 40px; padding: 0 12px; border: 1px solid rgba(255, 255, 255, .12); border-radius: 8px; color: #f0eff4; background: #0e0e0f; font: 400 13px $font-secondary; outline: none; }
+.transactions-player-filter input:focus { border-color: #988fd7; }
+.transactions-player-filter__options { position: absolute; z-index: 2; top: 76px; left: 24px; width: 320px; max-width: calc(100% - 48px); max-height: 220px; overflow-y: auto; border: 1px solid rgba(255, 255, 255, .12); border-radius: 8px; background: #201f20; box-shadow: 0 12px 24px rgba(0, 0, 0, .28); }
+.transactions-player-filter__options button { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 12px; border: 0; border-bottom: 1px solid rgba(255, 255, 255, .07); color: #f0eff4; background: transparent; font: 600 13px $font-secondary; text-align: left; cursor: pointer; }
+.transactions-player-filter__options button:last-child { border-bottom: 0; }
+.transactions-player-filter__options button:hover { background: rgba(82, 72, 156, .22); }
+.transactions-player-filter__options small { color: #8f8b99; font-size: 11px; }
+.transactions-player-filter__empty { margin: 10px 0 0; color: #a1a1aa; font-size: 12px; }
 
 .transactions-table-wrapper { width: 100%; overflow-x: auto; }
 .mobile-transactions { display: none; }
@@ -175,6 +185,9 @@
   .transactions-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .transactions-summary__item--featured { grid-column: 1 / -1; }
   .transactions-section__header { align-items: flex-start; padding: 18px; }
+  .transactions-player-filter { padding: 14px 18px; }
+  .transactions-player-filter input { width: 100%; }
+  .transactions-player-filter__options { top: 73px; left: 18px; width: calc(100% - 36px); }
   .transactions-table-wrapper { display: none; }
   .mobile-transactions { display: grid; gap: 28px; padding: 18px; }
   .mobile-transaction-requests,

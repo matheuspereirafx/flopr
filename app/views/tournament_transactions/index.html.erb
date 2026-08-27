@@ -39,7 +39,9 @@
       </section>
     </header>
 
-    <section class="transactions-section" aria-labelledby="transactions-section-title">
+    <section class="transactions-section"
+             aria-labelledby="transactions-section-title"
+             data-controller="transaction-filter">
       <header class="transactions-section__header">
         <div>
           <p class="transactions-section__eyebrow">Histórico financeiro</p>
@@ -47,6 +49,39 @@
         </div>
         <span class="transactions-section__count"><%= @transactions.size %> registros</span>
       </header>
+
+      <div class="transactions-player-filter">
+        <label for="transaction-player-filter">Filtrar por jogador</label>
+        <input id="transaction-player-filter"
+               type="search"
+               autocomplete="off"
+               placeholder="Buscar jogador"
+               data-transaction-filter-target="input"
+               data-action="focus->transaction-filter#showOptions input->transaction-filter#filter">
+
+        <div class="transactions-player-filter__options"
+             role="listbox"
+             hidden
+             data-transaction-filter-target="options">
+          <% @confirmed_players.each do |player| %>
+            <button type="button"
+                    role="option"
+                    data-transaction-filter-target="option"
+                    data-search="<%= [player.name, player.username].compact.join(" ").downcase %>"
+                    data-label="<%= player.name %>"
+                    data-action="transaction-filter#select">
+              <span><%= player.name %></span>
+              <% if player.username.present? %>
+                <small>@<%= player.username %></small>
+              <% end %>
+            </button>
+          <% end %>
+        </div>
+
+        <p class="transactions-player-filter__empty" hidden data-transaction-filter-target="empty">
+          Nenhuma transação encontrada para este jogador.
+        </p>
+      </div>
 
       <% if @transactions.any? %>
         <div class="transactions-table-wrapper">

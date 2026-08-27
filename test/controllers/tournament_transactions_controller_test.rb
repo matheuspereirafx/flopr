@@ -20,6 +20,8 @@ class TournamentTransactionsControllerTest < ActionDispatch::IntegrationTest
     assert_not_includes response.body, "Responsável"
     assert_select ".mobile-completed-transactions", count: 1
     assert_select ".mobile-completed-transaction", count: 1
+    assert_select "#transaction-player-filter"
+    assert_select ".transactions-player-filter__options button", text: /#{Regexp.escape(@player.name)}/
   end
 
   test "admin can view all transactions for the tournament" do
@@ -40,6 +42,7 @@ class TournamentTransactionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes response.body, "Pendente"
     assert_select ".mobile-transaction-card", count: 1
+    assert_select ".transactions-player-filter__options button", text: /#{Regexp.escape(@player.name)}/
   end
 
   test "displays the exact payment approval time" do

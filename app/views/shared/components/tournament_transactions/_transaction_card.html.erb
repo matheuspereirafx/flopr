@@ -1,6 +1,8 @@
 <% registration = transaction.tournament_registration %>
 <% charge_option = transaction.tournament_charge_option %>
-<article class="mobile-transaction-card">
+<article class="mobile-transaction-card"
+         data-transaction-filter-target="transaction"
+         data-player-search="<%= [registration.user.name, registration.user.username].compact.join(" ").downcase %>">
   <header class="mobile-transaction-card__header">
     <div class="mobile-transaction-card__player">
       <span class="mobile-transaction-card__avatar" aria-hidden="true">

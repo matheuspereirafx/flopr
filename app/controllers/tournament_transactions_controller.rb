@@ -11,6 +11,8 @@ class TournamentTransactionsController < ApplicationController
                                     recorded_by: {}
                                   )
                                   .order(created_at: :desc)
+    @pending_transactions = @transactions.pending
+    @completed_transactions = @transactions.paid
     paid_transactions = @transactions.paid
     @paid_total = paid_transactions.sum(:amount)
     @paid_counts_by_kind = paid_transactions

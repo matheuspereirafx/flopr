@@ -1,0 +1,11 @@
+<% registration = transaction.tournament_registration %>
+<% charge_option = transaction.tournament_charge_option %>
+<% transaction_time = (transaction.paid_at || transaction.created_at).in_time_zone("America/Sao_Paulo") %>
+<article class="mobile-completed-transaction">
+  <span class="mobile-completed-transaction__icon" aria-hidden="true">✓</span>
+  <div class="mobile-completed-transaction__details">
+    <strong><%= charge_option.kind.humanize %> — <%= registration.user.name %></strong>
+    <time datetime="<%= transaction_time.iso8601 %>"><%= l(transaction_time, format: :short) %></time>
+  </div>
+  <strong class="mobile-completed-transaction__amount"><%= number_to_currency(transaction.amount) %></strong>
+</article>

@@ -72,6 +72,36 @@
             </tbody>
           </table>
         </div>
+
+        <div class="mobile-transactions">
+          <% if @pending_transactions.any? %>
+            <section class="mobile-transaction-requests" aria-labelledby="mobile-transaction-requests-title">
+              <h3 id="mobile-transaction-requests-title">Solicitações pendentes</h3>
+
+              <div class="mobile-transaction-cards">
+                <% @pending_transactions.each do |transaction| %>
+                  <%= render "shared/components/tournament_transactions/transaction_card",
+                             transaction: transaction,
+                             club: @club,
+                             tournament: @tournament %>
+                <% end %>
+              </div>
+            </section>
+          <% end %>
+
+          <% if @completed_transactions.any? %>
+            <section class="mobile-completed-transactions" aria-labelledby="mobile-completed-transactions-title">
+              <h3 id="mobile-completed-transactions-title">Transações completas</h3>
+
+              <div class="mobile-completed-transactions__list">
+                <% @completed_transactions.each do |transaction| %>
+                  <%= render "shared/components/tournament_transactions/completed_transaction",
+                             transaction: transaction %>
+                <% end %>
+              </div>
+            </section>
+          <% end %>
+        </div>
       <% else %>
         <div class="transactions-empty-state" role="status">
           <span class="transactions-empty-state__icon" aria-hidden="true">◌</span>

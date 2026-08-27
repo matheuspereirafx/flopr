@@ -1,0 +1,32 @@
+<% registration = transaction.tournament_registration %>
+<% charge_option = transaction.tournament_charge_option %>
+<article class="mobile-transaction-card">
+  <header class="mobile-transaction-card__header">
+    <div class="mobile-transaction-card__player">
+      <span class="mobile-transaction-card__avatar" aria-hidden="true">
+        <%= registration.user.name.to_s.first(2).upcase %>
+      </span>
+      <div>
+        <strong><%= registration.user.name %></strong>
+        <time datetime="<%= transaction.created_at.iso8601 %>"><%= time_ago_in_words(transaction.created_at) %> atrás</time>
+      </div>
+    </div>
+    <span class="mobile-transaction-card__product"><%= charge_option.kind.humanize %></span>
+  </header>
+
+  <dl class="mobile-transaction-card__details">
+    <div>
+      <dt>Valor</dt>
+      <dd><%= number_to_currency(transaction.amount) %></dd>
+    </div>
+    <div>
+      <dt>Fichas</dt>
+      <dd><%= number_with_delimiter(charge_option.chip_amount) %></dd>
+    </div>
+  </dl>
+
+  <%= button_to "Confirmar",
+                confirm_club_tournament_transaction_path(club, tournament, transaction),
+                method: :patch,
+                class: "mobile-transaction-card__confirm" %>
+</article>

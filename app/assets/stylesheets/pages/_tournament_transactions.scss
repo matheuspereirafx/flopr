@@ -117,6 +117,7 @@
 .transactions-section__count { color: #a1a1aa; font-size: 12px; white-space: nowrap; }
 
 .transactions-table-wrapper { width: 100%; overflow-x: auto; }
+.mobile-transactions { display: none; }
 .transactions-table { width: 100%; min-width: 760px; border-collapse: collapse; table-layout: fixed; }
 .transactions-table th,
 .transactions-table td { padding: 16px 20px; border-bottom: 1px solid rgba(255, 255, 255, .06); text-align: left; vertical-align: middle; }
@@ -141,7 +142,8 @@
 .transactions-table__date { color: #c9c4d3; font-size: 13px; }
 .transactions-table__amount strong { display: block; color: #f0eff4; font-size: 14px; }
 .transactions-table__amount small { display: block; margin-top: 4px; }
-.transactions-table__action { white-space: nowrap; }
+.transactions-table .transactions-table__action { text-align: center; vertical-align: middle; white-space: nowrap; }
+.transactions-table__action form { display: flex; align-items: center; justify-content: center; margin: 0; }
 .transactions-table__confirm { padding: 7px 10px; border: 0; border-radius: 999px; color: #fff; background: #52489c; font: 700 10px $font-secondary; cursor: pointer; }
 .transactions-table__confirm:hover { background: #6a5fba; }
 .transactions-table__confirmed { color: #8f8b99; }
@@ -173,7 +175,36 @@
   .transactions-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .transactions-summary__item--featured { grid-column: 1 / -1; }
   .transactions-section__header { align-items: flex-start; padding: 18px; }
-  .transactions-table th, .transactions-table td { padding-inline: 16px; }
+  .transactions-table-wrapper { display: none; }
+  .mobile-transactions { display: grid; gap: 28px; padding: 18px; }
+  .mobile-transaction-requests,
+  .mobile-completed-transactions { display: grid; gap: 12px; }
+  .mobile-transaction-requests h3,
+  .mobile-completed-transactions h3 { margin: 0; color: #c9c4d3; font: 700 13px/1.2 $font-secondary; }
+  .mobile-transaction-cards { display: grid; gap: 12px; }
+  .mobile-transaction-card { display: grid; gap: 14px; padding: 14px; border: 1px solid rgba(255, 255, 255, .12); border-radius: 10px; background: #201f20; }
+  .mobile-transaction-card__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .mobile-transaction-card__player { display: flex; min-width: 0; align-items: center; gap: 10px; }
+  .mobile-transaction-card__avatar { display: inline-grid; width: 34px; height: 34px; flex: 0 0 34px; place-items: center; border-radius: 50%; color: #2e2176; background: #c7bfff; font: 700 10px/1 $font-secondary; }
+  .mobile-transaction-card__player div { display: grid; min-width: 0; gap: 3px; }
+  .mobile-transaction-card__player strong { overflow: hidden; color: #f0eff4; font: 700 13px/1.2 $font-secondary; text-overflow: ellipsis; white-space: nowrap; }
+  .mobile-transaction-card__player time { color: #8f8b99; font-size: 10px; }
+  .mobile-transaction-card__product { padding: 6px 8px; border: 1px solid rgba(255, 255, 255, .12); border-radius: 5px; color: #c9c4d3; font: 600 10px/1 $font-secondary; white-space: nowrap; }
+  .mobile-transaction-card__details { display: grid; grid-template-columns: 1fr 1fr; margin: 0; padding: 10px; border-radius: 7px; background: #0e0e0f; }
+  .mobile-transaction-card__details div { display: grid; gap: 4px; }
+  .mobile-transaction-card__details div + div { padding-left: 12px; border-left: 1px solid rgba(255, 255, 255, .14); text-align: right; }
+  .mobile-transaction-card__details dt { color: #a1a1aa; font-size: 9px; }
+  .mobile-transaction-card__details dd { margin: 0; color: #f0eff4; font: 700 15px/1 $font-secondary; }
+  .mobile-transaction-card__details div + div dd { color: #c7bfff; }
+  .mobile-transaction-card__confirm { width: 132px; justify-self: center; padding: 10px 14px; border: 0; border-radius: 999px; color: #fff; background: #52489c; font: 700 12px/1 $font-secondary; cursor: pointer; }
+  .mobile-completed-transactions__list { overflow: hidden; border: 1px solid rgba(255, 255, 255, .12); border-radius: 10px; }
+  .mobile-completed-transaction { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 9px; padding: 12px 10px; border-bottom: 1px solid rgba(255, 255, 255, .1); }
+  .mobile-completed-transaction:last-child { border-bottom: 0; }
+  .mobile-completed-transaction__icon { display: inline-grid; width: 14px; height: 14px; place-items: center; border: 1px solid #8f8b99; border-radius: 50%; color: #c9c4d3; font-size: 9px; }
+  .mobile-completed-transaction__details { display: grid; min-width: 0; gap: 2px; }
+  .mobile-completed-transaction__details strong { overflow: hidden; color: #d6d2dd; font: 500 12px/1.2 $font-secondary; text-overflow: ellipsis; white-space: nowrap; }
+  .mobile-completed-transaction__details time { color: #8f8b99; font-size: 10px; }
+  .mobile-completed-transaction__amount { color: #f0eff4; font: 700 12px/1 $font-secondary; white-space: nowrap; }
 }
 
 @media (max-width: 420px) {

@@ -12,7 +12,7 @@
 
   <div class="recharge-option-card__details">
     <div>
-      <span>Chips</span>
+      <span>Fichas</span>
       <strong><%= number_with_delimiter(charge_option.chip_amount) %></strong>
     </div>
     <div>
@@ -29,5 +29,6 @@
                     tournament_charge_option_id: charge_option.id
                   }
                 },
-                class: "recharge-option-card__button" %>
+                class: "recharge-option-card__button",
+                title: can_request_recharge ? nil : "Conclua a última recarga para solicitar mais recargas" %>
 </article>

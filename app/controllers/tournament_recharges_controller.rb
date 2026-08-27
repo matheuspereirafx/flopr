@@ -19,14 +19,22 @@ class TournamentRechargesController < ApplicationController
       return
     end
 
-    @registration.registration_payments.create!(
-      tournament_charge_option: charge_option,
-      recorded_by: current_user,
-      amount: charge_option.amount,
-      status: :pending,
-      provider: "manual",
-      payment_method: "manual"
-    )
+    @registration.with_lock do
+      unless @registration.can_request_recharge?
+        redirect_to recharges_path,
+                    alert: "Conclua a última recarga para solicitar mais recargas."
+        return
+      end
+
+      @registration.registration_payments.create!(
+        tournament_charge_option: charge_option,
+        recorded_by: current_user,
+        amount: charge_option.amount,
+        status: :pending,
+        provider: "manual",
+        payment_method: "manual"
+      )
+    end
 
     redirect_to recharges_path,
                 notice: "Solicitação de recarga enviada com sucesso."
@@ -76,6 +84,7 @@ class TournamentRechargesController < ApplicationController
     @recharge_history = @registration.registration_payments
                                                    .includes(:tournament_charge_option)
                                                    .order(created_at: :desc)
+    @can_request_recharge = @registration.can_request_recharge?
   end
 
   def available_charge_options

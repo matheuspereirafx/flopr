@@ -15,7 +15,12 @@ class TournamentRechargesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_includes response.body, "Rebuy"
+    assert_includes response.body, "Fichas"
+    assert_not_includes response.body, ">Chips<"
     assert_includes response.body, recharge.created_at.in_time_zone("America/Sao_Paulo").strftime("%H:%M")
+    assert_includes response.body, "Pendente"
+    assert_includes response.body, "Ações de recargas"
+    assert_includes response.body, "Histórico de recargas"
     assert_not_includes response.body, @other_player.name
   end
 
@@ -70,6 +75,42 @@ class TournamentRechargesControllerTest < ActionDispatch::IntegrationTest
     assert_equal @rebuy.amount, payment.amount
   end
 
+  test "player cannot request a new recharge while the last one is pending" do
+    create_payment_for(@player, status: :pending, kind: :rebuy)
+    sign_in @player
+    counts_before = RegistrationPayment.count
+
+    get recharges_path
+
+    assert_response :success
+    assert_includes response.body, "Conclua a última recarga para solicitar mais recargas."
+    assert_select ".recharge-option-card__button[disabled]", count: 0
+
+    post recharges_path,
+         params: {
+           registration_payment: { tournament_charge_option_id: @addon.id }
+         }
+
+    assert_redirected_to recharges_path
+    assert_equal counts_before, RegistrationPayment.count
+    assert_equal "Conclua a última recarga para solicitar mais recargas.",
+                 flash[:alert]
+  end
+
+  test "player can request a new recharge after the last one is paid" do
+    create_payment_for(@player, status: :paid, kind: :rebuy)
+    sign_in @player
+
+    assert_difference "RegistrationPayment.count", 1 do
+      post recharges_path,
+           params: {
+             registration_payment: { tournament_charge_option_id: @addon.id }
+           }
+    end
+
+    assert_redirected_to recharges_path
+  end
+
   test "player cannot create a recharge for another tournament" do
     sign_in @player
     counts_before = RegistrationPayment.count
@@ -109,7 +150,7 @@ class TournamentRechargesControllerTest < ActionDispatch::IntegrationTest
 
     payment_create_charge_option(tournament: @tournament, kind: :buy_in)
     @rebuy = payment_create_charge_option(tournament: @tournament, kind: :rebuy, amount: 100)
-    payment_create_charge_option(tournament: @tournament, kind: :addon, amount: 50)
+    @addon = payment_create_charge_option(tournament: @tournament, kind: :addon, amount: 50)
     payment_create_charge_option(tournament: @other_tournament, kind: :buy_in)
     @other_rebuy = payment_create_charge_option(tournament: @other_tournament, kind: :rebuy)
 

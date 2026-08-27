@@ -26,7 +26,13 @@
   </td>
   <td>
     <span class="transactions-status transactions-status--<%= transaction.status %>">
-      <%= transaction.paid? ? "Pago" : transaction.status.humanize %>
+      <%= if transaction.paid?
+            "Pago"
+          elsif transaction.pending?
+            "Pendente"
+          else
+            transaction.status.humanize
+          end %>
     </span>
   </td>
   <td class="transactions-table__date">

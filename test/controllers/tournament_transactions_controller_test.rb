@@ -29,6 +29,16 @@ class TournamentTransactionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "displays pending payment status in Portuguese" do
+    create_payment_for(@player, status: :pending)
+    sign_in @owner
+
+    get transactions_path(@club, @tournament)
+
+    assert_response :success
+    assert_includes response.body, "Pendente"
+  end
+
   test "displays the exact payment approval time" do
     payment = create_payment_for(@player)
     payment_time = Time.zone.local(2026, 8, 20, 15, 45, 12)

@@ -17,9 +17,15 @@
 
     <section class="recharge-actions-section" aria-labelledby="recharge-actions-title">
       <header class="recharge-section__header">
-        <p class="recharge-section__eyebrow">Request actions</p>
+        <p class="recharge-section__eyebrow">Ações de recargas</p>
         <h2 id="recharge-actions-title">Recargas disponíveis</h2>
       </header>
+
+      <% unless @can_request_recharge %>
+        <p class="recharge-request-warning" role="status">
+          Conclua a última recarga para solicitar mais recargas.
+        </p>
+      <% end %>
 
       <% if @available_charge_options.any? %>
         <div class="recharge-options-grid">
@@ -27,7 +33,8 @@
             <%= render "shared/components/tournament_recharges/charge_option_card",
                        charge_option: charge_option,
                        club: @club,
-                       tournament: @tournament %>
+                       tournament: @tournament,
+                       can_request_recharge: @can_request_recharge %>
           <% end %>
         </div>
       <% else %>
@@ -40,7 +47,7 @@
 
     <section class="recharge-history-section" aria-labelledby="recharge-history-title">
       <header class="recharge-section__header">
-        <p class="recharge-section__eyebrow">Request history</p>
+        <p class="recharge-section__eyebrow">Histórico de recargas</p>
         <h2 id="recharge-history-title">Histórico de solicitações</h2>
       </header>
 

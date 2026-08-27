@@ -11,6 +11,12 @@
   </div>
 
   <span class="recharge-request-status recharge-request-status--<%= recharge.status %>">
-    <%= recharge.status.humanize %>
+    <%= {
+          "pending" => "Pendente",
+          "paid" => "Pago",
+          "failed" => "Falhou",
+          "cancelled" => "Cancelado",
+          "refunded" => "Reembolsado"
+        }.fetch(recharge.status, recharge.status.humanize) %>
   </span>
 </article>

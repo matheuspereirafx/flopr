@@ -192,6 +192,20 @@
   font-size: 10px;
 }
 
+.recharge-history-item__payment-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  color: #a1a1aa;
+  font: 400 10px/1.2 $font-secondary;
+}
+
+.recharge-history-item__payment-details span + span::before {
+  margin-right: 8px;
+  color: #76727f;
+  content: "•";
+}
+
 .recharge-request-status {
   flex: 0 0 auto;
   color: #c9c4d3;

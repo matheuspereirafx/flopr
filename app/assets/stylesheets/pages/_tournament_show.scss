@@ -277,6 +277,14 @@
 .tournament-buy-in-modal__details div:last-child { border-bottom: 0; }
 .tournament-buy-in-modal__details dt { color: #a1a1aa; font-size: 13px; }
 .tournament-buy-in-modal__details dd { margin: 0; color: #c7bfff; font: 700 18px $font-primary; }
+.tournament-buy-in-modal__form { display: grid; gap: 16px; }
+.tournament-buy-in-modal__identity-fields { min-width: 0; margin: 0; padding: 16px; border: 1px solid rgba(255, 255, 255, .1); border-radius: 10px; background: #151516; }
+.tournament-buy-in-modal__identity-fields legend { padding: 0 6px; color: #f0eff4; font: 600 13px/1.2 $font-secondary; }
+.tournament-buy-in-modal__identity-fields > p { margin: 2px 0 14px; color: #a1a1aa; font: 400 12px/1.45 $font-secondary; }
+.tournament-buy-in-modal__identity-fields-grid { display: grid; gap: 20px; padding-bottom: 8px; }
+.tournament-buy-in-modal__field { display: grid; gap: 8px; }
+.tournament-buy-in-modal__field label { color: #c9c4d3; font: 600 12px/1.2 $font-secondary; }
+.tournament-buy-in-modal__input { height: 48px; }
 .tournament-buy-in-modal__pay { width: 100%; min-height: 46px; border: 0; border-radius: 999px; color: #fff; background: #52489c; font: 700 14px $font-secondary; cursor: pointer; }
 .tournament-buy-in-modal__pay:hover { background: #6a5fba; }
 .tournament-buy-in-modal__later { display: block; width: 100%; margin-top: 12px; border: 0; color: #a1a1aa; background: transparent; font: 600 13px $font-secondary; cursor: pointer; }

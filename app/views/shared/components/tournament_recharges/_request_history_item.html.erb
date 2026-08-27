@@ -7,6 +7,12 @@
       <time datetime="<%= recharge_time.iso8601 %>">
         <%= l(recharge_time, format: :short) %>
       </time>
+      <span class="recharge-history-item__payment-details">
+        <span><%= number_to_currency(recharge.amount) %></span>
+        <% if recharge.tournament_charge_option.chip_amount.present? %>
+          <span><%= number_with_delimiter(recharge.tournament_charge_option.chip_amount) %> fichas</span>
+        <% end %>
+      </span>
     </div>
   </div>
 

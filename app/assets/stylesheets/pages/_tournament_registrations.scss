@@ -95,12 +95,13 @@
 
 .registrations-table-wrapper {
   width: 100%;
-  overflow-x: auto;
+  overflow-x: hidden;
 }
 
 .registrations-table {
   width: 100%;
-  min-width: 560px;
+  min-width: 0;
+  max-width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
 }
@@ -121,9 +122,8 @@
   text-transform: uppercase;
 }
 
-.registrations-table thead th:first-child { width: 46%; }
-.registrations-table thead th:nth-child(2) { width: 28%; }
-.registrations-table thead th:last-child { width: 26%; }
+.registrations-table thead th:first-child { width: 68%; }
+.registrations-table thead th:last-child { width: 32%; }
 
 .registrations-table__row:last-child th,
 .registrations-table__row:last-child td { border-bottom: 0; }
@@ -190,8 +190,7 @@
   white-space: nowrap;
 }
 
-.registration-status,
-.registration-payment {
+.registration-status {
   display: inline-flex;
   min-height: 24px;
   align-items: center;
@@ -212,11 +211,6 @@
   border-color: rgba(255, 179, 180, .2);
   color: #ffb3b4;
   background: rgba(148, 10, 40, .2);
-}
-
-.registration-payment {
-  color: #a1a1aa;
-  background: rgba(255, 255, 255, .06);
 }
 
 .registrations-empty-state {
@@ -252,7 +246,7 @@
   .registration-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .registration-summary__card:first-child { grid-column: 1 / -1; }
   .registrations-section__header { padding-inline: 18px; }
-  .registrations-table th, .registrations-table td { padding-inline: 18px; }
+  .registrations-table th, .registrations-table td { padding-inline: 12px; }
 }
 
 @media (max-width: 420px) {
@@ -261,5 +255,4 @@
   .registration-summary__card { min-height: 92px; padding: 16px; }
   .registration-summary__card strong { font-size: 28px; }
   .registration-summary__card span { font-size: 10px; }
-  .registrations-table { min-width: 500px; }
 }

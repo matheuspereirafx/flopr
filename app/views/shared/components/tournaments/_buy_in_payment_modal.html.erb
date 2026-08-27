@@ -50,20 +50,35 @@
                     local: true,
                     class: "tournament-buy-in-modal__form",
                     data: { action: "submit->buy-in-payment#submit" } do |form| %>
-        <% if current_user.name.blank? %>
-          <%= form.label :name, "Nome completo" %>
-          <%= form.text_field :name,
-                              required: true,
-                              autocomplete: "name",
-                              placeholder: "Digite seu nome completo" %>
-        <% end %>
-        <% if current_user.cpf.blank? %>
-          <%= form.label :cpf, "CPF" %>
-          <%= form.text_field :cpf,
-                              required: true,
-                              inputmode: "numeric",
-                              autocomplete: "off",
-                              placeholder: "000.000.000-00" %>
+        <% if current_user.name.blank? || current_user.cpf.blank? %>
+          <fieldset class="tournament-buy-in-modal__identity-fields">
+            <legend>Dados do jogador</legend>
+            <p>Esses dados são necessários para gerar sua cobrança Pix.</p>
+
+            <div class="tournament-buy-in-modal__identity-fields-grid">
+              <% if current_user.name.blank? %>
+                <div class="tournament-buy-in-modal__field">
+                  <%= form.label :name, "Nome completo" %>
+                  <%= form.text_field :name,
+                                      required: true,
+                                      autocomplete: "name",
+                                      class: "input tournament-buy-in-modal__input",
+                                      placeholder: "Digite seu nome completo" %>
+                </div>
+              <% end %>
+              <% if current_user.cpf.blank? %>
+                <div class="tournament-buy-in-modal__field">
+                  <%= form.label :cpf, "CPF" %>
+                  <%= form.text_field :cpf,
+                                      required: true,
+                                      inputmode: "numeric",
+                                      autocomplete: "off",
+                                      class: "input tournament-buy-in-modal__input",
+                                      placeholder: "000.000.000-00" %>
+                </div>
+              <% end %>
+            </div>
+          </fieldset>
         <% end %>
 
         <%= form.submit "Pagar buy-in via Pix",

@@ -103,6 +103,9 @@ class TournamentRegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "pending"
     assert_includes response.body, "confirmed"
     assert_not_includes response.body, other_player.name
+    assert_select "th[scope='col']", 2
+    assert_select "th[scope='col']", text: "Status", count: 1
+    assert_select "th[scope='col']", text: "Pagamento", count: 0
   end
 
   test "index displays an informative message when there are no registrations" do

@@ -19,6 +19,8 @@ class TournamentRechargesControllerTest < ActionDispatch::IntegrationTest
     assert_not_includes response.body, ">Chips<"
     assert_includes response.body, recharge.created_at.in_time_zone("America/Sao_Paulo").strftime("%H:%M")
     assert_includes response.body, "Pendente"
+    assert_select ".recharge-history-item__payment-details", text: /50/
+    assert_select ".recharge-history-item__payment-details", text: /10.000 fichas/
     assert_includes response.body, "Ações de recargas"
     assert_includes response.body, "Histórico de recargas"
     assert_not_includes response.body, @other_player.name

@@ -12,7 +12,12 @@ class PaymentWebhooksController < ApplicationController
       provider: "asaas",
       provider_payment_id: provider_payment_id
     )
-    return head :not_found unless payment
+    unless payment
+      Rails.logger.warn(
+        "[AsaasWebhook] payment not found provider_payment_id=#{provider_payment_id.inspect} event_id=#{params[:id].inspect}"
+      )
+      return head :ok
+    end
 
     ApplicationRecord.transaction do
       payment.with_lock do

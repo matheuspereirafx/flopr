@@ -4,39 +4,54 @@ class TournamentBuyInPaymentsController < ApplicationController
   before_action :set_registration
 
   def create
+    if @registration.confirmed?
+      redirect_to club_tournament_path(@club, @tournament),
+                  notice: "Sua inscrição já está confirmada."
+      return
+    end
+
     cpf = buy_in_params[:cpf]
-    if cpf.present?
-      current_user.cpf = cpf
+    name = buy_in_params[:name]
+    if cpf.present? || name.present?
+      current_user.assign_attributes(buy_in_params.to_h.compact_blank)
       unless current_user.valid?
-        redirect_to club_tournament_path(@club, @tournament),
-                    alert: "Informe um CPF válido para continuar."
+        redirect_to club_tournament_path(@club, @tournament, payment: "buy_in"),
+                    alert: "Informe um nome e CPF válidos para continuar."
         return
       end
       current_user.save!
     end
-    if current_user.cpf.blank?
-      redirect_to club_tournament_path(@club, @tournament),
-                  alert: "Informe um CPF válido para continuar."
+    if current_user.cpf.blank? || current_user.name.blank?
+      redirect_to club_tournament_path(@club, @tournament, payment: "buy_in"),
+                  alert: "Informe seu nome e CPF para continuar."
       return
     end
 
-    customer = AsaasCustomer.find_or_create_for(current_user)
-    payment = AsaasPaymentCreation.call(
-      registration: @registration,
-      charge_option: @tournament.charge_options.find_by!(kind: :buy_in, active: true),
-      customer_id: customer["id"] || customer[:id],
-      payment_method: :pix
-    )
+    payment = nil
+    @registration.with_lock do
+      payment = @registration.registration_payments
+                              .joins(:tournament_charge_option)
+                              .where(status: :pending,
+                                     tournament_charge_options: { kind: :buy_in })
+                              .order(created_at: :desc)
+                              .first
 
-    if payment.provider_payment_url.present?
-      redirect_to payment.provider_payment_url, allow_other_host: true
-    else
-      redirect_to club_tournament_path(@club, @tournament),
-                  notice: "Cobrança Pix criada. Aguardando pagamento."
+      unless payment
+        customer = AsaasCustomer.find_or_create_for(current_user)
+        payment = AsaasPaymentCreation.call(
+          registration: @registration,
+          charge_option: @tournament.charge_options.find_by!(kind: :buy_in, active: true),
+          customer_id: customer["id"] || customer[:id],
+          payment_method: :pix
+        )
+      end
     end
+
+    redirect_to club_tournament_path(@club, @tournament, payment: "buy_in"),
+                notice: "Cobrança Pix criada. Aguardando pagamento."
   rescue ActiveRecord::RecordInvalid, AsaasCustomer::InvalidCustomer,
          AsaasPaymentCreation::InvalidPayment, AsaasClient::Error
-    redirect_to club_tournament_path(@club, @tournament),
+    redirect_to club_tournament_path(@club, @tournament, payment: "buy_in"),
                 alert: "Não foi possível criar a cobrança do buy-in."
   end
 
@@ -66,6 +81,6 @@ class TournamentBuyInPaymentsController < ApplicationController
   end
 
   def buy_in_params
-    params.fetch(:user, {}).permit(:cpf)
+    params.fetch(:user, {}).permit(:name, :cpf)
   end
 end

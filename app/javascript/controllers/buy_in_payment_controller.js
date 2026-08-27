@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["overlay", "trigger"]
+  static targets = ["overlay", "trigger", "pay"]
   static values = { open: Boolean }
 
   connect() {
@@ -16,5 +16,13 @@ export default class extends Controller {
   close() {
     this.overlayTarget.hidden = true
     this.triggerTarget?.setAttribute("aria-expanded", "false")
+  }
+
+  submit() {
+    if (!this.hasPayTarget) return
+
+    this.payTarget.disabled = true
+    this.payTarget.value = "Aguarde..."
+    this.close()
   }
 }

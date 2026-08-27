@@ -2,7 +2,7 @@ class AsaasCustomer
   class InvalidCustomer < StandardError; end
 
   def self.find_or_create_for(user, gateway: AsaasClient.new)
-    raise InvalidCustomer unless user.valid? && user.cpf.present?
+    raise InvalidCustomer unless user.valid? && user.cpf.present? && user.name.present?
     return { id: user.asaas_customer_id } if user.asaas_customer_id.present?
 
     customer = gateway.create_customer(user)

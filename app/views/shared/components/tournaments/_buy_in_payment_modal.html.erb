@@ -16,20 +16,6 @@
       Informe seus dados e pague via Pix para garantir sua inscrição neste torneio.
     </p>
 
-    <%= form_with url: club_tournament_buy_in_payment_path(club, tournament),
-                  method: :post,
-                  scope: :user,
-                  local: true,
-                  class: "tournament-buy-in-modal__form" do |form| %>
-      <% if current_user.cpf.blank? %>
-        <%= form.label :cpf, "CPF" %>
-        <%= form.text_field :cpf,
-                            required: true,
-                            inputmode: "numeric",
-                            autocomplete: "off",
-                            placeholder: "000.000.000-00" %>
-      <% end %>
-
     <dl class="tournament-buy-in-modal__details">
       <div>
         <dt>Valor</dt>
@@ -41,7 +27,49 @@
       </div>
     </dl>
 
-      <%= form.submit "Pagar buy-in via Pix", class: "tournament-buy-in-modal__pay" %>
+    <% if payment&.pix_qr_code_image.present? && payment.pix_payload.present? %>
+      <div class="tournament-buy-in-modal__pix" aria-label="Pagamento Pix">
+        <p>Escaneie o QR Code ou copie o código Pix.</p>
+        <%= image_tag "data:image/png;base64,#{payment.pix_qr_code_image}",
+                      alt: "QR Code Pix do buy-in",
+                      class: "tournament-buy-in-modal__pix-image" %>
+        <label for="buy-in-pix-payload">Pix copia e cola</label>
+        <input id="buy-in-pix-payload"
+               class="tournament-buy-in-modal__pix-payload"
+               type="text"
+               value="<%= payment.pix_payload %>"
+               readonly>
+        <% if payment.pix_expiration_date.present? %>
+          <p>Válido até <%= l(payment.pix_expiration_date, format: :short) %>.</p>
+        <% end %>
+      </div>
+    <% else %>
+      <%= form_with url: club_tournament_buy_in_payment_path(club, tournament),
+                    method: :post,
+                    scope: :user,
+                    local: true,
+                    class: "tournament-buy-in-modal__form",
+                    data: { action: "submit->buy-in-payment#submit" } do |form| %>
+        <% if current_user.name.blank? %>
+          <%= form.label :name, "Nome completo" %>
+          <%= form.text_field :name,
+                              required: true,
+                              autocomplete: "name",
+                              placeholder: "Digite seu nome completo" %>
+        <% end %>
+        <% if current_user.cpf.blank? %>
+          <%= form.label :cpf, "CPF" %>
+          <%= form.text_field :cpf,
+                              required: true,
+                              inputmode: "numeric",
+                              autocomplete: "off",
+                              placeholder: "000.000.000-00" %>
+        <% end %>
+
+        <%= form.submit "Pagar buy-in via Pix",
+                         class: "tournament-buy-in-modal__pay",
+                         data: { buy_in_payment_target: "pay" } %>
+      <% end %>
     <% end %>
     <button type="button"
             class="tournament-buy-in-modal__later"

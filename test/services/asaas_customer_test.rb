@@ -50,6 +50,7 @@ class AsaasCustomerTest < ActiveSupport::TestCase
     User.new(
       {
         username: "asaas.customer",
+        name: "Asaas Customer",
         email: "asaas-customer@example.com",
         password: "password123"
       }.merge(attributes)

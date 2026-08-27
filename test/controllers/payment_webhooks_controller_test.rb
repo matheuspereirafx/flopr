@@ -43,6 +43,25 @@ class PaymentWebhooksControllerTest < ActionDispatch::IntegrationTest
     assert_predicate payment.reload, :paid?
   end
 
+  test "acknowledges an event for a payment that no longer exists locally" do
+    payment_count = RegistrationPayment.count
+    registration_status = @player.tournament_registrations.find_by!(tournament: @tournament).status
+
+    post "/webhooks/asaas",
+         params: {
+           id: "evt_missing_payment",
+           event: "PAYMENT_RECEIVED",
+           payment: { id: "pay_missing_payment" }
+         },
+         headers: webhook_headers,
+         as: :json
+
+    assert_response :success
+    assert_equal payment_count, RegistrationPayment.count
+    assert_equal registration_status,
+                 @player.tournament_registrations.find_by!(tournament: @tournament).status
+  end
+
   test "rejects a webhook with an invalid token without changing the payment" do
     payment = payment_create_registration_payment(
       tournament: @tournament,

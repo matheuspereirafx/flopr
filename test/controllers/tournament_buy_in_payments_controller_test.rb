@@ -9,6 +9,14 @@ class TournamentBuyInPaymentsControllerTest < ActionDispatch::IntegrationTest
     def create_payment(_registration, _charge_option, _customer_id)
       { id: "pay_buy_in_pix", status: "PENDING" }
     end
+
+    def pix_qr_code(_payment_id)
+      {
+        encodedImage: "encoded-pix-image",
+        payload: "pix-payload",
+        expirationDate: "2026-08-27T23:59:59Z"
+      }
+    end
   end
 
   test "player can create a pending Pix buy-in payment" do
@@ -27,7 +35,7 @@ class TournamentBuyInPaymentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "pay_buy_in_pix", payment.provider_payment_id
     assert_equal @player, payment.tournament_registration.user
     assert_predicate @registration.reload, :pending?
-    assert_redirected_to club_tournament_path(@club, @tournament)
+    assert_redirected_to club_tournament_path(@club, @tournament, payment: "buy_in")
   end
 
   test "a second payment does not create a duplicate transaction" do
@@ -40,6 +48,33 @@ class TournamentBuyInPaymentsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to club_tournament_path(@club, @tournament)
+  end
+
+  test "preserves the CPF when only the missing name is submitted" do
+    @player.update!(cpf: "52998224725", name: nil)
+    sign_in @player
+
+    with_gateway_stub do
+      post payment_path, params: { user: { name: "Player Buy In" } }
+    end
+
+    assert_redirected_to club_tournament_path(@club, @tournament, payment: "buy_in")
+    assert_equal "52998224725", @player.reload.cpf
+    assert_equal "Player Buy In", @player.reload.name
+  end
+
+  test "reuses an existing pending buy-in payment" do
+    @player.update!(cpf: "52998224725")
+    sign_in @player
+
+    with_gateway_stub do
+      post payment_path
+      assert_difference "RegistrationPayment.count", 0 do
+        post payment_path
+      end
+    end
+
+    assert_equal 1, @registration.registration_payments.where(provider: "asaas").count
   end
 
   test "a player without a registration cannot pay the buy-in" do

@@ -9,6 +9,14 @@ class AsaasPaymentCreationTest < ActiveSupport::TestCase
     def create_payment(*_arguments)
       @response
     end
+
+    def pix_qr_code(*_arguments)
+      {
+        encodedImage: "encoded-pix-image",
+        payload: "pix-payload",
+        expirationDate: "2026-08-27T23:59:59Z"
+      }
+    end
   end
 
   test "creates a pending Pix payment using the charge option amount" do
@@ -35,6 +43,8 @@ class AsaasPaymentCreationTest < ActiveSupport::TestCase
     assert_predicate payment, :pending?
     assert_equal "pay_pix_123", payment.provider_payment_id
     assert_equal @buy_in.amount, payment.amount
+    assert_equal "encoded-pix-image", payment.pix_qr_code_image
+    assert_equal "pix-payload", payment.pix_payload
   end
 
   test "does not create a payment with a missing customer" do

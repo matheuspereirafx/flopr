@@ -34,11 +34,25 @@ class AsaasPaymentCreation
     provider_payment_id = response["id"] || response[:id]
     raise InvalidPayment if provider_payment_id.blank?
 
+    pix_qr_code = @gateway.pix_qr_code(provider_payment_id)
     payment.update!(provider_payment_id: provider_payment_id,
                     provider_status: response["status"] || response[:status],
-                    provider_payment_url: response["invoiceUrl"] || response[:invoiceUrl])
+                    provider_payment_url: response["invoiceUrl"] || response[:invoiceUrl],
+                    pix_qr_code_image: pix_qr_code["encodedImage"] || pix_qr_code[:encodedImage],
+                    pix_payload: pix_qr_code["payload"] || pix_qr_code[:payload],
+                    pix_expiration_date: parse_expiration_date(
+                      pix_qr_code["expirationDate"] || pix_qr_code[:expirationDate]
+                    ))
     payment
   rescue ActiveRecord::RecordInvalid, AsaasClient::Error
     raise InvalidPayment
+  end
+
+  private
+
+  def parse_expiration_date(value)
+    return if value.blank?
+
+    Time.zone.parse(value.to_s)
   end
 end

@@ -99,9 +99,10 @@
 
   &__back { display: inline-flex; margin-bottom: 32px; color: #988fd7; font-size: 14px; font-weight: 700; text-decoration: none; }
   &__back:focus-visible { outline: 2px solid #ffb3b4; outline-offset: 4px; }
-  &__content { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+  &__content { display: flex; align-items: flex-start; justify-content: center; gap: 24px; text-align: center; }
   &__information { min-width: 0; }
-  &__address { display: flex; align-items: flex-start; gap: 8px; margin: 0 0 8px; color: #c9c4d3; font-size: 14px; }
+  &__address, &__meta { justify-content: center; }
+  &__address { display: flex; align-items: flex-start; gap: 8px; margin: 0 0 8px; color: #c9c4d3; font-size: 14px; margin-top: 8px; }
   &__address > img { width: 16px; height: 16px; margin-top: 1px; object-fit: contain; }
   & > &__invite { position: absolute; top: 38px; right: 0; }
   h1 { margin: 0; color: #f0eff4; font-family: $font-primary; font-size: clamp(36px, 6vw, 48px); font-weight: 700; letter-spacing: -.04em; line-height: 1; }
@@ -313,4 +314,5 @@
   .tournament-buy-in-modal__card { max-height: calc(100dvh - 32px); padding: 28px 22px 22px; }
   .tournament-buy-in-modal__pix { padding: 14px; }
   .tournament-buy-in-modal__pix-image { width: 200px; }
+  .overview-header__information {margin-top: 8px;}
 }

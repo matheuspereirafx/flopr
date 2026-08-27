@@ -8,7 +8,11 @@
 
 <main class="tournament-overview-page" aria-labelledby="tournament-title">
   <header class="tournament-overview-page__header overview-header">
-    <% unless @current_membership&.player? %>
+    <% if @current_membership&.player? %>
+      <%= link_to "← Voltar aos torneios",
+                  player_tournaments_path,
+                  class: "overview-header__back" %>
+    <% elsif @current_membership.present? %>
       <%= link_to "← Voltar ao clube", club_path(@club), class: "overview-header__back" %>
     <% end %>
     <% if @current_membership&.owner? || @current_membership&.admin? %>
@@ -26,11 +30,11 @@
 
     <div class="overview-header__content">
       <div class="overview-header__information">
+        <h1 id="tournament-title"><%= @tournament.name %></h1>
         <p class="overview-header__address">
           <%= image_tag "icons/Iconlocation.svg", alt: "" %>
           <span><%= @tournament.location %></span>
         </p>
-        <h1 id="tournament-title"><%= @tournament.name %></h1>
         <div class="overview-header__meta">
           <% if @current_membership&.owner? ||
                 @current_membership&.admin? ||

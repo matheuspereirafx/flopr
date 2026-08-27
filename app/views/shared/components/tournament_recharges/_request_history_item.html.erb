@@ -1,28 +1,33 @@
-<% recharge_time = recharge.created_at.in_time_zone("America/Sao_Paulo") %>
+<% first_payment = payments.first %>
+<% recharge_time = first_payment.created_at.in_time_zone("America/Sao_Paulo") %>
+<% grouped = recharge_group.is_a?(RegistrationPaymentGroup) %>
+<% total_amount = grouped ? recharge_group.total_amount : first_payment.amount %>
+<% total_chip_amount = grouped ? recharge_group.total_chip_amount : first_payment.chip_amount.presence || first_payment.tournament_charge_option.chip_amount %>
 <article class="recharge-history-item">
   <div class="recharge-history-item__details">
     <span class="recharge-history-item__icon" aria-hidden="true">+</span>
     <div>
-      <strong><%= recharge.tournament_charge_option.kind.humanize %></strong>
+      <strong><%= grouped ? "Compra com taxa extra" : first_payment.tournament_charge_option.kind.humanize %></strong>
       <time datetime="<%= recharge_time.iso8601 %>">
         <%= l(recharge_time, format: :short) %>
       </time>
       <span class="recharge-history-item__payment-details">
-        <span><%= number_to_currency(recharge.amount) %></span>
-        <% if recharge.tournament_charge_option.chip_amount.present? %>
-          <span><%= number_with_delimiter(recharge.tournament_charge_option.chip_amount) %> fichas</span>
+        <span><%= number_to_currency(total_amount) %></span>
+        <% if total_chip_amount.present? %>
+          <span><%= number_with_delimiter(total_chip_amount) %> fichas</span>
         <% end %>
       </span>
     </div>
   </div>
 
-  <span class="recharge-request-status recharge-request-status--<%= recharge.status %>">
+  <% history_status = grouped ? recharge_group.status : first_payment.status %>
+  <span class="recharge-request-status recharge-request-status--<%= history_status %>">
     <%= {
           "pending" => "Pendente",
           "paid" => "Pago",
           "failed" => "Falhou",
           "cancelled" => "Cancelado",
           "refunded" => "Reembolsado"
-        }.fetch(recharge.status, recharge.status.humanize) %>
+          }.fetch(history_status, history_status.humanize) %>
   </span>
 </article>

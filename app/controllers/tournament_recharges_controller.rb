@@ -9,7 +9,7 @@ class TournamentRechargesController < ApplicationController
   end
 
   def create
-    charge_option = @available_charge_options.find do |option|
+    charge_option = available_recharge_options.find do |option|
       option.id.to_s == recharge_params[:tournament_charge_option_id].to_s
     end
 
@@ -26,14 +26,26 @@ class TournamentRechargesController < ApplicationController
         return
       end
 
-      @registration.registration_payments.create!(
-        tournament_charge_option: charge_option,
-        recorded_by: current_user,
-        amount: charge_option.amount,
-        status: :pending,
-        provider: "manual",
-        payment_method: "manual"
+      fee = selected_fee if include_fee?
+      payments = [charge_option, fee].compact
+      payment_group = @registration.registration_payment_groups.create!(
+        total_amount: payments.sum { |option| option.amount.to_d },
+        total_chip_amount: payments.sum { |option| option.chip_amount.to_i },
+        status: :pending
       )
+
+      payments.each do |option|
+        @registration.registration_payments.create!(
+          registration_payment_group: payment_group,
+          tournament_charge_option: option,
+          recorded_by: current_user,
+          amount: option.amount,
+          chip_amount: option.chip_amount,
+          status: :pending,
+          provider: "manual",
+          payment_method: "manual"
+        )
+      end
     end
 
     redirect_to recharges_path,
@@ -80,7 +92,8 @@ class TournamentRechargesController < ApplicationController
   def load_recharge_data
     return if performed?
 
-    @available_charge_options = available_charge_options
+    @available_charge_options = available_recharge_options
+    @fee_option = selected_fee
     @recharge_history = @registration.registration_payments
                                                    .includes(:tournament_charge_option)
                                                    .order(created_at: :desc)
@@ -100,8 +113,20 @@ class TournamentRechargesController < ApplicationController
     end
   end
 
+  def available_recharge_options
+    available_charge_options.reject(&:fee?)
+  end
+
+  def selected_fee
+    available_charge_options.find(&:fee?)
+  end
+
+  def include_fee?
+    ActiveModel::Type::Boolean.new.cast(recharge_params[:include_fee]) && selected_fee.present?
+  end
+
   def recharge_params
-    params.require(:registration_payment).permit(:tournament_charge_option_id)
+    params.require(:registration_payment).permit(:tournament_charge_option_id, :include_fee)
   end
 
   def recharges_path

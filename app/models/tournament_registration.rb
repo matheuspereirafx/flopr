@@ -7,6 +7,9 @@ class TournamentRegistration < ApplicationRecord
   has_many :registration_payments,
            dependent: :destroy
 
+  has_many :registration_payment_groups,
+           dependent: :destroy
+
   def latest_recharge
     registration_payments
       .joins(:tournament_charge_option)

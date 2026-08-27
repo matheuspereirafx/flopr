@@ -58,6 +58,45 @@ class TournamentTransactionsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, payment_time.strftime("%H:%M")
   end
 
+  test "confirming a grouped payment confirms its fee and base payment together" do
+    registration = @tournament.tournament_registrations.find_by!(user: @player)
+    buy_in = @tournament.charge_options.find_by!(kind: :buy_in)
+    fee = @tournament.charge_options.create!(kind: :fee, active: true, amount: 25, chip_amount: 5_000)
+    group = registration.registration_payment_groups.create!(
+      total_amount: 75,
+      total_chip_amount: 15_000,
+      status: :pending
+    )
+    base_payment = registration.registration_payments.create!(
+      registration_payment_group: group,
+      tournament_charge_option: buy_in,
+      amount: 50,
+      chip_amount: 10_000,
+      status: :pending,
+      provider: "manual",
+      payment_method: :manual,
+      recorded_by: @player
+    )
+    fee_payment = registration.registration_payments.create!(
+      registration_payment_group: group,
+      tournament_charge_option: fee,
+      amount: 25,
+      chip_amount: 5_000,
+      status: :pending,
+      provider: "manual",
+      payment_method: :manual,
+      recorded_by: @player
+    )
+    sign_in @owner
+
+    patch confirm_club_tournament_transaction_path(@club, @tournament, base_payment)
+
+    assert_redirected_to transactions_path(@club, @tournament)
+    assert_predicate base_payment.reload, :paid?
+    assert_predicate fee_payment.reload, :paid?
+    assert_predicate group.reload, :paid?
+  end
+
   test "dealer cannot view administrative transactions" do
     sign_in @dealer
 

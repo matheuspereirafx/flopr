@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_26_150000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_27_170000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -38,6 +38,44 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_26_150000) do
     t.index ["user_id"], name: "index_club_memberships_on_user_id"
   end
 
+  create_table "club_payout_destinations", force: :cascade do |t|
+    t.bigint "club_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "owner_id", null: false
+    t.string "pix_key", null: false
+    t.string "pix_key_type", null: false
+    t.string "recipient_name", null: false
+    t.string "status", default: "active", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "verified_at"
+    t.index ["club_id"], name: "index_club_payout_destinations_on_club_id", unique: true
+    t.index ["owner_id"], name: "index_club_payout_destinations_on_owner_id"
+  end
+
+  create_table "club_payouts", force: :cascade do |t|
+    t.bigint "club_id", null: false
+    t.bigint "club_payout_destination_id", null: false
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.string "failure_reason"
+    t.decimal "gross_amount", precision: 10, scale: 2, null: false
+    t.decimal "net_amount", precision: 10, scale: 2, null: false
+    t.string "provider", default: "asaas", null: false
+    t.string "provider_status"
+    t.string "provider_transfer_id"
+    t.bigint "requested_by_id", null: false
+    t.string "status", default: "pending", null: false
+    t.decimal "transfer_fee_amount", precision: 10, scale: 2, null: false
+    t.datetime "updated_at", null: false
+    t.index ["club_id"], name: "index_club_payouts_on_club_id"
+    t.index ["club_payout_destination_id"], name: "index_club_payouts_on_club_payout_destination_id"
+    t.index ["provider", "provider_transfer_id"], name: "index_club_payouts_on_provider_and_provider_transfer_id", unique: true, where: "(provider_transfer_id IS NOT NULL)"
+    t.index ["requested_by_id"], name: "index_club_payouts_on_requested_by_id"
+    t.index ["status"], name: "index_club_payouts_on_status"
+    t.check_constraint "gross_amount > 0::numeric", name: "club_payouts_gross_amount_positive"
+    t.check_constraint "net_amount > 0::numeric", name: "club_payouts_net_amount_positive"
+  end
+
   create_table "clubs", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name"
@@ -45,9 +83,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_26_150000) do
     t.string "whatsapp_contact_number"
   end
 
+  create_table "registration_payment_groups", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "status", default: "pending", null: false
+    t.decimal "total_amount", precision: 10, scale: 2, null: false
+    t.integer "total_chip_amount", null: false
+    t.bigint "tournament_registration_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["status"], name: "index_registration_payment_groups_on_status"
+    t.index ["tournament_registration_id"], name: "idx_on_tournament_registration_id_7a2647e908"
+    t.check_constraint "total_amount >= 0::numeric", name: "registration_payment_groups_total_amount_non_negative"
+    t.check_constraint "total_chip_amount >= 0", name: "registration_payment_groups_total_chips_non_negative"
+  end
+
   create_table "registration_payments", force: :cascade do |t|
     t.decimal "amount", precision: 10, scale: 2, null: false
+    t.decimal "charged_amount", precision: 10, scale: 2
+    t.integer "chip_amount"
     t.datetime "created_at", null: false
+    t.decimal "gateway_fee_amount", precision: 10, scale: 2
+    t.decimal "net_amount", precision: 10, scale: 2
     t.datetime "paid_at"
     t.string "payment_method", null: false
     t.datetime "pix_expiration_date"
@@ -58,16 +113,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_26_150000) do
     t.string "provider_payment_url"
     t.string "provider_status"
     t.bigint "recorded_by_id", null: false
+    t.bigint "registration_payment_group_id"
     t.string "status", default: "pending", null: false
     t.bigint "tournament_charge_option_id", null: false
     t.bigint "tournament_registration_id", null: false
     t.datetime "updated_at", null: false
     t.index ["provider", "provider_payment_id"], name: "idx_on_provider_provider_payment_id_d5c7638595", unique: true, where: "(provider_payment_id IS NOT NULL)"
     t.index ["recorded_by_id"], name: "index_registration_payments_on_recorded_by_id"
+    t.index ["registration_payment_group_id"], name: "index_registration_payments_on_registration_payment_group_id"
     t.index ["status"], name: "index_registration_payments_on_status"
     t.index ["tournament_charge_option_id"], name: "index_registration_payments_on_tournament_charge_option_id"
     t.index ["tournament_registration_id"], name: "index_registration_payments_on_tournament_registration_id"
     t.check_constraint "amount >= 0::numeric", name: "registration_payments_amount_non_negative"
+    t.check_constraint "chip_amount IS NULL OR chip_amount >= 0", name: "registration_payments_chips_non_negative"
   end
 
   create_table "tournament_charge_options", force: :cascade do |t|
@@ -171,6 +229,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_26_150000) do
   add_foreign_key "blind_levels", "tournaments"
   add_foreign_key "club_memberships", "clubs"
   add_foreign_key "club_memberships", "users"
+  add_foreign_key "club_payout_destinations", "clubs"
+  add_foreign_key "club_payout_destinations", "users", column: "owner_id"
+  add_foreign_key "club_payouts", "club_payout_destinations"
+  add_foreign_key "club_payouts", "clubs"
+  add_foreign_key "club_payouts", "users", column: "requested_by_id"
+  add_foreign_key "registration_payment_groups", "tournament_registrations"
+  add_foreign_key "registration_payments", "registration_payment_groups"
   add_foreign_key "registration_payments", "tournament_charge_options"
   add_foreign_key "registration_payments", "tournament_registrations"
   add_foreign_key "registration_payments", "users", column: "recorded_by_id"

@@ -34,7 +34,8 @@
                        charge_option: charge_option,
                        club: @club,
                        tournament: @tournament,
-                       can_request_recharge: @can_request_recharge %>
+                       can_request_recharge: @can_request_recharge,
+                       fee_option: @fee_option %>
           <% end %>
         </div>
       <% else %>
@@ -53,9 +54,10 @@
 
       <% if @recharge_history.any? %>
         <div class="recharge-history-list">
-          <% @recharge_history.each do |recharge| %>
+          <% @recharge_history.group_by { |recharge| recharge.registration_payment_group || recharge }.each do |recharge_group, payments| %>
             <%= render "shared/components/tournament_recharges/request_history_item",
-                       recharge: recharge %>
+                       recharge_group: recharge_group,
+                       payments: payments %>
           <% end %>
         </div>
         <p class="recharge-history-section__footer">Suas solicitações aparecem aqui após o envio.</p>

@@ -77,9 +77,31 @@ class TournamentRechargesControllerTest < ActionDispatch::IntegrationTest
     assert_equal @rebuy.amount, payment.amount
   end
 
+  test "player can add the fee to a recharge and the payments share a group" do
+    sign_in @player
+
+    assert_difference "RegistrationPaymentGroup.count", 1 do
+      assert_difference "RegistrationPayment.count", 2 do
+        post recharges_path,
+             params: {
+               registration_payment: {
+                 tournament_charge_option_id: @rebuy.id,
+                 include_fee: "1"
+               }
+             }
+      end
+    end
+
+    group = @player.tournament_registrations.first.registration_payment_groups.order(:created_at).last
+    assert_equal 125.to_d, group.total_amount
+    assert_equal 20_000, group.total_chip_amount
+    assert_equal %w[fee rebuy], group.registration_payments.map { |payment| payment.tournament_charge_option.kind }.sort
+    assert group.registration_payments.all?(&:pending?)
+  end
+
   test "player cannot request another recharge during the five second cooldown" do
     payment = create_payment_for(@player, status: :pending, kind: :rebuy)
-    payment.update_column(:created_at, 4.seconds.ago)
+    payment.update_column(:created_at, 1.second.ago)
     sign_in @player
     counts_before = RegistrationPayment.count
 
@@ -155,6 +177,7 @@ class TournamentRechargesControllerTest < ActionDispatch::IntegrationTest
     payment_create_charge_option(tournament: @tournament, kind: :buy_in)
     @rebuy = payment_create_charge_option(tournament: @tournament, kind: :rebuy, amount: 100)
     @addon = payment_create_charge_option(tournament: @tournament, kind: :addon, amount: 50)
+    payment_create_charge_option(tournament: @tournament, kind: :fee, amount: 25)
     payment_create_charge_option(tournament: @other_tournament, kind: :buy_in)
     @other_rebuy = payment_create_charge_option(tournament: @other_tournament, kind: :rebuy)
 

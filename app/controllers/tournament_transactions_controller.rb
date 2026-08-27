@@ -20,6 +20,27 @@ class TournamentTransactionsController < ApplicationController
                             .count
   end
 
+  def confirm
+    payment = @tournament.registration_payments.find(params[:id])
+
+    payment.with_lock do
+      unless payment.pending?
+        redirect_to club_tournament_transactions_path(@club, @tournament),
+                    alert: "Este pagamento não está pendente."
+        return
+      end
+
+      payment.update!(status: :paid, paid_at: Time.current)
+      payment.tournament_registration.update!(status: :confirmed) if payment.tournament_charge_option.buy_in?
+    end
+
+    redirect_to club_tournament_transactions_path(@club, @tournament),
+                notice: "Pagamento confirmado com sucesso."
+  rescue ActiveRecord::RecordInvalid
+    redirect_to club_tournament_transactions_path(@club, @tournament),
+                alert: "Não foi possível confirmar este pagamento."
+  end
+
   private
 
   def set_member_club

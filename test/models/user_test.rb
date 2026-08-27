@@ -94,15 +94,4 @@ class UserTest < ActiveSupport::TestCase
     assert user.errors[:cpf].any?
   end
 
-  test "stores the Asaas customer identifier" do
-    user = User.new(
-      username: "asaas.player",
-      email: "asaas-player@example.com",
-      password: "password123",
-      cpf: "52998224725",
-      asaas_customer_id: "cus_sandbox_123"
-    )
-
-    assert_equal "cus_sandbox_123", user.asaas_customer_id
-  end
 end

@@ -69,7 +69,7 @@ module RegistrationPaymentTestHelpers
       amount: amount,
       status: status,
       provider: "gateway",
-      payment_method: "pix",
+      payment_method: "manual",
       recorded_by: recorded_by
     )
   end

@@ -13,7 +13,7 @@
     <p class="tournament-buy-in-modal__eyebrow">Próximo passo</p>
     <h2 id="buy-in-payment-title">Pague o buy-in</h2>
     <p class="tournament-buy-in-modal__description">
-      Escolha a forma de pagamento para garantir sua inscrição neste torneio.
+      Realize o Pix usando os dados informados pelo organizador e avise quando concluir.
     </p>
 
     <dl class="tournament-buy-in-modal__details">
@@ -27,105 +27,15 @@
       </div>
     </dl>
 
-    <div data-buy-in-payment-target="selection"
-         <%= "hidden" if payment.present? %>>
-      <%= form_with url: club_tournament_buy_in_payment_path(club, tournament),
-                    method: :post,
-                    scope: :user,
-                    local: true,
-                    class: "tournament-buy-in-modal__form",
-                    data: { action: "submit->buy-in-payment#submit" } do |form| %>
-        <% if current_user.name.blank? || current_user.cpf.blank? %>
-          <fieldset class="tournament-buy-in-modal__identity-fields">
-            <legend>Seus dados</legend>
-            <p>Esses dados são necessários para gerar sua cobrança.</p>
-
-            <div class="tournament-buy-in-modal__identity-fields-grid">
-              <% if current_user.name.blank? %>
-                <div class="tournament-buy-in-modal__field">
-                  <%= form.label :name, "Nome completo" %>
-                  <%= form.text_field :name,
-                                      required: true,
-                                      autocomplete: "name",
-                                      class: "input tournament-buy-in-modal__input",
-                                      placeholder: "Digite seu nome completo" %>
-                </div>
-              <% end %>
-              <% if current_user.cpf.blank? %>
-                <div class="tournament-buy-in-modal__field">
-                  <%= form.label :cpf, "CPF" %>
-                  <%= form.text_field :cpf,
-                                      required: true,
-                                      inputmode: "numeric",
-                                      autocomplete: "off",
-                                      class: "input tournament-buy-in-modal__input",
-                                      placeholder: "000.000.000-00" %>
-                </div>
-              <% end %>
-            </div>
-          </fieldset>
-        <% end %>
-
-        <div class="tournament-buy-in-modal__methods" aria-label="Formas de pagamento">
-          <button type="submit"
-                  name="payment_method"
-                  value="pix"
-                  class="tournament-buy-in-modal__method"
-                  data-buy-in-payment-target="submit">
-            <span>Pix</span>
-            <small>QR Code e copia e cola</small>
-          </button>
-          <button type="submit"
-                  name="payment_method"
-                  value="card"
-                  class="tournament-buy-in-modal__method"
-                  data-buy-in-payment-target="submit">
-            <span>Cartão de crédito ou débito</span>
-            <small>Pagamento seguro pelo Asaas</small>
-          </button>
-        </div>
-      <% end %>
-    </div>
-
-    <% if payment&.pix? && payment.pix_qr_code_image.present? && payment.pix_payload.present? %>
-      <div class="tournament-buy-in-modal__pix"
-           aria-label="Pagamento Pix"
-           data-buy-in-payment-target="pix">
-        <p>Escaneie o QR Code ou copie o código Pix.</p>
-        <%= image_tag "data:image/png;base64,#{payment.pix_qr_code_image}",
-                      alt: "QR Code Pix do buy-in",
-                      class: "tournament-buy-in-modal__pix-image" %>
-        <label for="buy-in-pix-payload">Pix copia e cola</label>
-        <input id="buy-in-pix-payload"
-               class="tournament-buy-in-modal__pix-payload"
-               type="text"
-               value="<%= payment.pix_payload %>"
-               readonly>
-        <% if payment.pix_expiration_date.present? %>
-          <p>Válido até <%= l(payment.pix_expiration_date, format: :short) %>.</p>
-        <% end %>
-        <button type="button"
-                class="tournament-buy-in-modal__back"
-                data-action="buy-in-payment#showSelection">
-          Voltar para formas de pagamento
-        </button>
+    <% if payment.present? %>
+      <div class="tournament-buy-in-modal__manual-instructions" role="status">
+        <p>Aguardando pagamento.</p>
+        <span>Realize o Pix usando os dados informados pelo organizador. Após a confirmação, sua inscrição será concluída.</span>
       </div>
-    <% end %>
-
-    <% if payment&.card? && payment.provider_payment_url.present? %>
-      <div class="tournament-buy-in-modal__card-payment"
-           data-buy-in-payment-target="card">
-        <p>Você será direcionado à página segura do Asaas para informar os dados do cartão.</p>
-        <%= link_to "Ir para pagamento seguro",
-                    payment.provider_payment_url,
-                    class: "tournament-buy-in-modal__pay",
-                    target: "_blank",
-                    rel: "noopener noreferrer" %>
-        <button type="button"
-                class="tournament-buy-in-modal__back"
-                data-action="buy-in-payment#showSelection">
-          Voltar para formas de pagamento
-        </button>
+    <% else %>
+      <div class="tournament-buy-in-modal__manual-instructions">
+        <p>Pagamento por Pix</p>
+        <span>A chave Pix do clube será exibida aqui após o cadastro pelo organizador.</span>
       </div>
     <% end %>
     <button type="button"

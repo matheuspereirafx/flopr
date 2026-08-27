@@ -40,4 +40,14 @@
       <%= l(transaction_time, format: :short) %>
     </time>
   </td>
+  <td class="transactions-table__action">
+    <% if transaction.pending? %>
+      <%= button_to "Confirmar",
+                    confirm_club_tournament_transaction_path(club, tournament, transaction),
+                    method: :patch,
+                    class: "transactions-table__confirm" %>
+    <% else %>
+      <span class="transactions-table__confirmed">—</span>
+    <% end %>
+  </td>
 </tr>

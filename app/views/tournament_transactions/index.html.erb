@@ -59,12 +59,15 @@
                 <th scope="col">Valor</th>
                 <th scope="col">Pagamento</th>
                 <th scope="col">Data</th>
+                <th scope="col">Ação</th>
               </tr>
             </thead>
             <tbody>
               <% @transactions.each do |transaction| %>
                 <%= render "shared/components/tournament_transactions/transaction_row",
-                           transaction: transaction %>
+                           transaction: transaction,
+                           club: @club,
+                           tournament: @tournament %>
               <% end %>
             </tbody>
           </table>
@@ -73,7 +76,7 @@
         <div class="transactions-empty-state" role="status">
           <span class="transactions-empty-state__icon" aria-hidden="true">◌</span>
           <p>Nenhuma transação registrada neste torneio.</p>
-          <span>As compras aparecerão aqui após a confirmação pelo gateway.</span>
+          <span>As compras aparecerão aqui após uma solicitação de pagamento.</span>
         </div>
       <% end %>
     </section>

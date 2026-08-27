@@ -74,7 +74,7 @@ class RegistrationPaymentTest < ActiveSupport::TestCase
     assert_equal 50.to_d, @tournament.registration_payments.paid.sum(:amount)
   end
 
-  test "stores the Asaas payment identifier and payment approval time" do
+  test "stores a provider payment identifier and payment approval time" do
     paid_at = Time.zone.local(2026, 8, 27, 20, 33, 10)
     payment = build_payment
     payment.provider_payment_id = "pay_sandbox_123"
@@ -85,7 +85,7 @@ class RegistrationPaymentTest < ActiveSupport::TestCase
     assert_equal paid_at, payment.reload.paid_at
   end
 
-  test "does not allow a duplicate Asaas payment identifier" do
+  test "does not allow a duplicate provider payment identifier" do
     first = payment_create_registration_payment(
       tournament: @tournament,
       user: @player,
@@ -125,7 +125,7 @@ class RegistrationPaymentTest < ActiveSupport::TestCase
       amount: amount,
       status: status,
       provider: "gateway",
-      payment_method: "pix",
+      payment_method: "manual",
       recorded_by: @owner
     )
   end

@@ -19,6 +19,7 @@ class TournamentRegistrationConfirmation
       raise CapacityReached if @tournament.capacity_reached?
 
       registration.update!(status: :pending)
+      create_pending_buy_in_payment!(registration)
       registration
     end
   end
@@ -33,5 +34,20 @@ class TournamentRegistrationConfirmation
     TournamentRegistration.find_or_create_by!(tournament: @tournament, user: @user) do |registration|
       registration.status = :pending
     end
+  end
+
+  def create_pending_buy_in_payment!(registration)
+    buy_in = @tournament.charge_options.find_by(kind: :buy_in, active: true)
+    return if buy_in.blank?
+    return if registration.registration_payments.exists?(tournament_charge_option: buy_in)
+
+    registration.registration_payments.create!(
+      tournament_charge_option: buy_in,
+      recorded_by: @user,
+      amount: buy_in.amount,
+      status: :pending,
+      provider: "manual",
+      payment_method: "manual"
+    )
   end
 end

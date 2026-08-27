@@ -117,7 +117,7 @@
 .transactions-section__count { color: #a1a1aa; font-size: 12px; white-space: nowrap; }
 
 .transactions-table-wrapper { width: 100%; overflow-x: auto; }
-.transactions-table { width: 100%; min-width: 680px; border-collapse: collapse; table-layout: fixed; }
+.transactions-table { width: 100%; min-width: 760px; border-collapse: collapse; table-layout: fixed; }
 .transactions-table th,
 .transactions-table td { padding: 16px 20px; border-bottom: 1px solid rgba(255, 255, 255, .06); text-align: left; vertical-align: middle; }
 .transactions-table thead th { color: #928f9c; background: rgba(53, 52, 52, .42); font: 700 9px/1.2 $font-secondary; letter-spacing: .14em; text-transform: uppercase; }
@@ -125,7 +125,8 @@
 .transactions-table thead th:nth-child(2) { width: 19%; }
 .transactions-table thead th:nth-child(3) { width: 19%; }
 .transactions-table thead th:nth-child(4) { width: 16%; }
-.transactions-table thead th:nth-child(5) { width: 16%; }
+.transactions-table thead th:nth-child(5) { width: 13%; }
+.transactions-table thead th:nth-child(6) { width: 12%; }
 .transactions-table__row:last-child th,
 .transactions-table__row:last-child td { border-bottom: 0; }
 .transactions-table__row:hover { background: rgba(82, 72, 156, .08); }
@@ -140,6 +141,10 @@
 .transactions-table__date { color: #c9c4d3; font-size: 13px; }
 .transactions-table__amount strong { display: block; color: #f0eff4; font-size: 14px; }
 .transactions-table__amount small { display: block; margin-top: 4px; }
+.transactions-table__action { white-space: nowrap; }
+.transactions-table__confirm { padding: 7px 10px; border: 0; border-radius: 999px; color: #fff; background: #52489c; font: 700 10px $font-secondary; cursor: pointer; }
+.transactions-table__confirm:hover { background: #6a5fba; }
+.transactions-table__confirmed { color: #8f8b99; }
 .transactions-status { display: inline-flex; min-height: 23px; align-items: center; padding: 4px 9px; border: 1px solid transparent; border-radius: 999px; font: 600 10px/1 $font-secondary; white-space: nowrap; }
 .transactions-status--paid { border-color: rgba(199, 191, 255, .25); color: #c7bfff; background: rgba(82, 72, 156, .24); }
 .transactions-status--pending { border-color: rgba(255, 179, 180, .22); color: #ffb3b4; background: rgba(148, 10, 40, .18); }

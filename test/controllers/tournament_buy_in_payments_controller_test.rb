@@ -2,12 +2,24 @@ require "test_helper"
 
 class TournamentBuyInPaymentsControllerTest < ActionDispatch::IntegrationTest
   class GatewayStub
+    class << self
+      attr_accessor :deleted_payment_ids
+    end
+
     def create_customer(_user)
       { id: "cus_buy_in_player" }
     end
 
-    def create_payment(_registration, _charge_option, _customer_id)
-      { id: "pay_buy_in_pix", status: "PENDING" }
+    def create_payment(_registration, _charge_option, _customer_id, payment_method:)
+      if payment_method.to_sym == :card
+        {
+          id: "pay_buy_in_card",
+          status: "PENDING",
+          invoiceUrl: "https://sandbox.asaas.com/i/buy-in-card"
+        }
+      else
+        { id: "pay_buy_in_pix", status: "PENDING" }
+      end
     end
 
     def pix_qr_code(_payment_id)
@@ -17,6 +29,11 @@ class TournamentBuyInPaymentsControllerTest < ActionDispatch::IntegrationTest
         expirationDate: "2026-08-27T23:59:59Z"
       }
     end
+
+    def delete_payment(payment_id)
+      self.class.deleted_payment_ids << payment_id
+      { deleted: true, id: payment_id }
+    end
   end
 
   test "player can create a pending Pix buy-in payment" do
@@ -25,7 +42,7 @@ class TournamentBuyInPaymentsControllerTest < ActionDispatch::IntegrationTest
 
     with_gateway_stub do
       assert_difference "RegistrationPayment.count", 1 do
-        post payment_path
+        post payment_path, params: { payment_method: "pix" }
       end
     end
 
@@ -55,7 +72,8 @@ class TournamentBuyInPaymentsControllerTest < ActionDispatch::IntegrationTest
     sign_in @player
 
     with_gateway_stub do
-      post payment_path, params: { user: { name: "Player Buy In" } }
+      post payment_path,
+           params: { user: { name: "Player Buy In" }, payment_method: "pix" }
     end
 
     assert_redirected_to club_tournament_path(@club, @tournament, payment: "buy_in")
@@ -68,13 +86,61 @@ class TournamentBuyInPaymentsControllerTest < ActionDispatch::IntegrationTest
     sign_in @player
 
     with_gateway_stub do
-      post payment_path
+      post payment_path, params: { payment_method: "pix" }
       assert_difference "RegistrationPayment.count", 0 do
-        post payment_path
+        post payment_path, params: { payment_method: "pix" }
       end
     end
 
     assert_equal 1, @registration.registration_payments.where(provider: "asaas").count
+  end
+
+  test "player can create a pending card buy-in payment" do
+    @player.update!(cpf: "52998224725")
+    sign_in @player
+
+    with_gateway_stub do
+      assert_difference "RegistrationPayment.count", 1 do
+        post payment_path, params: { payment_method: "card" }
+      end
+    end
+
+    payment = RegistrationPayment.order(:created_at).last
+    assert_predicate payment, :card?
+    assert_equal "pay_buy_in_card", payment.provider_payment_id
+    assert_equal "https://sandbox.asaas.com/i/buy-in-card", payment.provider_payment_url
+    assert_nil payment.pix_qr_code_image
+    assert_predicate @registration.reload, :pending?
+  end
+
+  test "switching from Pix to card cancels the previous pending charge" do
+    @player.update!(cpf: "52998224725")
+    sign_in @player
+
+    with_gateway_stub do
+      post payment_path, params: { payment_method: "pix" }
+
+      assert_difference "RegistrationPayment.count", 1 do
+        post payment_path, params: { payment_method: "card" }
+      end
+    end
+
+    pix_payment = @registration.registration_payments.find_by!(payment_method: :pix)
+    card_payment = @registration.registration_payments.find_by!(payment_method: :card)
+    assert_predicate pix_payment, :cancelled?
+    assert_equal "DELETED", pix_payment.provider_status
+    assert_equal [pix_payment.provider_payment_id], GatewayStub.deleted_payment_ids
+    assert_predicate card_payment, :pending?
+  end
+
+  test "an invalid payment method does not create a transaction" do
+    sign_in @player
+
+    assert_no_difference "RegistrationPayment.count" do
+      post payment_path, params: { payment_method: "cash" }
+    end
+
+    assert_redirected_to club_tournament_path(@club, @tournament, payment: "buy_in")
   end
 
   test "a player without a registration cannot pay the buy-in" do
@@ -105,6 +171,7 @@ class TournamentBuyInPaymentsControllerTest < ActionDispatch::IntegrationTest
   private
 
   def setup
+    GatewayStub.deleted_payment_ids = []
     @club = payment_create_club(name: "Poker House")
     @other_club = payment_create_club(name: "Other Poker House")
     @tournament = payment_create_tournament(club: @club, name: "Friday Buy-in")

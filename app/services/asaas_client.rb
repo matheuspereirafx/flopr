@@ -21,10 +21,12 @@ class AsaasClient
     })
   end
 
-  def create_payment(registration, charge_option, customer_id)
+  def create_payment(registration, charge_option, customer_id, payment_method: :pix)
+    billing_type = payment_method.to_sym == :card ? "CREDIT_CARD" : "PIX"
+
     post("payments", {
       customer: customer_id,
-      billingType: "PIX",
+      billingType: billing_type,
       value: charge_option.amount.to_f,
       dueDate: Date.current.iso8601,
       description: "Buy-in - #{registration.tournament.name}",
@@ -34,6 +36,10 @@ class AsaasClient
 
   def pix_qr_code(payment_id)
     get("payments/#{payment_id}/pixQrCode")
+  end
+
+  def delete_payment(payment_id)
+    delete("payments/#{payment_id}")
   end
 
   private
@@ -63,6 +69,24 @@ class AsaasClient
     request["User-Agent"] = "Flopr/1.0"
     request["access_token"] = @api_key
     request.body = JSON.generate(payload)
+
+    response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https") do |http|
+      http.request(request)
+    end
+
+    body = JSON.parse(response.body)
+    return body if response.is_a?(Net::HTTPSuccess)
+
+    raise Error, body.dig("errors", 0, "description") || "Erro na API do Asaas"
+  rescue JSON::ParserError
+    raise Error, "Resposta inválida da API do Asaas"
+  end
+
+  def delete(path)
+    uri = URI.join("#{@base_url}/", path)
+    request = Net::HTTP::Delete.new(uri)
+    request["User-Agent"] = "Flopr/1.0"
+    request["access_token"] = @api_key
 
     response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https") do |http|
       http.request(request)

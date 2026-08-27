@@ -29,6 +29,18 @@ class RegistrationPaymentTest < ActiveSupport::TestCase
     assert_equal "'unknown' is not a valid status", error.message
   end
 
+  test "accepts the supported payment methods" do
+    assert_equal %w[card manual pix], RegistrationPayment.payment_methods.keys.sort
+  end
+
+  test "rejects an unsupported payment method" do
+    payment = build_payment
+    payment.payment_method = "bank_transfer"
+
+    assert_not payment.valid?
+    assert_includes payment.errors[:payment_method], "não está incluído na lista"
+  end
+
   test "rejects a negative amount" do
     payment = build_payment(amount: -1)
 

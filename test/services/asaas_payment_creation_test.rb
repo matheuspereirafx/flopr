@@ -2,15 +2,21 @@ require "test_helper"
 
 class AsaasPaymentCreationTest < ActiveSupport::TestCase
   class GatewayStub
+    attr_reader :pix_qr_code_calls, :payment_methods
+
     def initialize(response)
       @response = response
+      @pix_qr_code_calls = 0
+      @payment_methods = []
     end
 
-    def create_payment(*_arguments)
+    def create_payment(*_arguments, payment_method:)
+      @payment_methods << payment_method
       @response
     end
 
     def pix_qr_code(*_arguments)
+      @pix_qr_code_calls += 1
       {
         encodedImage: "encoded-pix-image",
         payload: "pix-payload",
@@ -59,6 +65,49 @@ class AsaasPaymentCreationTest < ActiveSupport::TestCase
         gateway: GatewayStub.new({})
       )
     end
+  end
+
+  test "does not persist a local payment when the gateway fails" do
+    registration = @tournament.tournament_registrations.find_by!(user: @player)
+    gateway = Object.new
+    gateway.define_singleton_method(:create_payment) do |*_arguments, **_keywords|
+      raise AsaasClient::Error, "Gateway indisponível"
+    end
+
+    assert_no_difference "RegistrationPayment.count" do
+      assert_raises(AsaasPaymentCreation::InvalidPayment) do
+        AsaasPaymentCreation.call(
+          registration: registration,
+          charge_option: @buy_in,
+          customer_id: "cus_player",
+          payment_method: :pix,
+          gateway: gateway
+        )
+      end
+    end
+  end
+
+  test "creates a pending card payment without requesting a Pix QR Code" do
+    registration = @tournament.tournament_registrations.find_by!(user: @player)
+    gateway = GatewayStub.new(
+      id: "pay_card_123",
+      status: "PENDING",
+      invoiceUrl: "https://sandbox.asaas.com/i/card_123"
+    )
+
+    payment = AsaasPaymentCreation.call(
+      registration: registration,
+      charge_option: @buy_in,
+      customer_id: "cus_player",
+      payment_method: :card,
+      gateway: gateway
+    )
+
+    assert_predicate payment, :card?
+    assert_equal "https://sandbox.asaas.com/i/card_123", payment.provider_payment_url
+    assert_nil payment.pix_qr_code_image
+    assert_equal 0, gateway.pix_qr_code_calls
+    assert_equal [:card], gateway.payment_methods
   end
 
   private

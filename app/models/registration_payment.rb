@@ -12,10 +12,16 @@ class RegistrationPayment < ApplicationRecord
     refunded: "refunded"
   }
 
+  enum :payment_method, {
+    pix: "pix",
+    card: "card",
+    manual: "manual"
+  }, validate: true
+
   validates :amount,
             presence: true,
             numericality: { greater_than_or_equal_to: 0 }
-  validates :provider, :payment_method, presence: true
+  validates :provider, presence: true
   validates :provider_payment_id, uniqueness: { scope: :provider }, allow_blank: true
   validate :payment_resources_belong_to_same_tournament
 

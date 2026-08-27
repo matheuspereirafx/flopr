@@ -10,6 +10,18 @@ class TournamentBuyInPaymentsController < ApplicationController
       return
     end
 
+    payment_method = payment_method_param
+    unless RegistrationPayment.payment_methods.key?(payment_method)
+      redirect_to club_tournament_path(@club, @tournament, payment: "buy_in"),
+                  alert: "Escolha uma forma de pagamento válida."
+      return
+    end
+    unless %w[pix card].include?(payment_method)
+      redirect_to club_tournament_path(@club, @tournament, payment: "buy_in"),
+                  alert: "Escolha uma forma de pagamento válida."
+      return
+    end
+
     cpf = buy_in_params[:cpf]
     name = buy_in_params[:name]
     if cpf.present? || name.present?
@@ -36,19 +48,24 @@ class TournamentBuyInPaymentsController < ApplicationController
                               .order(created_at: :desc)
                               .first
 
+      if payment&.payment_method != payment_method
+        cancel_pending_payment!(payment) if payment.present?
+        payment = nil
+      end
+
       unless payment
         customer = AsaasCustomer.find_or_create_for(current_user)
         payment = AsaasPaymentCreation.call(
           registration: @registration,
           charge_option: @tournament.charge_options.find_by!(kind: :buy_in, active: true),
           customer_id: customer["id"] || customer[:id],
-          payment_method: :pix
+          payment_method: payment_method
         )
       end
     end
 
     redirect_to club_tournament_path(@club, @tournament, payment: "buy_in"),
-                notice: "Cobrança Pix criada. Aguardando pagamento."
+                notice: "Cobrança criada. Aguardando pagamento."
   rescue ActiveRecord::RecordInvalid, AsaasCustomer::InvalidCustomer,
          AsaasPaymentCreation::InvalidPayment, AsaasClient::Error
     redirect_to club_tournament_path(@club, @tournament, payment: "buy_in"),
@@ -82,5 +99,17 @@ class TournamentBuyInPaymentsController < ApplicationController
 
   def buy_in_params
     params.fetch(:user, {}).permit(:name, :cpf)
+  end
+
+  def payment_method_param
+    params.permit(:payment_method)[:payment_method].to_s
+  end
+
+  def cancel_pending_payment!(payment)
+    if payment.provider == "asaas" && payment.provider_payment_id.present?
+      AsaasClient.new.delete_payment(payment.provider_payment_id)
+    end
+
+    payment.update!(status: :cancelled, provider_status: "DELETED")
   end
 end

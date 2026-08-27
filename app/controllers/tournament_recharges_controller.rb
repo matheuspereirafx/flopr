@@ -22,7 +22,7 @@ class TournamentRechargesController < ApplicationController
     @registration.with_lock do
       unless @registration.can_request_recharge?
         redirect_to recharges_path,
-                    alert: "Conclua a última recarga para solicitar mais recargas."
+                    alert: "Aguarde alguns segundos antes de solicitar outra recarga."
         return
       end
 

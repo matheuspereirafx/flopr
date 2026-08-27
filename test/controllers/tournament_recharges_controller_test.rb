@@ -77,15 +77,16 @@ class TournamentRechargesControllerTest < ActionDispatch::IntegrationTest
     assert_equal @rebuy.amount, payment.amount
   end
 
-  test "player cannot request a new recharge while the last one is pending" do
-    create_payment_for(@player, status: :pending, kind: :rebuy)
+  test "player cannot request another recharge during the five second cooldown" do
+    payment = create_payment_for(@player, status: :pending, kind: :rebuy)
+    payment.update_column(:created_at, 4.seconds.ago)
     sign_in @player
     counts_before = RegistrationPayment.count
 
     get recharges_path
 
     assert_response :success
-    assert_includes response.body, "Conclua a última recarga para solicitar mais recargas."
+    assert_includes response.body, "Aguarde alguns segundos antes de solicitar outra recarga."
     assert_select ".recharge-option-card__button[disabled]", count: 0
 
     post recharges_path,
@@ -95,12 +96,13 @@ class TournamentRechargesControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to recharges_path
     assert_equal counts_before, RegistrationPayment.count
-    assert_equal "Conclua a última recarga para solicitar mais recargas.",
+    assert_equal "Aguarde alguns segundos antes de solicitar outra recarga.",
                  flash[:alert]
   end
 
-  test "player can request a new recharge after the last one is paid" do
-    create_payment_for(@player, status: :paid, kind: :rebuy)
+  test "player can request another recharge after five seconds even if the previous one is pending" do
+    payment = create_payment_for(@player, status: :pending, kind: :rebuy)
+    payment.update_column(:created_at, 6.seconds.ago)
     sign_in @player
 
     assert_difference "RegistrationPayment.count", 1 do

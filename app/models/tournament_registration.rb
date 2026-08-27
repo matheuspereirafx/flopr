@@ -1,4 +1,6 @@
 class TournamentRegistration < ApplicationRecord
+  RECHARGE_REQUEST_COOLDOWN = 5.seconds
+
   belongs_to :tournament
   belongs_to :user
 
@@ -13,8 +15,8 @@ class TournamentRegistration < ApplicationRecord
       .first
   end
 
-  def can_request_recharge?
-    latest_recharge.nil? || latest_recharge.paid?
+  def can_request_recharge?(at: Time.current)
+    latest_recharge.blank? || latest_recharge.created_at <= at - RECHARGE_REQUEST_COOLDOWN
   end
 
   enum :status, {

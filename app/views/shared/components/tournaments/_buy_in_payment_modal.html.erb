@@ -52,7 +52,7 @@
                     data: { action: "submit->buy-in-payment#submit" } do |form| %>
         <% if current_user.name.blank? || current_user.cpf.blank? %>
           <fieldset class="tournament-buy-in-modal__identity-fields">
-            <legend>Dados do jogador</legend>
+
             <p>Esses dados são necessários para gerar sua cobrança Pix.</p>
 
             <div class="tournament-buy-in-modal__identity-fields-grid">

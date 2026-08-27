@@ -247,12 +247,15 @@
   position: relative;
   width: 100%;
   max-width: 420px;
+  max-height: calc(100dvh - 48px);
   padding: 32px;
   border: 1px solid rgba(152, 143, 215, .3);
   border-radius: 16px;
   color: #f0eff4;
   background: #201f20;
   box-shadow: 0 4px 12px rgba(0, 0, 0, .3);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .tournament-buy-in-modal__close {
@@ -277,6 +280,11 @@
 .tournament-buy-in-modal__details div:last-child { border-bottom: 0; }
 .tournament-buy-in-modal__details dt { color: #a1a1aa; font-size: 13px; }
 .tournament-buy-in-modal__details dd { margin: 0; color: #c7bfff; font: 700 18px $font-primary; }
+.tournament-buy-in-modal__pix { display: grid; min-width: 0; justify-items: center; gap: 12px; margin-bottom: 16px; padding: 16px; border: 1px solid rgba(255, 255, 255, .1); border-radius: 10px; background: #151516; }
+.tournament-buy-in-modal__pix > p { margin: 0; color: #a1a1aa; font: 400 12px/1.45 $font-secondary; text-align: center; }
+.tournament-buy-in-modal__pix-image { display: block; width: 220px; max-width: 100%; height: auto; padding: 8px; border-radius: 8px; background: #fff; }
+.tournament-buy-in-modal__pix label { justify-self: start; color: #c9c4d3; font: 600 12px/1.2 $font-secondary; }
+.tournament-buy-in-modal__pix-payload { width: 100%; min-width: 0; height: 44px; padding: 0 12px; overflow: hidden; border: 1px solid rgba(255, 255, 255, .12); border-radius: 8px; color: #f0eff4; background: #0e0e0f; font: 400 12px $font-secondary; text-overflow: ellipsis; white-space: nowrap; }
 .tournament-buy-in-modal__form { display: grid; gap: 16px; }
 .tournament-buy-in-modal__identity-fields { min-width: 0; margin: 0; padding: 16px; border: 1px solid rgba(255, 255, 255, .1); border-radius: 10px; background: #151516; }
 .tournament-buy-in-modal__identity-fields legend { padding: 0 6px; color: #f0eff4; font: 600 13px/1.2 $font-secondary; }
@@ -292,5 +300,7 @@
 @media (max-width: 680px) {
   .tournament-buy-in-trigger { right: 16px; bottom: 84px; }
   .tournament-buy-in-modal { align-items: end; padding: 16px; }
-  .tournament-buy-in-modal__card { padding: 28px 22px 22px; }
+  .tournament-buy-in-modal__card { max-height: calc(100dvh - 32px); padding: 28px 22px 22px; }
+  .tournament-buy-in-modal__pix { padding: 14px; }
+  .tournament-buy-in-modal__pix-image { width: 200px; }
 }

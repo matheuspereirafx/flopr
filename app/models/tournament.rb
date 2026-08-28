@@ -36,6 +36,15 @@ class Tournament < ApplicationRecord
     finished: "finished"
   }
 
+  scope :live, lambda {
+    joins(:clock_state)
+      .where(status: :posted, tournament_clock_states: { status: %i[running paused overtime] })
+  }
+
+  scope :upcoming, lambda {
+    where(status: :posted).where("starts_at >= ?", Time.current).order(starts_at: :asc)
+  }
+
   validates :name,
             presence: true,
             uniqueness: { case_sensitive: false }

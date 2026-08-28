@@ -147,6 +147,29 @@ class TournamentTest < ActiveSupport::TestCase
     assert tournament.valid?
   end
 
+  test "live scope includes posted tournaments with an active or paused clock" do
+    running = create_tournament(status: :posted, name: "Running", with_buy_in: true)
+    paused = create_tournament(status: :posted, name: "Paused", with_buy_in: true)
+    draft = create_tournament(name: "Draft")
+    finished = create_tournament(status: :finished, name: "Finished")
+
+    TournamentClockState.create_initial_for!(running).update!(status: :running)
+    TournamentClockState.create_initial_for!(paused).update!(status: :paused)
+    TournamentClockState.create_initial_for!(draft).update!(status: :running)
+    TournamentClockState.create_initial_for!(finished).update!(status: :overtime)
+
+    assert_equal ["Paused", "Running"].sort, Tournament.live.pluck(:name).sort
+  end
+
+  test "upcoming scope includes only future posted tournaments ordered by date" do
+    later = create_tournament(status: :posted, name: "Later", starts_at: 2.days.from_now, with_buy_in: true)
+    sooner = create_tournament(status: :posted, name: "Sooner", starts_at: 1.hour.from_now, with_buy_in: true)
+    create_tournament(status: :draft, name: "Draft", starts_at: 1.hour.from_now)
+    create_tournament(status: :posted, name: "Past", starts_at: 1.hour.ago, with_buy_in: true)
+
+    assert_equal [sooner, later], Tournament.upcoming.to_a
+  end
+
   test "is invalid when removal leaves fewer than five blind levels" do
     tournament = build_tournament
     tournament.blind_levels.last.mark_for_destruction
@@ -156,6 +179,14 @@ class TournamentTest < ActiveSupport::TestCase
   end
 
   private
+
+  def create_tournament(attributes = {})
+    with_buy_in = attributes.delete(:with_buy_in)
+    tournament = build_tournament(attributes)
+    tournament.charge_options.build(kind: :buy_in, active: true, amount: 50, chip_amount: 10_000) if with_buy_in
+    tournament.save!
+    tournament
+  end
 
   def build_tournament(attributes = {})
     defaults = {

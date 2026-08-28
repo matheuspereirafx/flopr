@@ -3,6 +3,11 @@ pt-BR:
     attributes:
       user:
         email: "E-mail"
+      tournament:
+        statuses:
+          draft: "Rascunho"
+          posted: "Publicado"
+          finished: "Finalizado"
 
     errors:
       models:

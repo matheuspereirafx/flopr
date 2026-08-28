@@ -313,6 +313,26 @@
   font-family: $font-secondary;
 }
 
+.tournament-card__status--posted {
+  border-color: rgba(96, 211, 139, 0.28);
+  color: #9be7b4;
+}
+
+.tournament-card__status--posted .tournament-card__status-dot {
+  background: #5ed38b;
+  box-shadow: 0 0 8px rgba(94, 211, 139, 0.8);
+}
+
+.tournament-card__status--finished {
+  border-color: rgba(201, 196, 211, 0.25);
+  color: #c9c4d3;
+}
+
+.tournament-card__status--finished .tournament-card__status-dot {
+  background: #928f9c;
+  box-shadow: 0 0 8px rgba(146, 143, 156, 0.65);
+}
+
 .tournament-card__menu {
   position: absolute;
   top: 13px;

@@ -170,6 +170,34 @@ class TournamentTest < ActiveSupport::TestCase
     assert_equal [sooner, later], Tournament.upcoming.to_a
   end
 
+  test "allows only forward tournament status transitions" do
+    tournament = create_tournament(name: "Status Flow")
+
+    tournament.status = :posted
+    assert tournament.valid?
+    tournament.save!
+
+    tournament.status = :finished
+    assert tournament.valid?
+    tournament.save!
+  end
+
+  test "rejects backwards tournament status transitions" do
+    posted = create_tournament(status: :posted, name: "Posted Status", with_buy_in: true)
+    finished = create_tournament(status: :finished, name: "Finished Status")
+
+    posted.status = :draft
+    assert_not posted.valid?
+    assert_includes posted.errors[:status], "não pode voltar para um estado anterior"
+
+    finished.status = :posted
+    assert_not finished.valid?
+    assert_includes finished.errors[:status], "não pode voltar para um estado anterior"
+
+    finished.status = :draft
+    assert_not finished.valid?
+  end
+
   test "is invalid when removal leaves fewer than five blind levels" do
     tournament = build_tournament
     tournament.blind_levels.last.mark_for_destruction

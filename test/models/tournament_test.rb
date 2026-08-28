@@ -9,6 +9,34 @@ class TournamentTest < ActiveSupport::TestCase
     assert_equal :belongs_to, Tournament.reflect_on_association(:club).macro
   end
 
+  test "has an optional cover attachment" do
+    assert_equal :has_one_attached, Tournament.reflect_on_attachment(:cover).macro
+  end
+
+  test "rejects covers larger than 8 MB" do
+    tournament = build_tournament
+    tournament.cover.attach(
+      io: StringIO.new("0" * (Tournament::COVER_MAX_SIZE + 1)),
+      filename: "cover.png",
+      content_type: "image/png"
+    )
+
+    assert_not tournament.valid?
+    assert_includes tournament.errors[:cover], "deve ter no máximo 8 MB"
+  end
+
+  test "rejects non-image covers" do
+    tournament = build_tournament
+    tournament.cover.attach(
+      io: StringIO.new("not an image"),
+      filename: "cover.pdf",
+      content_type: "application/pdf"
+    )
+
+    assert_not tournament.valid?
+    assert_includes tournament.errors[:cover], "deve ser uma imagem JPEG, PNG ou WebP"
+  end
+
   test "has tournament registrations" do
     assert_equal :has_many,
                  Tournament.reflect_on_association(:tournament_registrations).macro

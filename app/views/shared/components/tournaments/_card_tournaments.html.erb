@@ -65,9 +65,9 @@
                         aria: { label: "Ver detalhes do torneio #{tournament.name}" } do %>
             <div class="tournament-card__image-wrapper">
               <%= image_tag(
-                "backgroundshow.png",
+                tournament.cover.attached? ? tournament.cover : "backgroundshow.png",
                 class: "tournament-card__image",
-                alt: "Mesa de torneio de pôquer"
+                alt: tournament.cover.attached? ? "Capa do torneio #{tournament.name}" : "Mesa de torneio de pôquer"
               ) %>
 
               <span class="tournament-card__status">

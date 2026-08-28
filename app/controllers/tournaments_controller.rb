@@ -5,7 +5,7 @@ class TournamentsController < ApplicationController
   before_action :authorize_tournament_deletion!, only: :destroy
 
   def index
-    @tournaments = @club.tournaments.order(starts_at: :asc)
+    @tournaments = @club.tournaments.with_attached_cover.order(starts_at: :asc)
     @confirmed_registrations_by_tournament = TournamentRegistration.confirmed
                                                                .where(tournament_id: @tournaments.select(:id))
                                                                .group(:tournament_id)
@@ -131,6 +131,7 @@ class TournamentsController < ApplicationController
       :max_players,
       :starts_at,
       :blind_levels_count,
+      :cover,
       blind_levels_attributes: [
         :id,
         :level,

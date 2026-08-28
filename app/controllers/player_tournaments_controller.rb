@@ -5,11 +5,16 @@ class PlayerTournamentsController < ApplicationController
     @upcoming_tournaments = Tournament
                             .where(club_id: member_club_ids)
                             .where("starts_at >= ?", Time.current)
+                            .with_attached_cover
                             .includes(:club, :charge_options)
                             .order(starts_at: :asc)
 
     @my_tournaments = current_user.tournament_registrations
-                                  .includes(tournament: %i[club charge_options])
+                                  .includes(tournament: [
+                                    :club,
+                                    :charge_options,
+                                    { cover_attachment: :blob }
+                                  ])
                                   .map(&:tournament)
                                   .sort_by(&:starts_at)
 

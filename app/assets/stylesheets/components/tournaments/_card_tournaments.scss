@@ -197,6 +197,7 @@
 .tournament-card {
   position: relative;
   min-width: 0;
+  isolation: isolate;
 
   overflow: hidden;
 
@@ -222,7 +223,8 @@
 }
 
 .tournament-card:hover {
-  transform: translateY(-5px);
+  transform: translate3d(0, -5px, 0);
+  backface-visibility: hidden;
 
   border-color: rgba(164, 128, 255, 0.18);
 
@@ -272,11 +274,6 @@
 
   transition: transform 0.4s ease;
 }
-
-.tournament-card:hover .tournament-card__image {
-  transform: scale(1.04);
-}
-
 
 /* =========================
    STATUS

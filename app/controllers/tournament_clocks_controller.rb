@@ -34,7 +34,12 @@ class TournamentClocksController < ApplicationController
   end
 
   def start
-    @clock_state.start!
+    started_at = Time.current
+
+    ApplicationRecord.transaction do
+      @clock_state.start!(at: started_at)
+      @tournament.update!(starts_at: started_at)
+    end
 
     redirect_to club_tournament_clock_path(@club, @tournament),
                 notice: "Relógio iniciado com sucesso."
@@ -90,6 +95,7 @@ class TournamentClocksController < ApplicationController
 
     {
       status: @clock_state.status,
+      started_at: @clock_state.started_at&.iso8601(3),
       current_blind_level_id: @clock_state.current_blind_level_id,
       remaining_seconds: @clock_state.remaining_seconds,
       overtime_elapsed_seconds: @clock_state.overtime_seconds,

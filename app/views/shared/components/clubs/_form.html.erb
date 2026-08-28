@@ -43,7 +43,7 @@
           <%= f.input :name,
             label: "Nome do Clube",
             placeholder: "Ex: Monte Carlo Elite",
-            required: true,
+            required: false,
             input_html: {
               class: "dark-input",
               autocomplete: "off"
@@ -72,9 +72,7 @@
 
           <h3>
 
-            <span class="contact-icon" aria-hidden="true">
-              ☎
-            </span>
+            <i class="fa-solid fa-message contact-icon" aria-hidden="true"></i>
 
             Canais de contato
 
@@ -83,7 +81,7 @@
           <%= f.input :whatsapp_contact_number,
             label: "Número de contato",
             placeholder: "+55 11 99999-9999",
-            required: true,
+            required: false,
             input_html: {
               class: "dark-input",
               autocomplete: "tel"

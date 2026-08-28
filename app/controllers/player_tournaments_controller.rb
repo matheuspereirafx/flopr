@@ -4,7 +4,7 @@ class PlayerTournamentsController < ApplicationController
 
     @upcoming_tournaments = Tournament
                             .where(club_id: member_club_ids)
-                            .where("starts_at >= ?", Time.current)
+                            .upcoming
                             .with_attached_cover
                             .includes(:club, :charge_options)
                             .order(starts_at: :asc)

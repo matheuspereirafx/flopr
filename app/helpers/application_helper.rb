@@ -7,6 +7,8 @@ module ApplicationHelper
       tournament_invitation_links
       tournament_invite_links
       tournament_registrations
+      tournament_transactions
+      tournament_recharges
       tournaments
     ].include?(controller_name)
   end
@@ -23,7 +25,16 @@ module ApplicationHelper
     ]
 
     if membership.owner? || membership.admin?
-      items.insert(2, navigation_item("Pagamentos", "icons/iconcash.png", :payments, active_page))
+      items.insert(
+        2,
+        navigation_item(
+          "Transações",
+          "icons/iconcash.png",
+          :transactions,
+          active_page,
+          club_tournament_transactions_path(club, tournament)
+        )
+      )
       items << navigation_item(
         "Configurações",
         "icons/iconconfiguracoes.svg",
@@ -34,8 +45,16 @@ module ApplicationHelper
     elsif membership.dealer?
       items.insert(2, navigation_item("Recargas", "icons/iconcash.png", :reloads, active_page))
     elsif registration&.confirmed?
-      items.insert(2, navigation_item("Histórico", "icons/iconcash.png", :history, active_page))
-      items.insert(3, navigation_item("Solicitações", "icons/iconcash.png", :requests, active_page))
+      items.insert(
+        2,
+        navigation_item(
+          "Recargas",
+          "icons/iconcash.png",
+          :recharges,
+          active_page,
+          club_tournament_recharges_path(club, tournament)
+        )
+      )
     end
 
     items

@@ -5,6 +5,8 @@ import { eagerLoadControllersFrom } from "@hotwired/stimulus-loading"
 
 import PasswordToggleController from "./password_toggle_controller"
 import TournamentClockController from "./tournament_clock_controller"
+import BuyInPaymentController from "./buy_in_payment_controller"
+import RechargePaymentController from "./recharge_payment_controller"
 
 eagerLoadControllersFrom("controllers", application)
 
@@ -16,4 +18,14 @@ application.register(
 application.register(
   "tournament-clock",
   TournamentClockController
+)
+
+application.register(
+  "buy-in-payment",
+  BuyInPaymentController
+)
+
+application.register(
+  "recharge-payment",
+  RechargePaymentController
 )

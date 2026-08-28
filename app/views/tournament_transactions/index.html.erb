@@ -1,0 +1,149 @@
+<div class="tournament-show-shell">
+  <%= render "shared/components/tournaments/navigation",
+             club: @club,
+             tournament: @tournament,
+             current_membership: @current_membership,
+             current_registration: nil,
+             active_page: :transactions %>
+
+  <main class="tournament-transactions-page" aria-labelledby="tournament-transactions-title">
+    <header class="tournament-transactions-page__header">
+      <div class="tournament-transactions-page__identity">
+        <p class="tournament-transactions-page__eyebrow">Gestão financeira</p>
+        <h1 id="tournament-transactions-title">Transações</h1>
+        <p class="tournament-transactions-page__description">
+          Acompanhe as compras realizadas pelos jogadores neste torneio.
+        </p>
+      </div>
+
+      <section class="transactions-summary" aria-label="Resumo financeiro">
+        <article class="transactions-summary__item transactions-summary__item--featured">
+          <span class="transactions-summary__label">Total recebido</span>
+          <strong class="transactions-summary__value"><%= number_to_currency(@paid_total) %></strong>
+        </article>
+
+        <article class="transactions-summary__item">
+          <span class="transactions-summary__label">Buy-ins</span>
+          <strong class="transactions-summary__value"><%= @paid_counts_by_kind.fetch("buy_in", 0) %></strong>
+        </article>
+
+        <article class="transactions-summary__item">
+          <span class="transactions-summary__label">Rebuys</span>
+          <strong class="transactions-summary__value"><%= @paid_counts_by_kind.fetch("rebuy", 0) %></strong>
+        </article>
+
+        <article class="transactions-summary__item">
+          <span class="transactions-summary__label">Add-ons</span>
+          <strong class="transactions-summary__value"><%= @paid_counts_by_kind.fetch("addon", 0) %></strong>
+        </article>
+      </section>
+    </header>
+
+    <section class="transactions-section"
+             aria-labelledby="transactions-section-title"
+             data-controller="transaction-filter">
+      <header class="transactions-section__header">
+        <div>
+          <p class="transactions-section__eyebrow">Histórico financeiro</p>
+          <h2 id="transactions-section-title">Todas as transações</h2>
+        </div>
+        <span class="transactions-section__count"><%= @transactions.size %> registros</span>
+      </header>
+
+      <div class="transactions-player-filter">
+        <label for="transaction-player-filter">Filtrar por jogador</label>
+        <input id="transaction-player-filter"
+               type="search"
+               autocomplete="off"
+               placeholder="Buscar jogador"
+               data-transaction-filter-target="input"
+               data-action="focus->transaction-filter#showOptions input->transaction-filter#filter">
+
+        <div class="transactions-player-filter__options"
+             role="listbox"
+             hidden
+             data-transaction-filter-target="options">
+          <% @confirmed_players.each do |player| %>
+            <button type="button"
+                    role="option"
+                    data-transaction-filter-target="option"
+                    data-search="<%= [player.name, player.username].compact.join(" ").downcase %>"
+                    data-label="<%= player.name %>"
+                    data-action="transaction-filter#select">
+              <span><%= player.name %></span>
+              <% if player.username.present? %>
+                <small>@<%= player.username %></small>
+              <% end %>
+            </button>
+          <% end %>
+        </div>
+
+        <p class="transactions-player-filter__empty" hidden data-transaction-filter-target="empty">
+          Nenhuma transação encontrada para este jogador.
+        </p>
+      </div>
+
+      <% if @transactions.any? %>
+        <div class="transactions-table-wrapper">
+          <table class="transactions-table">
+            <caption class="sr-only">Transações do torneio <%= @tournament.name %></caption>
+            <thead>
+              <tr>
+                <th scope="col">Jogador</th>
+                <th scope="col">Produto</th>
+                <th scope="col">Valor</th>
+                <th scope="col">Pagamento</th>
+                <th scope="col">Data</th>
+                <th scope="col">Ação</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @transactions.each do |transaction| %>
+                <%= render "shared/components/tournament_transactions/transaction_row",
+                           transaction: transaction,
+                           club: @club,
+                           tournament: @tournament %>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mobile-transactions">
+          <% if @pending_transactions.any? %>
+            <section class="mobile-transaction-requests" aria-labelledby="mobile-transaction-requests-title">
+              <h3 id="mobile-transaction-requests-title">Solicitações pendentes</h3>
+
+              <div class="mobile-transaction-cards">
+                <% @pending_transactions.each do |transaction| %>
+                  <%= render "shared/components/tournament_transactions/transaction_card",
+                             transaction: transaction,
+                             club: @club,
+                             tournament: @tournament %>
+                <% end %>
+              </div>
+            </section>
+          <% end %>
+
+          <% if @completed_transactions.any? %>
+            <section class="mobile-completed-transactions" aria-labelledby="mobile-completed-transactions-title">
+              <h3 id="mobile-completed-transactions-title">Transações completas</h3>
+
+              <div class="mobile-completed-transactions__list">
+                <% @completed_transactions.each do |transaction| %>
+                  <%= render "shared/components/tournament_transactions/completed_transaction",
+                             transaction: transaction %>
+                <% end %>
+              </div>
+            </section>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="transactions-empty-state" role="status">
+          <span class="transactions-empty-state__icon" aria-hidden="true">◌</span>
+          <p>Nenhuma transação registrada neste torneio.</p>
+          <span>As compras aparecerão aqui após uma solicitação de pagamento.</span>
+        </div>
+      <% end %>
+    </section>
+  </main>
+</div>

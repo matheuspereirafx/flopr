@@ -1,0 +1,72 @@
+<article class="recharge-option-card"
+         data-controller="recharge-payment"
+         data-recharge-payment-amount-value="<%= charge_option.amount %>"
+         data-recharge-payment-chips-value="<%= charge_option.chip_amount %>">
+  <div class="recharge-option-card__icon" aria-hidden="true">+</div>
+
+  <div class="recharge-option-card__content">
+    <h3><%= charge_option.kind.humanize %></h3>
+    <p>
+      <%= charge_option.addon? ?
+            "Aumente seu stack durante o período do add-on." :
+            "Reponha seu stack enquanto esta opção estiver disponível." %>
+    </p>
+  </div>
+
+  <div class="recharge-option-card__details">
+    <div>
+      <span>Fichas</span>
+      <strong><%= number_with_delimiter(charge_option.chip_amount) %></strong>
+    </div>
+    <div>
+      <span>Custo</span>
+      <strong><%= number_to_currency(charge_option.amount) %></strong>
+    </div>
+  </div>
+
+  <button type="button"
+          class="recharge-option-card__button"
+          data-action="recharge-payment#open">
+    Solicitar
+  </button>
+
+  <div class="recharge-payment-modal"
+       data-recharge-payment-target="overlay"
+       hidden>
+    <section class="recharge-payment-modal__card"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="recharge-payment-title-<%= charge_option.id %>">
+      <button type="button"
+              class="recharge-payment-modal__close"
+              aria-label="Fechar"
+              data-action="recharge-payment#close">×</button>
+      <h2 id="recharge-payment-title-<%= charge_option.id %>">Confirmar recarga</h2>
+      <dl class="recharge-payment-modal__details">
+        <div><dt>Recarga</dt><dd><%= number_to_currency(charge_option.amount) %> · <%= number_with_delimiter(charge_option.chip_amount) %> fichas</dd></div>
+        <% if fee_option.present? %>
+          <div data-recharge-payment-target="feeDetails" hidden>
+            <dt>Taxa extra</dt>
+            <dd><%= number_to_currency(fee_option.amount) %> · <%= number_with_delimiter(fee_option.chip_amount) %> fichas</dd>
+          </div>
+          <label class="recharge-payment-modal__fee-choice">
+            <%= check_box_tag "include_fee_#{charge_option.id}", "1", false,
+                              data: {
+                                recharge_payment_target: "feeToggle",
+                                action: "change->recharge-payment#toggleFee",
+                                amount: fee_option.amount,
+                                chips: fee_option.chip_amount
+                              } %>
+            Adicionar taxa extra
+          </label>
+        <% end %>
+        <div class="recharge-payment-modal__total"><dt>Total</dt><dd data-recharge-payment-target="total"><%= number_to_currency(charge_option.amount) %> · <%= number_with_delimiter(charge_option.chip_amount) %> fichas</dd></div>
+      </dl>
+      <%= form_with url: club_tournament_recharges_path(club, tournament), method: :post do %>
+        <%= hidden_field_tag "registration_payment[tournament_charge_option_id]", charge_option.id %>
+        <%= hidden_field_tag "registration_payment[include_fee]", "0", data: { recharge_payment_target: "includeFeeValue" } %>
+        <%= submit_tag "Enviar solicitação", class: "recharge-option-card__button" %>
+      <% end %>
+    </section>
+  </div>
+</article>

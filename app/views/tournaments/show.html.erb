@@ -8,7 +8,11 @@
 
 <main class="tournament-overview-page" aria-labelledby="tournament-title">
   <header class="tournament-overview-page__header overview-header">
-    <% unless @current_membership&.player? %>
+    <% if @current_membership&.player? %>
+      <%= link_to "← Voltar aos torneios",
+                  player_tournaments_path,
+                  class: "overview-header__back" %>
+    <% elsif @current_membership.present? %>
       <%= link_to "← Voltar ao clube", club_path(@club), class: "overview-header__back" %>
     <% end %>
     <% if @current_membership&.owner? || @current_membership&.admin? %>
@@ -26,11 +30,11 @@
 
     <div class="overview-header__content">
       <div class="overview-header__information">
+        <h1 id="tournament-title"><%= @tournament.name %></h1>
         <p class="overview-header__address">
           <%= image_tag "icons/Iconlocation.svg", alt: "" %>
           <span><%= @tournament.location %></span>
         </p>
-        <h1 id="tournament-title"><%= @tournament.name %></h1>
         <div class="overview-header__meta">
           <% if @current_membership&.owner? ||
                 @current_membership&.admin? ||
@@ -58,7 +62,7 @@
 </main>
 </div>
 
-<% if @invite_token_access && !@invite_registration&.confirmed? %>
+<% if @invite_token_access && @invite_registration.blank? %>
   <div class="tournament-invitation-overlay" role="dialog" aria-modal="true" aria-labelledby="tournament-invitation-title">
     <section class="tournament-invitation-overlay__card">
       <h2 id="tournament-invitation-title">Convite para torneio</h2>
@@ -67,5 +71,24 @@
                     method: :patch,
                     class: "tournament-invitation-overlay__button" %>
     </section>
+  </div>
+<% end %>
+
+<% if @invite_registration&.pending? && @buy_in.present? %>
+  <div data-controller="buy-in-payment"
+       data-buy-in-payment-open-value="<%= @buy_in_payment_modal_open %>">
+    <button type="button"
+            class="tournament-buy-in-trigger"
+            data-buy-in-payment-target="trigger"
+            data-action="buy-in-payment#open">
+      Pagar buy-in
+    </button>
+
+    <%= render "shared/components/tournaments/buy_in_payment_modal",
+               club: @club,
+               tournament: @tournament,
+               buy_in: @buy_in,
+               payment: @pending_buy_in_payment,
+               open: @buy_in_payment_modal_open %>
   </div>
 <% end %>

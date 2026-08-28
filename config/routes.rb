@@ -35,13 +35,24 @@ Rails.application.routes.draw do
       resources :registrations,
                 only: :index,
                 controller: "tournament_registrations"
+      resources :transactions,
+                only: :index,
+                controller: "tournament_transactions" do
+        member do
+          patch :confirm
+        end
+      end
+      resources :recharges,
+                only: %i[index create],
+                controller: "tournament_recharges"
+      post :buy_in_payment,
+           to: "tournament_buy_in_payments#create"
     end
   end
 
   patch "tournament-invitations/:token/confirm",
         to: "tournament_invitation_links#confirm",
         as: :confirm_tournament_invitation
-
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker

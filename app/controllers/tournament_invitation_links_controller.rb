@@ -7,8 +7,8 @@ class TournamentInvitationLinksController < ApplicationController
       user: current_user
     )
 
-    redirect_to club_tournament_path(@tournament.club, @tournament),
-                notice: "Presença confirmada com sucesso."
+    redirect_to club_tournament_path(@tournament.club, @tournament, payment: "buy_in"),
+                notice: "Convite aceito. Finalize o pagamento do buy-in para confirmar sua inscrição."
   rescue TournamentRegistrationConfirmation::CapacityReached
     redirect_to club_tournament_path(@tournament.club, @tournament),
                 alert: "As vagas do torneio foram preenchidas."

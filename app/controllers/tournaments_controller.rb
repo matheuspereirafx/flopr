@@ -34,6 +34,16 @@ class TournamentsController < ApplicationController
     @invite_registration = current_user.tournament_registrations.find_by(
       tournament: @tournament
     )
+    @pending_buy_in_payment = @invite_registration&.registration_payments
+                                                   &.joins(:tournament_charge_option)
+                                                   &.where(
+                                                     status: :pending,
+                                                     tournament_charge_options: { kind: :buy_in }
+                                                   )
+                                                   &.order(created_at: :desc)
+                                                   &.first
+    @buy_in_payment_modal_open = @invite_registration&.pending? &&
+                                 (invitation_show_request? || params[:payment] == "buy_in")
     @invite_url = club_tournament_url(
       @club,
       @tournament,

@@ -40,14 +40,14 @@
             <thead>
               <tr>
                 <th scope="col">Jogador</th>
-                <th scope="col">Status da inscrição</th>
-                <th scope="col">Pagamento</th>
+                <th scope="col">Status</th>
               </tr>
             </thead>
             <tbody>
               <% @registrations.each do |registration| %>
                 <%= render "shared/components/tournament_registrations/registration_row",
-                           registration: registration %>
+                           registration: registration,
+                           current_user: current_user %>
               <% end %>
             </tbody>
           </table>

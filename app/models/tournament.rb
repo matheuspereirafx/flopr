@@ -78,6 +78,7 @@ class Tournament < ApplicationRecord
   private
 
   def status_cannot_move_backwards
+    return if new_record?
     return unless status_changed?
     return unless status_was.in?(%w[posted finished])
     return unless status_was == "finished" || draft?

@@ -171,7 +171,7 @@ class TournamentTest < ActiveSupport::TestCase
   end
 
   test "allows only forward tournament status transitions" do
-    tournament = create_tournament(name: "Status Flow")
+    tournament = create_tournament(name: "Status Flow", with_buy_in: true)
 
     tournament.status = :posted
     assert tournament.valid?

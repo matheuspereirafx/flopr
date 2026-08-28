@@ -39,7 +39,9 @@
           <% if @current_membership&.owner? ||
                 @current_membership&.admin? ||
                 @current_membership&.dealer? %>
-            <span class="overview-header__status"><%= @tournament.status.humanize %></span>
+            <span class="overview-header__status overview-header__status--<%= @tournament.status %>">
+              <%= t("activerecord.attributes.tournament.statuses.#{@tournament.status}") %>
+            </span>
           <% end %>
           <time class="overview-header__date" datetime="<%= @tournament.starts_at.iso8601 %>">
             <%= image_tag "icons/Icondate.svg", alt: "" %>

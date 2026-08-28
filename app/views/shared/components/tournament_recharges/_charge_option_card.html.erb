@@ -45,7 +45,7 @@
       <dl class="recharge-payment-modal__details">
         <div><dt>Recarga</dt><dd><%= number_to_currency(charge_option.amount) %> · <%= number_with_delimiter(charge_option.chip_amount) %> fichas</dd></div>
         <% if fee_option.present? %>
-          <div>
+          <div data-recharge-payment-target="feeDetails" hidden>
             <dt>Taxa extra</dt>
             <dd><%= number_to_currency(fee_option.amount) %> · <%= number_with_delimiter(fee_option.chip_amount) %> fichas</dd>
           </div>

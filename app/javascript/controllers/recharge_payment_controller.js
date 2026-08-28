@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["overlay", "feeToggle", "includeFeeValue", "total"]
+  static targets = ["overlay", "feeToggle", "feeDetails", "includeFeeValue", "total"]
   static values = { amount: Number, chips: Number }
 
   open() {
@@ -14,11 +14,13 @@ export default class extends Controller {
   }
 
   toggleFee() {
+    if (this.hasFeeDetailsTarget) this.feeDetailsTarget.hidden = !this.feeToggleTarget.checked
     this.updateTotal()
   }
 
   updateTotal() {
     const feeSelected = this.feeToggleTarget?.checked || false
+    if (this.hasFeeDetailsTarget) this.feeDetailsTarget.hidden = !feeSelected
     const feeAmount = feeSelected ? this.feeToggleTarget.dataset.amount || 0 : 0
     const feeChips = feeSelected ? this.feeToggleTarget.dataset.chips || 0 : 0
     const totalAmount = Number(this.amountValue) + Number(feeAmount)

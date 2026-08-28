@@ -301,8 +301,18 @@
   font-weight: 600;
 }
 
-.tournament-card__status--clock {
-  top: 48px;
+.tournament-card__statuses {
+  position: absolute;
+  top: 13px;
+  left: 13px;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tournament-card__statuses .tournament-card__status {
+  position: static;
 }
 
 .tournament-card__status--running,

@@ -85,25 +85,27 @@
                 alt: tournament.cover.attached? ? "Capa do torneio #{tournament.name}" : "Mesa de torneio de pôquer"
               ) %>
 
-              <% unless membership&.player? %>
-                <span class="tournament-card__status tournament-card__status--<%= tournament.status %>">
-                  <span class="tournament-card__status-dot"></span>
-                  <%= t("activerecord.attributes.tournament.statuses.#{tournament.status}") %>
-                </span>
-              <% end %>
+              <div class="tournament-card__statuses">
+                <% unless membership&.player? %>
+                  <span class="tournament-card__status tournament-card__status--<%= tournament.status %>">
+                    <span class="tournament-card__status-dot"></span>
+                    <%= t("activerecord.attributes.tournament.statuses.#{tournament.status}") %>
+                  </span>
+                <% end %>
 
-              <% if tournament.clock_state.present? && !tournament.clock_state.not_started? %>
-                <% clock_status_label = {
-                     "running" => "Ao vivo",
-                     "paused" => "Pausado",
-                     "overtime" => "Tempo extra",
-                     "finished" => "Finalizado"
-                   }.fetch(tournament.clock_state.status) %>
-                <span class="tournament-card__status tournament-card__status--clock tournament-card__status--<%= tournament.clock_state.status %>">
-                  <span class="tournament-card__status-dot"></span>
-                  <%= clock_status_label %>
-                </span>
-              <% end %>
+                <% if tournament.clock_state.present? && !tournament.clock_state.not_started? %>
+                  <% clock_status_label = {
+                       "running" => "Ao vivo",
+                       "paused" => "Pausado",
+                       "overtime" => "Tempo extra",
+                       "finished" => "Finalizado"
+                     }.fetch(tournament.clock_state.status) %>
+                  <span class="tournament-card__status tournament-card__status--clock tournament-card__status--<%= tournament.clock_state.status %>">
+                    <span class="tournament-card__status-dot"></span>
+                    <%= clock_status_label %>
+                  </span>
+                <% end %>
+              </div>
 
             </div>
 

@@ -45,6 +45,19 @@ class PlayerTournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Posted Tournament"
   end
 
+  test "player cards show clock status without publication status" do
+    tournament = create_tournament(@club, name: "Live Tournament", starts_at: 1.day.from_now, status: :posted)
+    clock_state = TournamentClockState.create_initial_for!(tournament)
+    clock_state.update!(status: :running)
+
+    sign_in @player
+    get player_tournaments_path
+
+    assert_response :success
+    assert_select ".tournament-card__status--posted", count: 0
+    assert_select ".tournament-card__status--clock.tournament-card__status--running", text: /Ao vivo/, count: 1
+  end
+
   test "my tournaments only contains registrations belonging to the current user" do
     registered_tournament = create_tournament(@club, name: "Registered Tournament", starts_at: 4.days.from_now)
     other_tournament = create_tournament(@club, name: "Other Registration", starts_at: 5.days.from_now)

@@ -106,6 +106,8 @@ class ClubsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_operator response.body.index("Live"), :<, response.body.index("Soon")
     assert_select ".tournament-card[data-tournament-status='posted'][data-clock-status='running']", count: 1
+    assert_select ".tournament-card__status--posted", text: /Publicado/, count: 1
+    assert_select ".tournament-card__status--clock.tournament-card__status--running", text: /Ao vivo/, count: 1
     assert_select ".club-events__filter[data-filter='live']", count: 1
     assert_select ".club-events__filter[data-filter='upcoming']", count: 1
   end

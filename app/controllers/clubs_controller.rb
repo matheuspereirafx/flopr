@@ -10,6 +10,7 @@ class ClubsController < ApplicationController
   def show
     @tournaments = @club.tournaments.includes(:charge_options).order(starts_at: :asc)
     @confirmed_registrations_by_tournament = confirmed_registrations_by_tournament
+    @active_players_count = @club.club_memberships.where(role: :player).count
   end
 
   def new

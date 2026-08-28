@@ -51,6 +51,22 @@ class ClubsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".tournament-card__link[data-turbo-prefetch='false']", count: 1
   end
 
+  test "shows the number of active player memberships in the club hero" do
+    second_player = User.create!(
+      email: "second-player@example.com",
+      password: "password123",
+      name: "Second Player",
+      username: "second_player"
+    )
+    ClubMembership.create!(user: second_player, club: @club, role: :player)
+
+    sign_in @owner
+    get club_path(@club)
+
+    assert_response :success
+    assert_select ".club-show-hero__players-count", "2"
+  end
+
   test "shows buy in as pending when the tournament has no financial configuration" do
     create_tournament
 

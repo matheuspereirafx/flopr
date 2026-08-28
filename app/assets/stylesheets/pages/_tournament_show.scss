@@ -144,6 +144,8 @@
 .overview-details__item:last-child { border-bottom: 0; }
 .overview-details__item dt { color: #c9c4d3; font-size: 14px; }
 .overview-details__item dd { margin: 0; color: #f0eff4; font-weight: 700; text-align: right; }
+.overview-details__amount { display: block; }
+.overview-details__chips { display: block; margin-top: 4px; color: #928f9c; font-size: 12px; font-weight: 500; }
 
 .overview-prize-pool {
   display: flex;

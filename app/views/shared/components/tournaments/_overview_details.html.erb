@@ -5,10 +5,25 @@
   <h2 id="overview-details-title">Detalhes do torneio</h2>
 
   <dl class="overview-details__list">
-    <% { "Buy-in" => charge_options["buy_in"], "Rebuy" => charge_options["rebuy"], "Add-on" => charge_options["addon"], "Taxa extra" => charge_options["fee"] }.each do |label, option| %>
+    <% {
+         "Buy-in" => charge_options["buy_in"],
+         "Rebuy" => charge_options["rebuy"],
+         "Rebuy duplo" => charge_options["double_rebuy"],
+         "Add-on" => charge_options["addon"],
+         "Taxa extra" => charge_options["fee"]
+       }.each do |label, option| %>
       <div class="overview-details__item">
         <dt><%= label %></dt>
-        <dd><%= option&.active? ? number_to_currency(option.amount) : "Não configurado" %></dd>
+        <dd>
+          <% if option&.active? %>
+            <span class="overview-details__amount"><%= number_to_currency(option.amount) %></span>
+            <span class="overview-details__chips">
+              <%= number_with_delimiter(option.chip_amount, delimiter: ".") %> fichas
+            </span>
+          <% else %>
+            Não configurado
+          <% end %>
+        </dd>
       </div>
     <% end %>
 

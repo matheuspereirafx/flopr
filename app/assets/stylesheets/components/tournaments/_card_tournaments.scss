@@ -197,6 +197,7 @@
 .tournament-card {
   position: relative;
   min-width: 0;
+  isolation: isolate;
 
   overflow: hidden;
 
@@ -222,7 +223,8 @@
 }
 
 .tournament-card:hover {
-  transform: translateY(-5px);
+  transform: translate3d(0, -5px, 0);
+  backface-visibility: hidden;
 
   border-color: rgba(164, 128, 255, 0.18);
 
@@ -273,11 +275,6 @@
   transition: transform 0.4s ease;
 }
 
-.tournament-card:hover .tournament-card__image {
-  transform: scale(1.04);
-}
-
-
 /* =========================
    STATUS
 ========================= */
@@ -314,6 +311,26 @@
 
   box-shadow: 0 0 8px rgba(255, 131, 125, 0.8);
   font-family: $font-secondary;
+}
+
+.tournament-card__status--posted {
+  border-color: rgba(96, 211, 139, 0.28);
+  color: #9be7b4;
+}
+
+.tournament-card__status--posted .tournament-card__status-dot {
+  background: #5ed38b;
+  box-shadow: 0 0 8px rgba(94, 211, 139, 0.8);
+}
+
+.tournament-card__status--finished {
+  border-color: rgba(201, 196, 211, 0.25);
+  color: #c9c4d3;
+}
+
+.tournament-card__status--finished .tournament-card__status-dot {
+  background: #928f9c;
+  box-shadow: 0 0 8px rgba(146, 143, 156, 0.65);
 }
 
 .tournament-card__menu {

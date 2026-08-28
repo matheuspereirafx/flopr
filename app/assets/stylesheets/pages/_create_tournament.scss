@@ -551,16 +551,18 @@ table {
 // ---- Dropzone (upload de banner) ------------------------------------------
 .dropzone {
   position: relative;
+  width: 100%;
+  min-height: 174px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: $space-2;
   text-align: center;
-  padding: $space-8 $space-4;
-  border: 1.5px dashed $color-border-strong;
-  border-radius: $radius-md;
-  background: $color-surface;
+  padding: $space-6 $space-4;
+  border: 1.5px dashed #474551;
+  border-radius: 6px;
+  background: #0e0e0f;
   cursor: pointer;
   transition: border-color $transition-fast, background-color $transition-fast;
 
@@ -589,23 +591,27 @@ table {
   }
 
   &__icon {
-    color: $color-text-muted;
-    svg { width: 28px; height: 28px; }
+    color: #928f9c;
+
+    svg {
+      width: 30px;
+      height: 30px;
+      stroke-width: 2;
+    }
   }
 
   &__text {
+    color: #e5e1e3;
     font-size: $font-size-sm;
-    color: $color-text-secondary;
   }
 
   &__link {
-    color: $color-accent;
-    font-weight: 600;
+    color: #c7bfff;
   }
 
   &__hint {
+    color: #928f9c;
     font-size: $font-size-xs;
-    color: $color-text-muted;
   }
 }
 

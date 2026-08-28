@@ -1,9 +1,13 @@
 class Tournament < ApplicationRecord
   MINIMUM_BLIND_LEVELS = 5
+  COVER_MAX_SIZE = 8.megabytes
+  COVER_CONTENT_TYPES = %w[image/jpeg image/png image/webp].freeze
 
   attr_accessor :blind_levels_count
 
   belongs_to :club
+
+  has_one_attached :cover
 
   has_many :tournament_registrations,
            dependent: :destroy
@@ -44,6 +48,7 @@ class Tournament < ApplicationRecord
   validate :has_required_charge_options, if: :posted?
   validate :double_rebuy_requires_rebuy, if: :posted?
   validate :active_charge_options_have_valid_period, if: :posted?
+  validate :cover_file_is_valid
 
   before_validation :renumber_blind_levels
   before_validation :generate_invite_token, on: :create
@@ -61,6 +66,13 @@ class Tournament < ApplicationRecord
   end
 
   private
+
+  def cover_file_is_valid
+    return unless cover.attached?
+
+    errors.add(:cover, "deve ser uma imagem JPEG, PNG ou WebP") unless COVER_CONTENT_TYPES.include?(cover.blob.content_type)
+    errors.add(:cover, "deve ter no máximo 8 MB") if cover.blob.byte_size > COVER_MAX_SIZE
+  end
 
   def active_blind_levels
     blind_levels.reject(&:marked_for_destruction?)

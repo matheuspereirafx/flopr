@@ -8,7 +8,9 @@ class ClubsController < ApplicationController
   end
 
   def show
-    @tournaments = @club.tournaments.includes(:charge_options).order(starts_at: :asc)
+    @tournaments = @club.tournaments.with_attached_cover
+                          .includes(:charge_options)
+                          .order(starts_at: :asc)
     @confirmed_registrations_by_tournament = confirmed_registrations_by_tournament
   end
 

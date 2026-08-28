@@ -11,7 +11,7 @@
     </header>
 
     <%= simple_form_for [club, tournament],
-                        html: { class: "tournament-form__body" } do |f| %>
+                        html: { class: "tournament-form__body", multipart: true } do |f| %>
       <%= f.error_notification class: "form-errors" %>
 
       <% selected_duration =
@@ -28,6 +28,29 @@
                       wrapper_html: { class: "field" },
                       label_html: { class: "field__label" },
                       input_html: { class: "input" } %>
+
+          <div class="field tournament-form__cover-field">
+            <%= f.label :cover, "Banner do torneio", class: "field__label" %>
+
+            <label class="dropzone" for="tournament_cover">
+              <%= f.input_field :cover,
+                                class: "dropzone__input",
+                                accept: "image/jpeg,image/png,image/webp" %>
+
+              <span class="dropzone__icon" aria-hidden="true">
+                <i data-lucide="cloud-upload"></i>
+              </span>
+
+              <span class="dropzone__text">
+                Arraste e solte ou
+                <span class="dropzone__link">clique para enviar</span>
+              </span>
+
+              <span class="dropzone__hint">
+                1920×1080px (16:9) recomendado. Máx. 8 MB.
+              </span>
+            </label>
+          </div>
 
           <div class="field">
             <%= f.label :starts_at,

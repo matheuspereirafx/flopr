@@ -60,7 +60,7 @@
             Adicionar taxa extra
           </label>
         <% end %>
-        <div><dt>Total</dt><dd data-recharge-payment-target="total"><%= number_to_currency(charge_option.amount) %> · <%= number_with_delimiter(charge_option.chip_amount) %> fichas</dd></div>
+        <div class="recharge-payment-modal__total"><dt>Total</dt><dd data-recharge-payment-target="total"><%= number_to_currency(charge_option.amount) %> · <%= number_with_delimiter(charge_option.chip_amount) %> fichas</dd></div>
       </dl>
       <%= form_with url: club_tournament_recharges_path(club, tournament), method: :post do %>
         <%= hidden_field_tag "registration_payment[tournament_charge_option_id]", charge_option.id %>

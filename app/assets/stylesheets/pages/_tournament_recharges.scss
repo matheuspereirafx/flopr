@@ -205,6 +205,25 @@
 .recharge-payment-modal__details dt { color: #a1a1aa; font-size: 11px; }
 .recharge-payment-modal__details dd { margin: 0; color: #c7bfff; font-size: 12px; text-align: right; }
 
+.recharge-payment-modal__details .recharge-payment-modal__total {
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid rgba(199, 191, 255, .35);
+  border-bottom: 0;
+}
+
+.recharge-payment-modal__total dt {
+  color: #f0eff4;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.recharge-payment-modal__total dd {
+  color: #c7bfff;
+  font-size: 18px;
+  font-weight: 700;
+}
+
 .recharge-payment-modal__fee-choice {
   display: flex;
   align-items: center;

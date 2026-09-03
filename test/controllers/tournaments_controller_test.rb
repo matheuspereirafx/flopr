@@ -71,6 +71,11 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
       get club_tournament_path(@club, tournament)
 
       visible_items.each { |item| assert_select ".tournament-navigation", text: /#{item}/ }
+      assert_select "a.tournament-navigation__item" do |links|
+        links.each do |link|
+          assert_equal "false", link.attributes["data-turbo-prefetch"].value
+        end
+      end
       assert_select ".tournament-navigation__item--active[aria-current='page']", text: /Visão geral/
       sign_out user
     end

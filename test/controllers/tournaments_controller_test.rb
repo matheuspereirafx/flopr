@@ -89,6 +89,24 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-participation-status='available-slots'] strong", "2"
   end
 
+  test "overview details displays the chip amount for active charge options" do
+    tournament = create_tournament(@club)
+    tournament.charge_options.create!(kind: :buy_in, active: true, amount: 180, chip_amount: 20_000)
+    tournament.charge_options.create!(kind: :rebuy, active: true, amount: 100, chip_amount: 10_000)
+    tournament.charge_options.create!(kind: :double_rebuy, active: true, amount: 180, chip_amount: 20_000)
+    tournament.charge_options.create!(kind: :addon, active: true, amount: 80, chip_amount: 8_000)
+    tournament.charge_options.create!(kind: :fee, active: true, amount: 25, chip_amount: 2_500)
+    sign_in @player
+
+    get club_tournament_path(@club, tournament)
+
+    assert_select ".overview-details__item", text: /Buy-in.*R\$\s*180,00.*20\.000 fichas/m
+    assert_select ".overview-details__item", text: /Rebuy.*R\$\s*100,00.*10\.000 fichas/m
+    assert_select ".overview-details__item", text: /Rebuy duplo.*R\$\s*180,00.*20\.000 fichas/m
+    assert_select ".overview-details__item", text: /Add-on.*R\$\s*80,00.*8\.000 fichas/m
+    assert_select ".overview-details__item", text: /Taxa extra.*R\$\s*25,00.*2\.500 fichas/m
+  end
+
   test "only owner and admin see the button that copies the invite link" do
     tournament = create_tournament(@club)
 

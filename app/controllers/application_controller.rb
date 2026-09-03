@@ -10,4 +10,15 @@ class ApplicationController < ActionController::Base
       keys: %i[terms username name]
     )
   end
+
+  def after_sign_in_path_for(resource)
+    case params[:role]
+    when "player"
+      player_tournaments_path
+    when "organizer"
+      clubs_path
+    else
+      super
+    end
+  end
 end

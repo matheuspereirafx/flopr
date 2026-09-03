@@ -16,6 +16,7 @@ class ClubsController < ApplicationController
                          .left_joins(:clock_state)
                          .order(Arel.sql(live_first), starts_at: :asc)
     @confirmed_registrations_by_tournament = confirmed_registrations_by_tournament
+    @active_players_count = @club.club_memberships.where(role: :player).count
   end
 
   def new

@@ -13,6 +13,8 @@
           as: resource_name,
           url: session_path(resource_name)) do |f| %>
 
+      <%= hidden_field_tag :role, params[:role] if %w[player organizer].include?(params[:role]) %>
+
       <%# Email %>
       <div class="field">
 

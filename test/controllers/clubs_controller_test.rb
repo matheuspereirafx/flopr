@@ -67,6 +67,14 @@ class ClubsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".club-show-hero__players-count", "2"
   end
 
+  test "does not prefetch the create tournament link on club show" do
+    sign_in @owner
+    get club_path(@club)
+
+    assert_response :success
+    assert_select ".club-show__create-tournament[data-turbo-prefetch='false']", count: 1
+  end
+
   test "shows buy in as pending when the tournament has no financial configuration" do
     create_tournament
 

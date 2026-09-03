@@ -380,6 +380,7 @@
                              club_path(club) %>
           <%= link_to cancel_path,
                       class: "button button--ghost tournament-form__cancel",
+                      data: { turbo_prefetch: false },
                       aria: { label: "Cancelar" },
                       title: "Cancelar" do %>
             <svg viewBox="0 0 24 24" aria-hidden="true">

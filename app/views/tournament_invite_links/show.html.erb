@@ -1,5 +1,7 @@
 <main class="tournament-invitation-page" aria-labelledby="invite-link-title">
-  <%= link_to "← Voltar ao torneio", club_tournament_path(@club, @tournament), class: "tournament-invitation-page__back" %>
+  <%= link_to "← Voltar ao torneio", club_tournament_path(@club, @tournament),
+              class: "tournament-invitation-page__back",
+              data: { turbo_prefetch: false } %>
 
   <section class="tournament-invitation-card">
     <p class="tournament-invitation-card__eyebrow">Convite do torneio</p>

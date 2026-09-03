@@ -2,6 +2,7 @@
 
   <%= link_to club_path(club),
       class: "club-card-link",
+      data: { turbo_prefetch: false },
       aria: { label: "Abrir #{club.name}" } do %>
   <% end %>
 

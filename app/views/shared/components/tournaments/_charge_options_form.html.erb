@@ -168,6 +168,7 @@
         <div class="tournament-form__actions">
           <%= link_to edit_club_tournament_path(club, tournament),
                       class: "button button--ghost",
+                      data: { turbo_prefetch: false },
                       aria: { label: "Voltar para os dados do torneio" },
                       title: "Voltar para os dados do torneio" do %>
             <svg viewBox="0 0 24 24" aria-hidden="true">

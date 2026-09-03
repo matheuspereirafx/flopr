@@ -20,7 +20,8 @@
     hidden
   >
     <%= link_to edit_club_tournament_path(tournament.club, tournament),
-        class: "inside-menu-item" do %>
+        class: "inside-menu-item",
+        data: { turbo_prefetch: false } do %>
 
       <span>Editar torneio</span>
 

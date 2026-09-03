@@ -11,9 +11,12 @@
     <% if @current_membership&.player? %>
       <%= link_to "← Voltar aos torneios",
                   player_tournaments_path,
-                  class: "overview-header__back" %>
+                  class: "overview-header__back",
+                  data: { turbo_prefetch: false } %>
     <% elsif @current_membership.present? %>
-      <%= link_to "← Voltar ao clube", club_path(@club), class: "overview-header__back" %>
+      <%= link_to "← Voltar ao clube", club_path(@club),
+                  class: "overview-header__back",
+                  data: { turbo_prefetch: false } %>
     <% end %>
     <% if @current_membership&.owner? || @current_membership&.admin? %>
       <button class="overview-header__invite"

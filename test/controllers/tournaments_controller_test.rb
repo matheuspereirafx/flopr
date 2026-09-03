@@ -118,7 +118,7 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
       sign_in user
       get club_tournament_path(@club, tournament)
 
-      assert_select ".overview-header__status", text: "Draft", count: 1
+      assert_select ".overview-header__status.overview-header__status--draft", text: "Rascunho", count: 1
       sign_out user
     end
 

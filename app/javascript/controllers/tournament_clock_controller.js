@@ -81,7 +81,9 @@ export default class extends Controller {
       : state.remaining_seconds
     this.runningValue = state.status === "running" || state.status === "overtime"
     this.overtimeValue = state.status === "overtime"
-    this.startedAt = Date.now()
+    this.startedAt = state.started_at
+      ? new Date(state.started_at).getTime()
+      : Date.now()
 
     if (state.current_level.id !== this.currentLevelIdValue) {
       this.currentLevelIdValue = state.current_level.id

@@ -132,6 +132,20 @@ class TournamentClocksControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "starting the clock updates the tournament start time to the exact clock time" do
+    original_starts_at = @tournament.starts_at
+    sign_in @owner
+
+    travel_to Time.zone.parse("2026-08-28 19:30:45") do
+      post start_club_tournament_clock_path(@club, @tournament)
+    end
+
+    assert_redirected_to club_tournament_clock_path(@club, @tournament)
+    assert_equal Time.zone.parse("2026-08-28 19:30:45"), @tournament.reload.starts_at
+    assert_not_equal original_starts_at, @tournament.starts_at
+    assert_equal @tournament.starts_at, @tournament.clock_state.reload.started_at
+  end
+
   test "dealer player and outsider cannot start the clock" do
     [@dealer, @player, @outsider].each do |user|
       state = TournamentClockState.create_initial_for!(@tournament)

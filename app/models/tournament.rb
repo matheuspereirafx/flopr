@@ -36,6 +36,15 @@ class Tournament < ApplicationRecord
     finished: "finished"
   }
 
+  scope :live, lambda {
+    joins(:clock_state)
+      .where(status: :posted, tournament_clock_states: { status: %i[running paused overtime] })
+  }
+
+  scope :upcoming, lambda {
+    where(status: :posted).where("starts_at >= ?", Time.current).order(starts_at: :asc)
+  }
+
   validates :name,
             presence: true,
             uniqueness: { case_sensitive: false }
@@ -46,6 +55,7 @@ class Tournament < ApplicationRecord
   validate :blind_levels_have_same_duration
   validate :blind_levels_count_matches_structure
   validate :has_required_charge_options, if: :posted?
+  validate :status_cannot_move_backwards
   validate :double_rebuy_requires_rebuy, if: :posted?
   validate :active_charge_options_have_valid_period, if: :posted?
   validate :cover_file_is_valid
@@ -66,6 +76,15 @@ class Tournament < ApplicationRecord
   end
 
   private
+
+  def status_cannot_move_backwards
+    return if new_record?
+    return unless status_changed?
+    return unless status_was.in?(%w[posted finished])
+    return unless status_was == "finished" || draft?
+
+    errors.add(:status, "não pode voltar para um estado anterior")
+  end
 
   def cover_file_is_valid
     return unless cover.attached?

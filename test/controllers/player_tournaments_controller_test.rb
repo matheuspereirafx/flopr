@@ -14,9 +14,9 @@ class PlayerTournamentsControllerTest < ActionDispatch::IntegrationTest
   test "authenticated users can view upcoming tournaments from every club they belong to" do
     second_membership_club = Club.create!(name: "Second Poker House")
     create_membership(@player, second_membership_club, :dealer)
-    earliest = create_tournament(@club, name: "Earliest Tournament", starts_at: 1.day.from_now)
-    latest = create_tournament(second_membership_club, name: "Latest Tournament", starts_at: 3.days.from_now)
-    create_tournament(@other_club, name: "Private Tournament", starts_at: 2.days.from_now)
+    earliest = create_tournament(@club, name: "Earliest Tournament", starts_at: 1.day.from_now, status: :posted)
+    latest = create_tournament(second_membership_club, name: "Latest Tournament", starts_at: 3.days.from_now, status: :posted)
+    create_tournament(@other_club, name: "Private Tournament", starts_at: 2.days.from_now, status: :posted)
 
     sign_in @player
     get player_tournaments_path
@@ -31,6 +31,31 @@ class PlayerTournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".player-tournaments-page__section:nth-of-type(1) .tournament-card__title", 2
     assert_operator response.body.index(earliest.name), :<, response.body.index(latest.name)
     assert_not_includes response.body, "Private Tournament"
+  end
+
+  test "upcoming tournaments do not show drafts to players" do
+    create_tournament(@club, name: "Draft Tournament", starts_at: 1.day.from_now)
+    create_tournament(@club, name: "Posted Tournament", starts_at: 2.days.from_now, status: :posted)
+
+    sign_in @player
+    get player_tournaments_path
+
+    assert_response :success
+    assert_not_includes response.body, "Draft Tournament"
+    assert_includes response.body, "Posted Tournament"
+  end
+
+  test "player cards show clock status without publication status" do
+    tournament = create_tournament(@club, name: "Live Tournament", starts_at: 1.day.from_now, status: :posted)
+    clock_state = TournamentClockState.create_initial_for!(tournament)
+    clock_state.update!(status: :running)
+
+    sign_in @player
+    get player_tournaments_path
+
+    assert_response :success
+    assert_select ".tournament-card__status--posted", count: 0
+    assert_select ".tournament-card__status--clock.tournament-card__status--running", text: /Ao vivo/, count: 1
   end
 
   test "my tournaments only contains registrations belonging to the current user" do
@@ -71,12 +96,13 @@ class PlayerTournamentsControllerTest < ActionDispatch::IntegrationTest
   end
 
   def create_tournament(club, attributes)
+    status = attributes.fetch(:status, :draft)
     tournament = club.tournaments.build(
       {
         location: "Rua das Flores, 123",
         max_players: 24,
         status: :draft
-      }.merge(attributes)
+      }.merge(attributes).merge(status: :draft)
     )
 
     5.times do |index|
@@ -91,6 +117,10 @@ class PlayerTournamentsControllerTest < ActionDispatch::IntegrationTest
     end
 
     tournament.save!
+    if status.to_sym == :posted
+      tournament.charge_options.create!(kind: :buy_in, active: true, amount: 50, chip_amount: 10_000)
+      tournament.update!(status: :posted)
+    end
     tournament
   end
 end

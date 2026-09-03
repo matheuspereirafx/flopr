@@ -8,9 +8,13 @@ class ClubsController < ApplicationController
   end
 
   def show
+    live_first = "CASE WHEN tournaments.status = 'posted' AND " \
+                 "tournament_clock_states.status IN ('running', 'paused', 'overtime') " \
+                 "THEN 0 ELSE 1 END"
     @tournaments = @club.tournaments.with_attached_cover
-                          .includes(:charge_options)
-                          .order(starts_at: :asc)
+                         .includes(:charge_options)
+                         .left_joins(:clock_state)
+                         .order(Arel.sql(live_first), starts_at: :asc)
     @confirmed_registrations_by_tournament = confirmed_registrations_by_tournament
   end
 

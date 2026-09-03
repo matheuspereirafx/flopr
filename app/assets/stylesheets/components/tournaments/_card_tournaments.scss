@@ -301,6 +301,42 @@
   font-weight: 600;
 }
 
+.tournament-card__statuses {
+  position: absolute;
+  top: 13px;
+  left: 13px;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tournament-card__statuses .tournament-card__status {
+  position: static;
+}
+
+.tournament-card__status--running,
+.tournament-card__status--overtime {
+  border-color: rgba(96, 211, 139, 0.28);
+  color: #9be7b4;
+}
+
+.tournament-card__status--running .tournament-card__status-dot,
+.tournament-card__status--overtime .tournament-card__status-dot {
+  background: #5ed38b;
+  box-shadow: 0 0 8px rgba(94, 211, 139, 0.8);
+}
+
+.tournament-card__status--paused {
+  border-color: rgba(250, 204, 21, 0.3);
+  color: #fde68a;
+}
+
+.tournament-card__status--paused .tournament-card__status-dot {
+  background: #facc15;
+  box-shadow: 0 0 8px rgba(250, 204, 21, 0.8);
+}
+
 .tournament-card__status-dot {
   width: 6px;
   height: 6px;

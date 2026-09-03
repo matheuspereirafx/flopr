@@ -18,6 +18,14 @@ class ClubsControllerTest < ActionDispatch::IntegrationTest
     ClubMembership.create!(user: @player, club: @club, role: :player)
   end
 
+  test "does not prefetch the create club link on clubs index" do
+    sign_in @owner
+    get clubs_path
+
+    assert_response :success
+    assert_select ".clubs-header a[data-turbo-prefetch='false'][href='#{new_club_path}']", count: 1
+  end
+
   test "owner, admin and dealer can view the club but player cannot" do
     [@owner, @admin, @dealer].each do |user|
       sign_in user

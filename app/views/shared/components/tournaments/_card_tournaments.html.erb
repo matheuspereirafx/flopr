@@ -93,7 +93,9 @@
                   </span>
                 <% end %>
 
-                <% if tournament.clock_state.present? && !tournament.clock_state.not_started? %>
+                <% if tournament.clock_state.present? &&
+                      !tournament.clock_state.not_started? &&
+                      !tournament.clock_state.finished? %>
                   <% clock_status_label = {
                        "running" => "Ao vivo",
                        "paused" => "Pausado",

@@ -18,6 +18,14 @@ class ClubsControllerTest < ActionDispatch::IntegrationTest
     ClubMembership.create!(user: @player, club: @club, role: :player)
   end
 
+  test "does not prefetch the create club link on clubs index" do
+    sign_in @owner
+    get clubs_path
+
+    assert_response :success
+    assert_select ".clubs-header a[data-turbo-prefetch='false'][href='#{new_club_path}']", count: 1
+  end
+
   test "owner, admin and dealer can view the club but player cannot" do
     [@owner, @admin, @dealer].each do |user|
       sign_in user
@@ -65,6 +73,14 @@ class ClubsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select ".club-show-hero__players-count", "2"
+  end
+
+  test "does not prefetch the create tournament link on club show" do
+    sign_in @owner
+    get club_path(@club)
+
+    assert_response :success
+    assert_select ".club-show__create-tournament[data-turbo-prefetch='false']", count: 1
   end
 
   test "shows buy in as pending when the tournament has no financial configuration" do
@@ -126,6 +142,21 @@ class ClubsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".tournament-card__status--clock.tournament-card__status--running", text: /Ao vivo/, count: 1
     assert_select ".club-events__filter[data-filter='live']", count: 1
     assert_select ".club-events__filter[data-filter='upcoming']", count: 1
+  end
+
+  test "shows only the tournament status when its clock is finished" do
+    tournament = create_tournament(name: "Finished clock")
+    tournament.charge_options.create!(kind: :buy_in, active: true, amount: 50, chip_amount: 10_000)
+    tournament.update!(status: :posted)
+    TournamentClockState.create_initial_for!(tournament).update!(status: :finished)
+
+    sign_in @owner
+    get club_path(@club)
+
+    assert_select ".tournament-card[data-clock-status='finished']", count: 1 do
+      assert_select ".tournament-card__status--posted", text: /Publicado/, count: 1
+      assert_select ".tournament-card__status--clock", count: 0
+    end
   end
 
   private

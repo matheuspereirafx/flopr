@@ -20,7 +20,8 @@
     hidden
   >
     <%= link_to edit_club_path(club),
-        class: "inside-menu-item" do %>
+        class: "inside-menu-item",
+        data: { turbo_prefetch: false } do %>
 
       <span>Editar clube</span>
 

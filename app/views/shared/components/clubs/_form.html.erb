@@ -97,7 +97,7 @@
 
       <footer class="form-actions">
 
-        <%= link_to clubs_path, class: "back-button" do %>
+        <%= link_to clubs_path, class: "back-button", data: { turbo_prefetch: false } do %>
           <span aria-hidden="true">←</span>
           Voltar
         <% end %>

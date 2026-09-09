@@ -20,7 +20,7 @@
 .tournament-clock-page::after {
   content: "";
   position: absolute;
-  z-index: 0;
+  z-index: 1;
   inset: 0;
   pointer-events: none;
   opacity: .8;
@@ -37,15 +37,39 @@
 
 .tournament-clock-page__background {
   position: absolute;
+  z-index: 0;
   inset: 0;
   opacity: .4;
   background: image-url("backgroundrelogio.png") center / cover no-repeat;
   pointer-events: none;
 }
 
+.tournament-clock-page__particles {
+  position: absolute;
+  z-index: 1;
+  inset: -12%;
+  pointer-events: none;
+  opacity: .42;
+  background-image:
+    radial-gradient(circle, rgba(32, 210, 115, .7) 0 1px, transparent 1.8px),
+    radial-gradient(circle, rgba(199, 191, 255, .6) 0 1px, transparent 1.8px),
+    radial-gradient(circle, rgba(255, 255, 255, .4) 0 .8px, transparent 1.6px);
+  background-position: 0 0, 28px 46px, 82px 18px;
+  background-size: 176px 184px, 238px 256px, 312px 294px;
+  filter: blur(.15px);
+  mask-image: radial-gradient(ellipse at center, transparent 0, #000 28%, #000 72%, transparent 100%);
+  animation: tournament-clock-particles-drift 30s linear infinite;
+}
+
+@keyframes tournament-clock-particles-drift {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(2.5%, -1.5%, 0) scale(1.02); }
+  100% { transform: translate3d(5%, -3%, 0) scale(1); }
+}
+
 .tournament-clock-page__content {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
@@ -88,11 +112,11 @@
 .tournament-clock-next-level { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: 14px; padding: 11px 18px; border: 1px solid rgba(255,255,255,.08); border-radius: 999px; background: rgba(18,23,26,.88); text-align: center; }
 .tournament-clock-next-level strong { font: 700 30px/1 $font-primary; }
 .tournament-clock-next-level__duration { color: #20d273; font: 700 30px/1 $font-primary; }
-.tournament-clock-summary { position: relative; display: grid; grid-template-columns: 266px 430px; gap: 12px; width: 708px; max-width: 100%; margin: 8px auto 0; }
+.tournament-clock-summary { position: relative; display: grid; grid-template-columns: 430px 266px; gap: 12px; width: 708px; max-width: 100%; margin: 8px auto 0; }
 .tournament-clock-summary-card,
 .tournament-clock-charge-options { box-sizing: border-box; min-width: 0; padding: 24px; border: 1px solid rgba(255, 255, 255, 0.014); border-radius: 10px; background: rgba(13,17,19,.7); font-family: $font-primary; }
 .tournament-clock-summary-card { min-height: 254px; }
-.tournament-clock-summary-card:first-child { min-width: 266px; }
+.tournament-clock-summary-card:first-child { min-width: 0; }
 .tournament-clock-summary-card--prize { min-width: 430px; }
 .tournament-clock-summary-card--prize {
   border-color: rgba(235, 194, 194, .05);
@@ -149,6 +173,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .tournament-clock-players__track--scrolling { animation: none; }
+  .tournament-clock-page__particles { animation: none; }
 }
 .tournament-clock-summary-card--prize
 .tournament-clock-summary-card__empty { color: #20d273; }
@@ -166,7 +191,7 @@
 @media (max-width: 1200px) { .tournament-clock-timer__value { font-size: clamp(160px, 23vw, 260px); }
 
 .tournament-clock-charge-options { position: static; grid-column: 1 / -1; width: auto; transform: none; border-radius: 10px; }
-.tournament-clock-summary { grid-template-columns: minmax(266px, 1fr) minmax(430px, 1.6fr); } }
+.tournament-clock-summary { grid-template-columns: minmax(0, 430px) minmax(266px, 1fr); } }
 @media (max-width: 760px) { .tournament-clock-page { overflow-y: auto; }.tournament-clock-page__content { min-height: auto; }
 .tournament-clock-header { min-height: 72px; }.tournament-clock-status { position: static; align-self: flex-start; margin-left: auto; }
 .tournament-clock-timer__value { font-size: clamp(112px, 31vw, 190px); }.tournament-clock-blind__value { font-size: clamp(28px, 7vw, 48px); }

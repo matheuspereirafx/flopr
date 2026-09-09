@@ -11,9 +11,12 @@
     <% if @current_membership&.player? %>
       <%= link_to "← Voltar aos torneios",
                   player_tournaments_path,
-                  class: "overview-header__back" %>
+                  class: "overview-header__back",
+                  data: { turbo_prefetch: false } %>
     <% elsif @current_membership.present? %>
-      <%= link_to "← Voltar ao clube", club_path(@club), class: "overview-header__back" %>
+      <%= link_to "← Voltar ao clube", club_path(@club),
+                  class: "overview-header__back",
+                  data: { turbo_prefetch: false } %>
     <% end %>
     <% if @current_membership&.owner? || @current_membership&.admin? %>
       <button class="overview-header__invite"
@@ -50,6 +53,20 @@
         </div>
       </div>
     </div>
+
+    <% if @current_membership&.owner? || @current_membership&.admin? %>
+      <div class="overview-header__actions">
+        <% if @tournament.posted? %>
+          <%= button_to "Finalizar torneio",
+                        finish_club_tournament_path(@club, @tournament),
+                        method: :patch,
+                        class: "overview-header__finish",
+                        form: { data: { turbo_confirm: "Tem certeza que deseja finalizar este torneio? Essa ação bloqueará o clock e novas operações." } } %>
+        <% elsif @tournament.finished? %>
+          <span class="overview-header__finished-label">Torneio finalizado</span>
+        <% end %>
+      </div>
+    <% end %>
   </header>
 
   <%= render "shared/components/tournaments/overview_participation",

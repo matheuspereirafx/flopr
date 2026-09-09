@@ -20,7 +20,7 @@ module ApplicationHelper
       overview_navigation_item(club, tournament, active_page),
       navigation_item("Jogadores", "icons/Iconplayer.svg", :players, active_page,
                       club_tournament_registrations_path(club, tournament)),
-      navigation_item("Relógio", "icons/icontimermenu.svg", :clock, active_page,
+      navigation_item("Relógio", "icons/timericon.png", :clock, active_page,
                       club_tournament_clock_path(club, tournament))
     ]
 

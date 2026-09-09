@@ -1,4 +1,6 @@
-<%= link_to path, class: "btn-primary #{local_assigns[:class]}" do %>
+<%= link_to path,
+            class: "btn-primary #{local_assigns[:class]}",
+            data: local_assigns[:data] do %>
   <span class="btn-icon">+</span>
   <span><%= text %></span>
 <% end %>

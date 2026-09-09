@@ -39,7 +39,8 @@
                  class: class_names(
                    "tournament-navigation__item",
                    "tournament-navigation__item--active" => item[:active]
-                 )
+                 ),
+                 data: { turbo_prefetch: false }
                } %>
             <% link_attributes[:aria] = { current: "page" } if item[:active] %>
             <%= link_to safe_join([

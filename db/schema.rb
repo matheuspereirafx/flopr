@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_28_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_09_010100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -205,6 +205,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_28_120000) do
     t.check_constraint "remaining_seconds >= 0", name: "tournament_clock_states_remaining_seconds_non_negative"
   end
 
+  create_table "tournament_prize_pools", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.decimal "total_amount", precision: 10, scale: 2, null: false
+    t.bigint "tournament_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tournament_id"], name: "index_tournament_prize_pools_on_tournament_id", unique: true
+    t.check_constraint "total_amount > 0::numeric", name: "tournament_prize_pools_total_amount_positive"
+  end
+
+  create_table "tournament_prize_positions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.decimal "percentage", precision: 5, scale: 2, null: false
+    t.integer "position", null: false
+    t.bigint "tournament_prize_pool_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tournament_prize_pool_id", "position"], name: "index_prize_positions_on_pool_and_position", unique: true
+    t.index ["tournament_prize_pool_id"], name: "index_tournament_prize_positions_on_tournament_prize_pool_id"
+    t.check_constraint "\"position\" > 0", name: "tournament_prize_positions_position_positive"
+    t.check_constraint "percentage >= 0::numeric AND percentage <= 100::numeric", name: "tournament_prize_positions_percentage_in_range"
+  end
+
   create_table "tournament_registrations", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "status", default: "pending", null: false
@@ -277,6 +298,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_28_120000) do
   add_foreign_key "tournament_clock_events", "tournaments"
   add_foreign_key "tournament_clock_states", "blind_levels", column: "current_blind_level_id", on_delete: :cascade
   add_foreign_key "tournament_clock_states", "tournaments", on_delete: :cascade
+  add_foreign_key "tournament_prize_pools", "tournaments"
+  add_foreign_key "tournament_prize_positions", "tournament_prize_pools"
   add_foreign_key "tournament_registrations", "tournaments"
   add_foreign_key "tournament_registrations", "users"
   add_foreign_key "tournaments", "clubs"

@@ -170,13 +170,15 @@
   &__winner-player span, &__hint { color: #e8e3ff; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
   &__winner-player strong { overflow: hidden; color: #f0eff4; font-family: $font-secondary; font-size: 30px; text-overflow: ellipsis; white-space: nowrap; }
   &__winner-value { color: #e1dcff; font-family: $font-primary; font-size: 28px; }
-  &__placements { display: grid; gap: 8px; margin-top: 12px; }
+  // Mantém três cards de colocação visíveis; posições adicionais avançam automaticamente.
+  &__placements { display: grid; gap: 8px; max-height: 210px; margin-top: 12px; overflow: hidden; }
   &__placement { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; min-height: 62px; align-items: center; gap: 12px; padding: 12px 16px; border: 1px solid rgba(255, 255, 255, .06); border-radius: 10px; background: rgba(19, 19, 20, .5); transition: border-color .2s ease, background-color .2s ease, transform .2s ease; }
   &__placement:hover { border-color: #eb5160; background: rgba(235, 81, 96, .14); transform: translateX(4px); }
   &__position { color: #988fd7; font-family: $font-primary; font-size: 18px; }
   &__placement span { overflow: hidden; color: #c9c4d3; text-overflow: ellipsis; white-space: nowrap; }
   &__placement > strong:last-child { color: #f0eff4; }
   &__hint { margin: 16px 0 0; color: #77727f; letter-spacing: 0; text-align: center; text-transform: none; }
+  .button--ghost { margin-top: 8px; }
 }
 
 .overview-participation {
@@ -210,6 +212,7 @@
   .overview-header > .overview-header__invite { top: 48px; }
   .overview-details, .overview-prize-pool { min-height: auto; }
   .overview-prize-pool { height: auto; overflow-y: visible; }
+  .overview-prize-pool__placements { max-height: 210px; overflow: hidden; }
   .overview-participation, .overview-participation__grid, .overview-participation__item { min-height: 0; }
   .overview-prize-pool { min-height: 360px; }
   .overview-participation__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

@@ -75,7 +75,11 @@
              available_slots_count: @available_slots_count %>
 
   <section class="tournament-overview-page__main" aria-label="Resumo do torneio">
-    <%= render "shared/components/tournaments/overview_prize_pool" %>
+    <%= render "shared/components/tournaments/overview_prize_pool",
+               club: @club,
+               tournament: @tournament,
+               prize_pool: @prize_pool,
+               can_configure: @current_membership&.owner? || @current_membership&.admin? %>
     <%= render "shared/components/tournaments/overview_details", tournament: @tournament %>
   </section>
 </main>

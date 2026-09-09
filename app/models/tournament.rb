@@ -27,6 +27,10 @@ class Tournament < ApplicationRecord
            class_name: "TournamentChargeOption",
            dependent: :destroy
 
+  has_one :prize_pool,
+          class_name: "TournamentPrizePool",
+          dependent: :destroy
+
   has_many :blind_levels,
            -> { order(:level) },
            dependent: :destroy

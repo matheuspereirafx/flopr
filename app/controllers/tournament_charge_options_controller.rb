@@ -60,8 +60,8 @@ class TournamentChargeOptionsController < ApplicationController
         @tournament.update!(status: :posted)
       end
 
-      redirect_to club_tournament_path(@club, @tournament),
-                  notice: "Configurações financeiras do torneio salvas com sucesso."
+      redirect_to prize_pool_configuration_path,
+                  notice: "Configurações financeiras salvas. Configure a premiação."
     else
       @tournament.status = @tournament.status_in_database
       render action_name == "create" ? :new : :edit,
@@ -131,6 +131,14 @@ class TournamentChargeOptionsController < ApplicationController
     @charge_options.values.filter_map do |option|
       option.addon? ? option.available_from_level : option.available_until_level
     end.first
+  end
+
+  def prize_pool_configuration_path
+    if @tournament.prize_pool.present?
+      edit_club_tournament_prize_pool_path(@club, @tournament)
+    else
+      new_club_tournament_prize_pool_path(@club, @tournament)
+    end
   end
 
 end

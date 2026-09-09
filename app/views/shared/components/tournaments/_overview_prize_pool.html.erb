@@ -1,24 +1,40 @@
 <section class="overview-prize-pool" aria-labelledby="overview-prize-pool-title">
   <h2 id="overview-prize-pool-title">Resultados do torneio</h2>
 
-  <div class="overview-prize-pool__winner" aria-label="Campeão ainda não definido">
-    <span class="overview-prize-pool__trophy" aria-hidden="true">♛</span>
-    <div class="overview-prize-pool__winner-player">
-      <span>Campeão</span>
-      <strong>Jogador não definido</strong>
+  <% if prize_pool.present? && prize_pool.prize_positions.any? %>
+    <% prize_positions = prize_pool.prize_positions.order(:position) %>
+    <p class="overview-prize-pool__amount">Premiação total: <strong>R$ <%= number_to_currency(prize_pool.total_amount, unit: "", separator: ",", delimiter: ".") %></strong></p>
+
+    <% winner = prize_positions.first %>
+    <div class="overview-prize-pool__winner" aria-label="Premiação do 1º lugar">
+      <span class="overview-prize-pool__trophy" aria-hidden="true">♛</span>
+      <div class="overview-prize-pool__winner-player">
+        <span><%= winner.position %>º lugar</span>
+        <strong>Premiação configurada</strong>
+      </div>
+      <strong class="overview-prize-pool__winner-value">
+        <%= number_to_percentage(winner.percentage, precision: 2, strip_insignificant_zeros: true) %>
+      </strong>
     </div>
-    <strong class="overview-prize-pool__winner-value">—</strong>
-  </div>
 
-  <div class="overview-prize-pool__placements" aria-label="Próximas colocações">
-    <% ["2º", "3º"].each do |position| %>
-      <article class="overview-prize-pool__placement">
-        <strong class="overview-prize-pool__position"><%= position %></strong>
-        <span>Jogador não definido</span>
-        <strong>—</strong>
-      </article>
+    <% if prize_positions.drop(1).any? %>
+      <div class="overview-prize-pool__placements" aria-label="Próximas colocações"
+           data-controller="prize-pool-scroll"
+           data-action="mouseenter->prize-pool-scroll#pause mouseleave->prize-pool-scroll#resume focusin->prize-pool-scroll#pause focusout->prize-pool-scroll#resume">
+        <% prize_positions.drop(1).each do |prize_position| %>
+          <article class="overview-prize-pool__placement">
+            <strong class="overview-prize-pool__position"><%= prize_position.position %>º</strong>
+            <span>Premiação configurada</span>
+            <strong><%= number_to_percentage(prize_position.percentage, precision: 2, strip_insignificant_zeros: true) %></strong>
+          </article>
+        <% end %>
+      </div>
     <% end %>
-  </div>
+  <% else %>
+    <p class="overview-prize-pool__hint">Premiação ainda não configurada.</p>
+  <% end %>
 
-  <p class="overview-prize-pool__hint">Premiação disponível após a finalização do torneio.</p>
+  <% if can_configure && prize_pool.present? %>
+    <%= link_to "Configurar premiação", edit_club_tournament_prize_pool_path(club, tournament), class: "button button--ghost" %>
+  <% end %>
 </section>

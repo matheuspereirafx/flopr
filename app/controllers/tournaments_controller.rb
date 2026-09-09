@@ -28,6 +28,7 @@ class TournamentsController < ApplicationController
   end
 
   def show
+    @prize_pool = @tournament.prize_pool
     @buy_in = @tournament.charge_options.find do |option|
       option.buy_in? && option.active?
     end

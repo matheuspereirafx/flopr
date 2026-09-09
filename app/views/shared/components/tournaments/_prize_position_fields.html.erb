@@ -1,0 +1,11 @@
+<div class="prize-pool-position" data-prize-pool-form-target="row">
+  <span class="prize-pool-position__number" data-prize-pool-form-target="positionLabel"></span>
+  <%= position_fields.hidden_field :position, data: { prize_pool_form_target: "positionInput" } %>
+  <div class="prize-pool-position__percentage">
+    <%= position_fields.number_field :percentage, class: "input", min: 0, max: 100, step: "0.01", placeholder: "0" %>
+    <span aria-hidden="true">%</span>
+  </div>
+  <%= position_fields.hidden_field :_destroy, value: "0", data: { prize_pool_form_target: "destroyInput" } %>
+  <button type="button" class="icon-button icon-button--danger" aria-label="Remover posição"
+          data-action="prize-pool-form#removePosition"><span class="icon-button__symbol" aria-hidden="true">×</span></button>
+</div>

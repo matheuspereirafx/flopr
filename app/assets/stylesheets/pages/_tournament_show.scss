@@ -105,6 +105,10 @@
   &__address { display: flex; align-items: flex-start; gap: 8px; margin: 0 0 8px; color: #c9c4d3; font-size: 14px; margin-top: 8px; }
   &__address > img { width: 16px; height: 16px; margin-top: 1px; object-fit: contain; }
   & > &__invite { position: absolute; top: 38px; right: 0; }
+  &__actions { display: flex; justify-content: center; margin-top: 4px; }
+  &__finish { padding: 10px 18px; border: 0; border-radius: 999px; color: #07150e; background: #20d273; font: 700 12px $font-secondary; cursor: pointer; }
+  &__finish:hover { background: #42e58a; }
+  &__finished-label { color: #86efac; font-size: 12px; font-weight: 700; }
   h1 { margin: 0; color: #f0eff4; font-family: $font-primary; font-size: clamp(36px, 6vw, 48px); font-weight: 700; letter-spacing: -.04em; line-height: 1; }
   &__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 20px; padding-bottom: 16px; color: #c9c4d3; font-size: 14px; }
   &__status { padding: 6px 10px; border: 1px solid rgba(255, 179, 180, .35); border-radius: 999px; color: #ffb3b4; background: rgba(255, 179, 180, .08); font-weight: 700; }

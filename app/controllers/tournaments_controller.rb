@@ -1,8 +1,9 @@
 class TournamentsController < ApplicationController
   before_action :set_member_club
   before_action :authorize_owner!, only: %i[new create edit update destroy]
-  before_action :set_tournament, only: %i[show edit update destroy]
+  before_action :set_tournament, only: %i[show edit update destroy finish]
   before_action :authorize_tournament_deletion!, only: :destroy
+  before_action :authorize_tournament_finishing!, only: :finish
 
   def index
     @tournaments = @club.tournaments.with_attached_cover.order(starts_at: :asc)
@@ -90,6 +91,20 @@ class TournamentsController < ApplicationController
                 status: :see_other
   end
 
+  def finish
+    return redirect_to club_tournament_path(@club, @tournament), alert: "O torneio já foi finalizado." if @tournament.finished?
+    return redirect_to club_tournament_path(@club, @tournament), alert: "O torneio precisa estar publicado para ser finalizado." if @tournament.draft?
+
+    ApplicationRecord.transaction do
+      @tournament.update!(status: :finished)
+      @tournament.clock_state&.update!(status: :finished, started_at: nil, paused_at: nil, overtime_started_at: nil)
+    end
+
+    redirect_to club_tournament_path(@club, @tournament), notice: "Torneio finalizado com sucesso."
+  rescue ActiveRecord::RecordInvalid
+    redirect_to club_tournament_path(@club, @tournament), alert: "Não foi possível finalizar o torneio."
+  end
+
   private
 
   def set_member_club
@@ -118,6 +133,13 @@ class TournamentsController < ApplicationController
   def authorize_tournament_deletion!
     return if performed?
     return if @current_membership.owner?
+
+    render plain: "Forbidden", status: :forbidden
+  end
+
+  def authorize_tournament_finishing!
+    return if performed?
+    return if @current_membership.owner? || @current_membership.admin?
 
     render plain: "Forbidden", status: :forbidden
   end

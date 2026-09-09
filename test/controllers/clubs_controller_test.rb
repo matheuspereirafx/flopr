@@ -144,6 +144,21 @@ class ClubsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".club-events__filter[data-filter='upcoming']", count: 1
   end
 
+  test "shows only the tournament status when its clock is finished" do
+    tournament = create_tournament(name: "Finished clock")
+    tournament.charge_options.create!(kind: :buy_in, active: true, amount: 50, chip_amount: 10_000)
+    tournament.update!(status: :posted)
+    TournamentClockState.create_initial_for!(tournament).update!(status: :finished)
+
+    sign_in @owner
+    get club_path(@club)
+
+    assert_select ".tournament-card[data-clock-status='finished']", count: 1 do
+      assert_select ".tournament-card__status--posted", text: /Publicado/, count: 1
+      assert_select ".tournament-card__status--clock", count: 0
+    end
+  end
+
   private
 
   def create_tournament(attributes = {})

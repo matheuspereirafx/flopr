@@ -182,6 +182,25 @@ class TournamentTest < ActiveSupport::TestCase
     tournament.save!
   end
 
+  test "destroys clock events before blind levels when tournament is deleted" do
+    tournament = create_tournament(name: "Tournament with clock events", with_buy_in: true)
+    from_level = tournament.blind_levels.first
+    to_level = tournament.blind_levels.second
+    TournamentClockEvent.create!(
+      tournament: tournament,
+      from_blind_level: from_level,
+      to_blind_level: to_level,
+      kind: :manual_level_advanced,
+      occurred_at: Time.current
+    )
+
+    assert_difference("TournamentClockEvent.count", -1) do
+      assert_difference("BlindLevel.count", -5) do
+        tournament.destroy!
+      end
+    end
+  end
+
   test "rejects backwards tournament status transitions" do
     posted = create_tournament(status: :posted, name: "Posted Status", with_buy_in: true)
     finished = create_tournament(status: :finished, name: "Finished Status")

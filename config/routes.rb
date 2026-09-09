@@ -14,6 +14,10 @@ Rails.application.routes.draw do
   get "/access", to: "onboarding#access", as: :access
   resources :clubs do
     resources :tournaments, only: %i[index show new create edit update destroy] do
+      member do
+        patch :finish
+      end
+
       resource :invite_link,
                only: :show,
                controller: "tournament_invite_links"

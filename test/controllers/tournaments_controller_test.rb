@@ -134,6 +134,47 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "owner and admin can manually finish a posted tournament" do
+    [@owner, @admin].each do |user|
+      tournament = create_tournament(@club, name: "Finished Tournament #{user.id}")
+      tournament.charge_options.create!(kind: :buy_in, active: true, amount: 100, chip_amount: 10_000)
+      tournament.update!(status: :posted)
+      TournamentClockState.create_initial_for!(tournament)
+      sign_in user
+      patch finish_club_tournament_path(@club, tournament)
+
+      assert_redirected_to club_tournament_path(@club, tournament)
+      assert_equal "finished", tournament.reload.status
+      assert_equal "finished", tournament.clock_state.reload.status
+      sign_out user
+    end
+  end
+
+  test "dealer and player cannot finish a tournament" do
+    tournament = create_tournament(@club)
+    tournament.charge_options.create!(kind: :buy_in, active: true, amount: 100, chip_amount: 10_000)
+    tournament.update!(status: :posted)
+
+    [@dealer, @player].each do |user|
+      sign_in user
+      patch finish_club_tournament_path(@club, tournament)
+
+      assert_response :forbidden
+      assert_equal "posted", tournament.reload.status
+      sign_out user
+    end
+  end
+
+  test "finished tournament does not show the finish action" do
+    tournament = create_tournament(@club, status: :finished)
+    sign_in @owner
+
+    get club_tournament_path(@club, tournament)
+
+    assert_select "button", text: "Finalizar torneio", count: 0
+    assert_select ".overview-header__finished-label", text: "Torneio finalizado"
+  end
+
   test "only owner, admin and dealer see the tournament status in the overview" do
     tournament = create_tournament(@club)
 

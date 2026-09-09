@@ -19,7 +19,7 @@ class TournamentChargeOptionsControllerTest < ActionDispatch::IntegrationTest
     get new_club_tournament_charge_options_path(@club, @tournament)
 
     assert_response :success
-    assert_select ".financial-form__step", "Etapa 2 de 2"
+    assert_select ".financial-form__step", "Etapa 2 de 3"
     assert_select "h1", "Configurações financeiras"
     assert_select ".form-grid.financial-form__grid > .panel", count: 2
     assert_select ".financial-panel--required .panel__title", "Buy-in obrigatório"
@@ -41,7 +41,7 @@ class TournamentChargeOptionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "form[method='post'][action=?]",
                   club_tournament_charge_options_path(@club, @tournament)
-    assert_select "button[type='submit'][title='Salvar alterações'][aria-label='Salvar alterações']"
+    assert_select "button[type='submit'][title='Continuar'][aria-label='Continuar']"
   end
 
   test "owner publishes tournament with buy in and no recharge period" do
@@ -50,7 +50,7 @@ class TournamentChargeOptionsControllerTest < ActionDispatch::IntegrationTest
     post club_tournament_charge_options_path(@club, @tournament),
          params: financial_configuration_payload(nil, optional_options: false)
 
-    assert_redirected_to club_tournament_path(@club, @tournament)
+    assert_redirected_to new_club_tournament_prize_pool_path(@club, @tournament)
     assert_equal "posted", @tournament.reload.status
     assert @tournament.charge_options.find_by!(kind: :buy_in).active?
     assert_not @tournament.charge_options.find_by!(kind: :rebuy).active?
@@ -76,7 +76,7 @@ class TournamentChargeOptionsControllerTest < ActionDispatch::IntegrationTest
     post club_tournament_charge_options_path(@club, @tournament),
          params: financial_configuration_payload(period_end.id)
 
-    assert_redirected_to club_tournament_path(@club, @tournament)
+    assert_redirected_to new_club_tournament_prize_pool_path(@club, @tournament)
     assert_equal "posted", @tournament.reload.status
 
     buy_in = @tournament.charge_options.find_by!(kind: :buy_in)

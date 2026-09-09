@@ -21,7 +21,7 @@ class TournamentOverviewTest < ApplicationSystemTestCase
     assert_text @tournament.location
     assert_text "Detalhes"
     assert_text "Buy-in"
-    assert_text "Premiação disponível após a finalização do torneio."
+    assert_text "Premiação ainda não configurada."
     assert_text "Confirmados"
     assert_text "Pendentes"
     assert_text "Vagas disponíveis"

@@ -5,7 +5,7 @@
   <main class="tournament-form financial-form" aria-labelledby="page-title">
     <header class="tournament-form__header financial-form__header">
       <div class="financial-form__header-content">
-        <p class="financial-form__step">Etapa 2 de 2</p>
+        <p class="financial-form__step">Etapa 2 de 3</p>
         <h1 id="page-title" class="tournament-form__title">
           Configurações financeiras
         </h1>
@@ -179,15 +179,13 @@
 
           <%= button_tag type: "submit",
                          class: "button button--primary",
-                         aria: {
-                           label: editing_financial_configuration ? "Salvar alterações" : "Finalizar criação do torneio"
-                         },
-                         title: editing_financial_configuration ? "Salvar alterações" : "Finalizar criação do torneio" do %>
+                           aria: { label: editing_financial_configuration ? "Continuar" : "Continuar" },
+                           title: "Continuar" do %>
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="m5 12 4 4L19 6" />
             </svg>
             <span class="sr-only">
-              <%= editing_financial_configuration ? "Salvar alterações" : "Finalizar criação" %>
+              Continuar
             </span>
           <% end %>
         </div>

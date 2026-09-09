@@ -52,7 +52,7 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
 
       assert_response :success
       assert_select "h1", tournament.name
-      assert_select ".overview-prize-pool__hint", "Premiação disponível após a finalização do torneio."
+      assert_select ".overview-prize-pool__hint", "Premiação ainda não configurada."
       sign_out user
     end
   end

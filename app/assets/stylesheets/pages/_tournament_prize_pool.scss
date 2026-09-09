@@ -1,0 +1,25 @@
+.prize-pool-form__step { margin: 0 0 8px; color: #988fd7; font-size: 14px; }
+.prize-pool-form__grid { grid-template-columns: minmax(260px, .75fr) minmax(0, 1.25fr); }
+.prize-pool-panel { min-width: 0; }
+.prize-pool-panel__description { color: #a1a1aa; font-size: 14px; }
+.prize-pool-amount { display: flex; align-items: center; gap: 10px; }
+.prize-pool-amount > span { color: #a1a1aa; }
+.prize-pool-positions__header, .prize-pool-position { display: grid; grid-template-columns: 1fr 150px 36px; align-items: center; gap: 12px; }
+.prize-pool-positions__header { padding: 0 12px 8px; color: #a1a1aa; font-size: 12px; text-transform: uppercase; }
+.prize-pool-position { padding: 10px 12px; border-top: 1px solid rgba(255,255,255,.06); }
+.prize-pool-position__number { font-weight: 600; }
+.prize-pool-position__percentage { position: relative; }
+.prize-pool-position__percentage .input { padding-right: 28px; }
+.prize-pool-position__percentage > span { position: absolute; top: 50%; right: 12px; color: #a1a1aa; transform: translateY(-50%); }
+.prize-pool-form__add { margin-top: 16px; }
+.prize-pool-form .button--ghost { margin-top: 8px; }
+.prize-pool-form .tournament-form__actions .button--primary { margin-top: 8px; }
+.prize-pool-total { display: flex; flex-direction: column; margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.08); color: #a1a1aa; }
+.prize-pool-total > div { display: flex; width: 100%; justify-content: space-between; gap: 16px; }
+.prize-pool-total strong { color: #eb5160; }
+.prize-pool-total[data-state="complete"] strong { color: #20d273; }
+.prize-pool-total__message { margin: 8px 0 0; color: #eb5160; font-size: 12px; }
+.prize-pool-total[data-state="complete"] .prize-pool-total__message { color: #20d273; }
+.overview-prize-pool__amount { margin: 16px 0; color: #a1a1aa; }
+.overview-prize-pool__amount strong { display: block; margin-top: 6px; color: #fffbfc; font-size: 28px; }
+@media (max-width: 760px) { .prize-pool-form__grid { grid-template-columns: 1fr; } .prize-pool-positions__header, .prize-pool-position { grid-template-columns: 1fr 120px 32px; } }

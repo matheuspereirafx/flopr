@@ -60,6 +60,7 @@ class BlindLevelTest < ActiveSupport::TestCase
       club: club,
       name: "Friday Poker Night",
       location: "Rua das Flores, 123",
+      google_place_id: "ChIJtestplace",
       max_players: 24,
       starts_at: 2.days.from_now,
       status: :posted

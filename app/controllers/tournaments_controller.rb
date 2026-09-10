@@ -64,7 +64,7 @@ class TournamentsController < ApplicationController
     @tournament = @club.tournaments.build(tournament_params)
     @tournament.status = :draft
 
-    if create_tournament_with_clock_state
+    if validate_google_location && create_tournament_with_clock_state
       redirect_to new_club_tournament_charge_options_path(@club, @tournament),
                   notice: "Estrutura do torneio salva. Configure as regras financeiras."
     else
@@ -76,7 +76,10 @@ class TournamentsController < ApplicationController
   end
 
   def update
-    if @tournament.update(tournament_params)
+    attributes = tournament_params
+    @tournament.assign_attributes(attributes)
+
+    if validate_google_location && @tournament.save
       redirect_to edit_club_tournament_charge_options_path(@club, @tournament),
                   notice: "Dados do torneio salvos. Configure as opções financeiras."
     else
@@ -149,6 +152,7 @@ class TournamentsController < ApplicationController
     params.require(:tournament).permit(
       :name,
       :location,
+      :google_place_id,
       :max_players,
       :starts_at,
       :blind_levels_count,
@@ -163,6 +167,14 @@ class TournamentsController < ApplicationController
         :_destroy
       ]
     )
+  end
+
+  def validate_google_location(place_id = @tournament.google_place_id)
+    result = GooglePlaces::PlaceDetails.call(place_id)
+    return true if result.valid?
+
+    @tournament.errors.add(:google_place_id, "não corresponde a um local válido do Google")
+    false
   end
 
   def create_tournament_with_clock_state

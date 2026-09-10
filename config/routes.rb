@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  devise_for :users
+  devise_for :users, controllers: { omniauth_callbacks: "users/omniauth_callbacks" }
   root to: "pages#home"
 
   get "/tournaments", to: "player_tournaments#index", as: :player_tournaments
@@ -12,6 +12,8 @@ Rails.application.routes.draw do
 
   get "up" => "rails/health#show", as: :rails_health_check
   get "/access", to: "onboarding#access", as: :access
+  get "/onboarding/profile", to: "profiles#edit", as: :onboarding_profile
+  patch "/onboarding/profile", to: "profiles#update"
   resources :clubs do
     resources :tournaments, only: %i[index show new create edit update destroy] do
       member do

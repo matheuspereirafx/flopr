@@ -20,7 +20,8 @@ class User < ApplicationRecord
            through: :owner_club_memberships,
            source: :club
 
-  validates :username, presence: true, on: :create
+  validates :username, presence: true, on: :create, unless: :profile_incomplete?
+  validates :name, :username, presence: true, if: :google_profile_completed?
   validates :username,
             format: { with: /\A[a-zA-Z0-9_.]+\z/, allow_nil: true },
             uniqueness: { allow_nil: true }
@@ -30,9 +31,54 @@ class User < ApplicationRecord
   before_validation :normalize_cpf
 
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+         :recoverable, :rememberable, :validatable,
+         :omniauthable, omniauth_providers: [:google_oauth2]
+
+  def profile_incomplete?
+    provider == "google_oauth2" && profile_completed_at.nil?
+  end
+
+  class << self
+    def from_google_oauth!(auth)
+      provider = auth.fetch("provider")
+      uid = auth.fetch("uid")
+      email = auth.dig("info", "email").to_s.downcase
+
+      validate_google_auth!(auth, email)
+
+      find_by(provider: provider, uid: uid) || transaction do
+        find_or_create_from_google_auth!(provider:, uid:, email:)
+      end
+    end
+
+    private
+
+    def validate_google_auth!(auth, email)
+      raise ArgumentError, "O Google não retornou um e-mail válido." if email.blank?
+      raise ArgumentError, "O e-mail do Google precisa ser verificado." unless google_email_verified?(auth)
+    end
+
+    def find_or_create_from_google_auth!(provider:, uid:, email:)
+      user = find_by(email: email)
+      return create!(email:, provider:, uid:, password: Devise.friendly_token.first(32)) unless user
+
+      raise ArgumentError, "Esta conta já está vinculada a outro login Google." if user.provider.present?
+
+      user.update!(provider:, uid:)
+      user
+    end
+
+    def google_email_verified?(auth)
+      auth.dig("extra", "raw_info", "email_verified") == true ||
+        auth.dig("info", "email_verified") == true
+    end
+  end
 
   private
+
+  def google_profile_completed?
+    provider == "google_oauth2" && profile_completed_at.present?
+  end
 
   def normalize_cpf
     self.cpf = cpf.to_s.gsub(/\D/, "") if cpf.present?

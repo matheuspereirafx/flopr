@@ -100,6 +100,7 @@ class PlayerTournamentsControllerTest < ActionDispatch::IntegrationTest
     tournament = club.tournaments.build(
       {
         location: "Rua das Flores, 123",
+        google_place_id: "ChIJtestplace",
         max_players: 24,
         status: :draft
       }.merge(attributes).merge(status: :draft)

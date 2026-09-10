@@ -57,6 +57,7 @@ class Tournament < ApplicationRecord
             presence: true,
             uniqueness: { case_sensitive: false }
   validates :location, :max_players, :starts_at, :status, presence: true
+  validates :google_place_id, presence: { message: "deve ser selecionado no Google" }
 
   validate :has_minimum_blind_levels
   validate :blind_levels_are_sequential

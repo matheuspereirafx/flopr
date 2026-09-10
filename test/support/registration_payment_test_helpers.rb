@@ -21,6 +21,7 @@ module RegistrationPaymentTestHelpers
     tournament = club.tournaments.build(
       name: name,
       location: "Rua das Flores, 123",
+      google_place_id: "ChIJtestplace",
       max_players: 24,
       starts_at: 2.days.from_now,
       status: :draft

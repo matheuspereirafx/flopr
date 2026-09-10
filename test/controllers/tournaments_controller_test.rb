@@ -236,6 +236,35 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "draft", tournament.status
   end
 
+  test "owner creates a tournament with a Google-selected location" do
+    sign_in @owner
+
+    assert_difference "Tournament.count", 1 do
+      post club_tournaments_path(@club),
+           params: tournament_payload(
+             location: "Rua Augusta, 1500, São Paulo - SP",
+             google_place_id: "ChIJgoogleplace123"
+           )
+    end
+
+    tournament = Tournament.order(:created_at).last
+    assert_equal "Rua Augusta, 1500, São Paulo - SP", tournament.location
+    assert_equal "ChIJgoogleplace123", tournament.google_place_id
+    assert_redirected_to new_club_tournament_charge_options_path(@club, tournament)
+  end
+
+  test "owner cannot create a tournament with manually typed location" do
+    sign_in @owner
+
+    assert_no_difference "Tournament.count" do
+      post club_tournaments_path(@club),
+           params: tournament_payload(google_place_id: nil)
+    end
+
+    assert_response :unprocessable_entity
+    assert_select ".form-errors", count: 1
+  end
+
   test "creating a tournament also creates its initial clock state" do
     sign_in @owner
 
@@ -257,6 +286,16 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "button[type='submit'][title='Continuar'][aria-label='Continuar']"
+  end
+
+  test "tournament form includes the Google place id field and autocomplete controller" do
+    sign_in @owner
+
+    get new_club_tournament_path(@club)
+
+    assert_response :success
+    assert_select "input[name='tournament[google_place_id]'][type='hidden']", count: 1
+    assert_select "[data-controller~='place-autocomplete']", count: 1
   end
 
   test "owner cannot create a tournament with a name already used in different casing" do
@@ -346,6 +385,40 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "draft", tournament.reload.status
     assert_equal 6, tournament.reload.blind_levels.count
     assert_equal original_level.small_blind, tournament.blind_levels.first.small_blind
+  end
+
+  test "owner can update the tournament location with a Google-selected place" do
+    tournament = create_tournament(@club)
+    sign_in @owner
+
+    patch club_tournament_path(@club, tournament),
+          params: {
+            tournament: {
+              location: "Avenida Paulista, 1000, São Paulo - SP",
+              google_place_id: "ChIJgoogleplace456"
+            }
+          }
+
+    assert_redirected_to edit_club_tournament_charge_options_path(@club, tournament)
+    assert_equal "Avenida Paulista, 1000, São Paulo - SP", tournament.reload.location
+    assert_equal "ChIJgoogleplace456", tournament.google_place_id
+  end
+
+  test "owner cannot update the tournament location without a Google place" do
+    tournament = create_tournament(@club)
+    original_location = tournament.location
+    sign_in @owner
+
+    patch club_tournament_path(@club, tournament),
+          params: {
+            tournament: {
+              location: "Endereço digitado manualmente",
+              google_place_id: nil
+            }
+          }
+
+    assert_response :unprocessable_entity
+    assert_equal original_location, tournament.reload.location
   end
 
   test "edit form displays the tournament start date and time" do
@@ -511,6 +584,7 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     {
       name: "Friday Poker Night",
       location: "Rua das Flores, 123",
+      google_place_id: "ChIJtestplace",
       max_players: 24,
       starts_at: 2.days.from_now,
       status: :draft,

@@ -463,6 +463,63 @@ table {
   padding-left: $space-10;
 }
 
+// Campo de endereço integrado ao Places Autocomplete. O componente Google
+// mantém a lista de sugestões e suas atribuições obrigatórias; o host recebe
+// o tratamento visual do Flopr para permanecer alinhado aos demais campos.
+.tournament-location-field {
+  [data-place-autocomplete-target="message"] {
+    margin: $space-1 0 0;
+    color: $color-text-muted;
+    font-size: $font-size-xs;
+  }
+}
+
+// O Places Autocomplete clássico cria o menu no document.body, permitindo
+// aplicar o tema visual do Flopr sem remover a identificação obrigatória do Google.
+body .pac-container {
+  z-index: 2000;
+  margin-top: $space-1;
+  overflow: hidden;
+  border: 1px solid $color-border-strong;
+  border-radius: $radius-sm;
+  background: $color-panel;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.42);
+  font-family: $font-secondary;
+
+  .pac-item {
+    min-height: 42px;
+    padding: $space-3 $space-4;
+    border-top-color: $color-border;
+    color: $color-text-secondary;
+    font-size: $font-size-sm;
+    transition: background-color $transition-fast, color $transition-fast;
+
+    &:hover,
+    &.pac-item-selected {
+      background: $color-accent-soft;
+      color: $color-text-primary;
+    }
+  }
+
+  .pac-item-query {
+    color: $color-text-primary;
+    font-size: $font-size-sm;
+  }
+
+  .pac-matched {
+    color: $color-accent;
+  }
+
+  .pac-icon {
+    filter: grayscale(1) brightness(1.8);
+  }
+
+  .hdpi.pac-logo::after,
+  .pac-logo::after {
+    opacity: 0.85;
+  }
+}
+
 // <select> nativo perde a seta padrão do navegador (appearance: none) para
 // que possamos desenhar nossa própria seta consistente com o resto da UI.
 .select-wrapper {

@@ -67,6 +67,22 @@ class TournamentTest < ActiveSupport::TestCase
     assert build_tournament.valid?
   end
 
+  test "is valid with a Google-selected location" do
+    tournament = build_tournament(
+      location: "Rua das Flores, 123, São Paulo - SP",
+      google_place_id: "ChIJgoogleplace123"
+    )
+
+    assert tournament.valid?
+  end
+
+  test "requires a Google place id for the location" do
+    tournament = build_tournament(google_place_id: nil)
+
+    assert_not tournament.valid?
+    assert_includes tournament.errors[:google_place_id], "deve ser selecionado no Google"
+  end
+
   test "does not allow a tournament name already used with different casing" do
     build_tournament.save!
     other_club = Club.create!(name: "Another Poker House")
@@ -240,6 +256,7 @@ class TournamentTest < ActiveSupport::TestCase
       club: @club,
       name: "Friday Poker Night",
       location: "Rua das Flores, 123",
+      google_place_id: "ChIJtestplace",
       max_players: 24,
       starts_at: 2.days.from_now,
       status: :draft,

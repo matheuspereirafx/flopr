@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_09_010100) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_10_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -241,6 +241,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_09_010100) do
   create_table "tournaments", force: :cascade do |t|
     t.bigint "club_id", null: false
     t.datetime "created_at", null: false
+    t.string "google_place_id"
     t.string "invite_token", null: false
     t.string "location", null: false
     t.integer "max_players", null: false
@@ -251,6 +252,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_09_010100) do
     t.index "lower((name)::text)", name: "index_tournaments_on_lower_name", unique: true
     t.index ["club_id", "starts_at"], name: "index_tournaments_on_club_id_and_starts_at"
     t.index ["club_id"], name: "index_tournaments_on_club_id"
+    t.index ["google_place_id"], name: "index_tournaments_on_google_place_id"
     t.index ["invite_token"], name: "index_tournaments_on_invite_token", unique: true
     t.index ["starts_at"], name: "index_tournaments_on_starts_at"
     t.index ["status"], name: "index_tournaments_on_status"

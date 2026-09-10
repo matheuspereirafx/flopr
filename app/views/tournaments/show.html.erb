@@ -34,10 +34,17 @@
     <div class="overview-header__content">
       <div class="overview-header__information">
         <h1 id="tournament-title"><%= @tournament.name %></h1>
-        <p class="overview-header__address">
+        <button class="overview-header__address"
+                type="button"
+                aria-label="Copiar endereço do torneio"
+                title="Copiar endereço"
+                data-controller="copy-invite-link"
+                data-copy-invite-link-url-value="<%= @tournament.location %>"
+                data-copied-message="Endereço copiado"
+                data-action="click->copy-invite-link#copy">
           <%= image_tag "icons/Iconlocation.svg", alt: "" %>
           <span><%= @tournament.location %></span>
-        </p>
+        </button>
         <div class="overview-header__meta">
           <% if @current_membership&.owner? ||
                 @current_membership&.admin? ||

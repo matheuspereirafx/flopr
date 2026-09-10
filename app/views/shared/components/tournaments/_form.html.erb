@@ -72,12 +72,14 @@
             </div>
           </div>
 
-          <div class="field">
+          <div class="field"
+               data-controller="place-autocomplete"
+               data-place-autocomplete-api-key-value="<%= ENV['GOOGLE_MAPS_BROWSER_API_KEY'] %>">
             <%= f.label :location,
                         "Local",
                         class: "field__label" %>
 
-            <div class="input-icon">
+            <div class="input-icon tournament-location-field">
               <span class="input-icon__icon" aria-hidden="true">
                 <%= image_tag "icons/Iconlocation.svg",
                               class: "input-icon__image",
@@ -86,7 +88,17 @@
 
               <%= f.input_field :location,
                                 class: "input input--with-icon",
-                                placeholder: "Ex.: Poker Room, Mesa 1" %>
+                                placeholder: "Pesquise um endereço ou local",
+                                autocomplete: "off",
+                                data: {
+                                  place_autocomplete_target: "input",
+                                  action: "input->place-autocomplete#clearSelection"
+                                } %>
+              <%= f.hidden_field :google_place_id,
+                                 data: { place_autocomplete_target: "placeId" } %>
+              <p class="field__hint"
+                 data-place-autocomplete-target="message"
+                 hidden></p>
             </div>
           </div>
 

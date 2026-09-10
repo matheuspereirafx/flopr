@@ -91,6 +91,7 @@ class TournamentPrizePoolTest < ActiveSupport::TestCase
     defaults = {
       name: "Friday Poker Night #{SecureRandom.uuid}",
       location: "Poker House",
+      google_place_id: "ChIJtestplace",
       max_players: 20,
       starts_at: 2.days.from_now,
       status: :draft

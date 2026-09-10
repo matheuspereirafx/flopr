@@ -93,5 +93,4 @@ class UserTest < ActiveSupport::TestCase
     assert_not user.valid?
     assert user.errors[:cpf].any?
   end
-
 end

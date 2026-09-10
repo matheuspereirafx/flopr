@@ -89,6 +89,18 @@
             class: "login-btn" %>
 
       <% end %>
+
+      <div class="login-divider" aria-hidden="true">
+        <span>ou</span>
+      </div>
+
+      <%= button_to user_google_oauth2_omniauth_authorize_path(role: params[:role]),
+                    method: :post,
+                    form: { data: { turbo: false } },
+                    class: "google-login-btn" do %>
+        <i class="fa-brands fa-google" aria-hidden="true"></i>
+        Entrar com Google
+      <% end %>
     </div>
     <p class="signup">
       Não tem uma conta?

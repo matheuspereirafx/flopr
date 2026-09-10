@@ -1,0 +1,56 @@
+<div class="signup-page">
+  <div class="signup-card">
+    <h1>Complete seu perfil</h1>
+
+    <p class="subtitle">
+      Informe seu nome completo e apelido para continuar.
+    </p>
+
+    <div class="card-signup">
+      <%= simple_form_for(current_user, url: onboarding_profile_path, method: :patch) do |f| %>
+        <div class="field">
+          <label>Nome completo</label>
+
+          <div class="input-wrapper">
+            <i class="fa-solid fa-user input-icon" aria-hidden="true"></i>
+            <%= f.input :name,
+                        label: false,
+                        required: true,
+                        error: false,
+                        input_html: {
+                          autocomplete: "name",
+                          placeholder: "Seu nome completo"
+                        } %>
+          </div>
+
+          <% if current_user.errors[:name].any? %>
+            <div class="error-message"><%= current_user.errors[:name].first %></div>
+          <% end %>
+        </div>
+
+        <div class="field">
+          <label>Apelido</label>
+
+          <div class="input-wrapper">
+            <i class="fa-solid fa-at input-icon" aria-hidden="true"></i>
+            <%= f.input :username,
+                        label: false,
+                        required: true,
+                        error: false,
+                        input_html: {
+                          autocomplete: "username",
+                          placeholder: "seu.apelido",
+                          pattern: "[a-zA-Z0-9_.]+"
+                        } %>
+          </div>
+
+          <% if current_user.errors[:username].any? %>
+            <div class="error-message"><%= current_user.errors[:username].first %></div>
+          <% end %>
+        </div>
+
+        <%= f.button :submit, "Continuar", class: "signup-btn" %>
+      <% end %>
+    </div>
+  </div>
+</div>

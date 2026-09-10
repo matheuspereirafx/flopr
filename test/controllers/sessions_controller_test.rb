@@ -1,6 +1,12 @@
 require "test_helper"
 
 class SessionsControllerTest < ActionDispatch::IntegrationTest
+  test "login page submits Google authentication outside Turbo" do
+    get new_user_session_path
+
+    assert_select "form[data-turbo='false'][action='/users/auth/google_oauth2'][method='post']"
+  end
+
   test "player profile redirects to player tournaments after login" do
     user = User.create!(
       email: "player-login@example.com",

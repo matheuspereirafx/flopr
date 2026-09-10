@@ -102,8 +102,11 @@
   &__content { display: flex; align-items: flex-start; justify-content: center; gap: 24px; text-align: center; }
   &__information { min-width: 0; }
   &__address, &__meta { justify-content: center; }
-  &__address { display: flex; align-items: flex-start; gap: 8px; margin: 0 0 8px; color: #c9c4d3; font-size: 14px; margin-top: 8px; }
+  &__address { position: relative; display: inline-flex; align-items: flex-start; gap: 8px; margin: 8px 0 8px; padding: 6px 10px; border: 1px solid transparent; border-radius: 8px; color: #c9c4d3; background: transparent; font: 400 14px $font-secondary; cursor: pointer; transition: border-color .15s ease, background-color .15s ease, color .15s ease; }
+  &__address:hover, &__address:focus-visible { border-color: rgba(152, 143, 215, .42); color: #e4dfff; background: rgba(152, 143, 215, .08); }
+  &__address:focus-visible { outline: 2px solid #c7bfff; outline-offset: 3px; }
   &__address > img { width: 16px; height: 16px; margin-top: 1px; object-fit: contain; }
+  &__address.is-copied::after { position: absolute; transform: translateY(34px); padding: 8px 12px; border: 1px solid rgba(199, 191, 255, .25); border-radius: 8px; color: #e4dfff; background: #201f20; box-shadow: 0 4px 12px rgba(0, 0, 0, .15); content: attr(data-copied-message); font: 700 12px/1 $font-secondary; white-space: nowrap; }
   & > &__invite { position: absolute; top: 38px; right: 0; }
   &__actions { display: flex; justify-content: center; margin-top: 4px; }
   &__finish { padding: 10px 18px; border: 0; border-radius: 999px; color: #07150e; background: #20d273; font: 700 12px $font-secondary; cursor: pointer; }

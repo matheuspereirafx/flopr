@@ -21,7 +21,7 @@ module GooglePlaces
 
     def call
       return Result.new(false, nil) if @place_id.blank?
-      return Result.new(true, nil) if Rails.env.test? && ENV["GOOGLE_MAPS_SERVER_API_KEY"].blank?
+      return Result.new(true, nil) if Rails.env.test?
 
       response = request
       return Result.new(false, nil) unless response.is_a?(Net::HTTPSuccess)

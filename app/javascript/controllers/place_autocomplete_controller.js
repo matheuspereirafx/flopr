@@ -16,27 +16,28 @@ export default class extends Controller {
 
     try {
       await this.loadScript()
-      const { PlaceAutocompleteElement } = await google.maps.importLibrary("places")
-      const autocomplete = new PlaceAutocompleteElement({
-        includedRegionCodes: ["br"]
+      const { Autocomplete } = await google.maps.importLibrary("places")
+      this.autocomplete = new Autocomplete(this.inputTarget, {
+        componentRestrictions: { country: "br" },
+        fields: ["formatted_address", "place_id"]
       })
-      autocomplete.id = this.inputTarget.id
-      autocomplete.value = this.inputTarget.value
-      autocomplete.addEventListener("gmp-select", (event) => this.selectPlace(event))
-
-      this.inputTarget.replaceWith(autocomplete)
-      this.inputTarget = autocomplete
+      this.autocomplete.addListener("place_changed", () => this.selectPlace())
     } catch (_error) {
       this.showMessage("Não foi possível carregar a busca de endereços.")
     }
   }
 
-  async selectPlace(event) {
-    const place = event.placePrediction.toPlace()
-    await place.fetchFields({ fields: ["formattedAddress", "id"] })
+  selectPlace() {
+    const place = this.autocomplete.getPlace()
 
-    this.inputTarget.value = place.formattedAddress || ""
-    this.placeIdTarget.value = place.id || ""
+    if (!place.place_id || !place.formatted_address) {
+      this.placeIdTarget.value = ""
+      this.showMessage("Selecione um endereço válido nas sugestões.")
+      return
+    }
+
+    this.inputTarget.value = place.formatted_address
+    this.placeIdTarget.value = place.place_id
     this.hideMessage()
   }
 
@@ -50,7 +51,7 @@ export default class extends Controller {
 
     window.googleMapsScriptPromise = new Promise((resolve, reject) => {
       const script = document.createElement("script")
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(this.apiKeyValue)}&v=weekly`
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(this.apiKeyValue)}&libraries=places&v=weekly`
       script.async = true
       script.defer = true
       script.onload = resolve

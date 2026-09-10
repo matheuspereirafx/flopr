@@ -173,7 +173,7 @@ class TournamentsController < ApplicationController
     result = GooglePlaces::PlaceDetails.call(place_id)
     return true if result.valid?
 
-    @tournament.errors.add(:google_place_id, "não corresponde a um local válido do Google")
+    @tournament.errors.add(:location, "selecione um endereço válido nas sugestões do Google")
     false
   end
 

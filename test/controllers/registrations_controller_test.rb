@@ -6,6 +6,8 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "input[name='user[name]'][required]"
+    assert_select "form[data-turbo='false'][action='/users/auth/google_oauth2'][method='post']",
+                  text: "Cadastrar pelo Google"
   end
 
   test "creates a user when terms are accepted" do

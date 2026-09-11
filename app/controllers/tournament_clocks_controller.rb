@@ -61,7 +61,7 @@ class TournamentClocksController < ApplicationController
   def state
     @clock_state.refresh!
 
-    render json: clock_state_payload
+    render json: @clock_state.realtime_payload
   end
 
   def resume
@@ -85,38 +85,6 @@ class TournamentClocksController < ApplicationController
   end
 
   private
-
-  def clock_state_payload
-    current_blind_level = @clock_state.current_blind_level
-    next_blind_level = @tournament.blind_levels.find_by(
-      "level > ?",
-      current_blind_level.level
-    )
-
-    {
-      status: @clock_state.status,
-      started_at: @clock_state.started_at&.iso8601(3),
-      current_blind_level_id: @clock_state.current_blind_level_id,
-      remaining_seconds: @clock_state.remaining_seconds,
-      overtime_elapsed_seconds: @clock_state.overtime_seconds,
-      tournament_elapsed_seconds: @clock_state.tournament_elapsed_seconds,
-      current_level: blind_level_payload(current_blind_level),
-      next_level: blind_level_payload(next_blind_level)
-    }
-  end
-
-  def blind_level_payload(blind_level)
-    return if blind_level.blank?
-
-    blind_level.slice(
-      :id,
-      :level,
-      :duration_minutes,
-      :small_blind,
-      :big_blind,
-      :ante
-    )
-  end
 
   def set_member_club
     @club = current_user.clubs.find(params[:club_id])

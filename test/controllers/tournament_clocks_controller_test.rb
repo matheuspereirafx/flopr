@@ -1,6 +1,8 @@
 require "test_helper"
 
 class TournamentClocksControllerTest < ActionDispatch::IntegrationTest
+  include ActionCable::TestHelper
+
   def setup
     @club = create_club(name: "Poker House")
     @other_club = create_club(name: "Other Poker House")
@@ -174,6 +176,20 @@ class TournamentClocksControllerTest < ActionDispatch::IntegrationTest
       sign_out user
       state.destroy!
     end
+  end
+
+  test "pausing broadcasts the new clock state" do
+    state = TournamentClockState.create_initial_for!(@tournament)
+    state.start!(at: Time.current)
+    sign_in @owner
+
+    messages = capture_broadcasts("tournament_clock_#{@tournament.id}") do
+      patch pause_club_tournament_clock_path(@club, @tournament)
+    end
+
+    assert_response :redirect
+    assert_equal 1, messages.size
+    assert_equal "paused", messages.first.fetch("status")
   end
 
   test "player cannot pause and does not change the clock" do

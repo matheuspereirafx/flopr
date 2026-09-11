@@ -50,7 +50,7 @@
     display:flex;
     justify-content:space-between;
     align-items:center;
-    margin-bottom:48px;
+    margin-bottom:24px;
 
 }
 
@@ -118,6 +118,8 @@
   }
 
   .clubs-header {
+    position: relative;
+    z-index: 10;
     flex-direction: column;
     align-items: center;
     gap: 24px;
@@ -131,5 +133,22 @@
   .clubs-toolbar { flex-wrap: wrap; }
   .clubs-search { flex: 1 1 100%; width: 100%; max-width: none; }
   .clubs-filter-submit { flex: 1; }
+
+  .clubs-page .club-show__create-tournament {
+    display: inline-flex;
+    position: fixed;
+    z-index: 1000;
+    right: 20px;
+    bottom: 36px;
+    width: 56px;
+    height: 56px;
+    min-height: 56px;
+    padding: 0;
+    border-radius: 50%;
+    box-shadow: 0 12px 26px rgba(0, 0, 0, .35);
+  }
+
+  .clubs-page .club-show__create-tournament span:not(.btn-icon) { display: none; }
+  .clubs-page .club-show__create-tournament .btn-icon { width: auto; height: auto; font-size: 30px; transform: none; }
 
 }

@@ -31,6 +31,10 @@ class TournamentChargeOptionsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-kind='addon'] input[data-financial-options-target='toggle'][disabled]", count: 1
     assert_select "[data-kind='fee'] input[data-financial-options-target='toggle'][disabled]", count: 1
     assert_select "input[name='financial_configuration[charge_options][buy_in][amount]']", count: 1
+    assert_select ".financial-chips .input-icon img.input-icon__image", count: 5
+    assert_select ".financial-option__fields", count: 0
+    assert_select "[data-financial-options-target='fields']", count: 4
+    assert_select "[data-financial-options-target='fields'][hidden]", count: 4
   end
 
   test "editing financial configuration uses patch and saves changes" do

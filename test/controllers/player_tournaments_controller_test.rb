@@ -27,7 +27,13 @@ class PlayerTournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".player-tournaments-page__section:nth-of-type(1) .club-events__filters",
                   count: 1
     assert_select ".player-tournaments-page__section:nth-of-type(2) .club-events__filters",
-                  count: 0
+                  count: 1
+    assert_select ".player-tournaments-page__section .club-events__filter[data-filter='all']",
+                  count: 2
+    assert_select ".player-tournaments-page__section .club-events__filter[data-filter='live']",
+                  count: 2
+    assert_select ".player-tournaments-page__section .club-events__filter[data-filter='upcoming']",
+                  count: 2
     assert_select ".player-tournaments-page__section:nth-of-type(1) .tournament-card__title", 2
     assert_operator response.body.index(earliest.name), :<, response.body.index(latest.name)
     assert_not_includes response.body, "Private Tournament"

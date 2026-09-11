@@ -37,6 +37,16 @@
   margin: 0 auto 56px;
 }
 
+.player-tournaments-page .tournament-card__club-name {
+  margin: 0 0 6px;
+  color: #a1a1aa;
+  font-family: $font-secondary;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 @media (max-width: 768px) {
   .player-tournaments-page {
     padding: 48px 48px 72px;

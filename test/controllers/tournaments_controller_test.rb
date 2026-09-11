@@ -57,6 +57,58 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "player without a registration sees the confirmation modal when entering from the tournaments page" do
+    tournament = published_tournament
+    sign_in @player
+
+    get club_tournament_path(@club, tournament, join: true)
+
+    assert_response :success
+    assert_select ".tournament-invitation-overlay", count: 1
+    assert_select "form[action='#{join_club_tournament_path(@club, tournament)}'][method='post']", count: 1
+  end
+
+  test "player with a registration does not see the confirmation modal" do
+    tournament = published_tournament
+    TournamentRegistration.create!(tournament: tournament, user: @player, status: :pending)
+    sign_in @player
+
+    get club_tournament_path(@club, tournament, join: true)
+
+    assert_response :success
+    assert_select ".tournament-invitation-overlay", count: 0
+  end
+
+  test "player confirms participation from the tournament page" do
+    tournament = published_tournament
+    sign_in @player
+
+    assert_difference "TournamentRegistration.count", 1 do
+      patch join_club_tournament_path(@club, tournament)
+    end
+
+    registration = TournamentRegistration.find_by!(tournament: tournament, user: @player)
+    assert_redirected_to club_tournament_path(@club, tournament, payment: "buy_in")
+    assert_equal "pending", registration.status
+    assert_equal 1, registration.registration_payments.count
+    assert_equal "pending", registration.registration_payments.first.status
+  end
+
+  test "only players can confirm participation from the tournament page" do
+    tournament = published_tournament
+
+    [@owner, @admin, @dealer].each do |user|
+      sign_in user
+
+      assert_no_difference "TournamentRegistration.count" do
+        patch join_club_tournament_path(@club, tournament)
+      end
+
+      assert_response :forbidden
+      sign_out user
+    end
+  end
+
   test "tournament navigation follows each member role" do
     tournament = create_tournament(@club)
     TournamentRegistration.create!(tournament: tournament, user: @player, status: :confirmed)
@@ -574,6 +626,13 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
 
   def create_tournament(club, attributes = {})
     club.tournaments.create!(valid_tournament_attributes.merge(attributes))
+  end
+
+  def published_tournament
+    tournament = create_tournament(@club)
+    tournament.charge_options.create!(kind: :buy_in, active: true, amount: 100, chip_amount: 10_000)
+    tournament.update!(status: :posted)
+    tournament
   end
 
   def tournament_payload(overrides = {})

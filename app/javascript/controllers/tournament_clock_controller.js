@@ -1,4 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
+import { createConsumer } from "@rails/actioncable"
+
+const consumer = createConsumer()
 
 export default class extends Controller {
   static targets = [
@@ -13,6 +16,8 @@ export default class extends Controller {
     currentLevelId: Number,
     totalLevels: Number,
     stateUrl: String,
+    clubId: Number,
+    tournamentId: Number,
     soundStorageKey: String
   }
 
@@ -22,6 +27,18 @@ export default class extends Controller {
     this.transitionRequestedLevelId = null
     this.soundEnabled = this.soundWasEnabled()
     this.render()
+
+    this.subscription = consumer.subscriptions.create(
+      {
+        channel: "TournamentClockChannel",
+        club_id: this.clubIdValue,
+        tournament_id: this.tournamentIdValue
+      },
+      {
+        connected: () => this.fetchState(),
+        received: (state) => this.applyState(state)
+      }
+    )
 
     this.interval = window.setInterval(() => this.render(), 1000)
     this.preventSoundDialogClose = (event) => event.preventDefault()
@@ -35,6 +52,7 @@ export default class extends Controller {
   disconnect() {
     window.clearInterval(this.interval)
     window.clearTimeout(this.audioStopTimer)
+    this.subscription?.unsubscribe()
     this.soundDialogTarget.removeEventListener("cancel", this.preventSoundDialogClose)
   }
 
@@ -149,15 +167,19 @@ export default class extends Controller {
 
     this.transitionRequestedLevelId = this.currentLevelIdValue
 
-    fetch(this.stateUrlValue, {
+    this.fetchState()
+      .catch(() => {
+        this.transitionRequestedLevelId = null
+      })
+  }
+
+  fetchState() {
+    return fetch(this.stateUrlValue, {
       headers: { Accept: "application/json" },
       credentials: "same-origin"
     })
       .then((response) => response.ok ? response.json() : Promise.reject())
       .then((state) => this.applyState(state))
-      .catch(() => {
-        this.transitionRequestedLevelId = null
-      })
   }
 
   soundWasEnabled() {

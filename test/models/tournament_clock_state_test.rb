@@ -1,6 +1,8 @@
 require "test_helper"
 
 class TournamentClockStateTest < ActiveSupport::TestCase
+  include ActionCable::TestHelper
+
   def setup
     @tournament = create_tournament(club: create_club)
     @first_level = @tournament.blind_levels.first
@@ -122,6 +124,39 @@ class TournamentClockStateTest < ActiveSupport::TestCase
     assert_equal last_level, state.current_blind_level
     assert_not_nil state.overtime_started_at
     assert_operator state.overtime_seconds(at: 5.seconds.from_now), :>=, 5
+  end
+
+  test "broadcasts the paused state to the tournament clock stream" do
+    state = TournamentClockState.create_initial_for!(@tournament)
+    state.start!(at: Time.current)
+
+    messages = capture_broadcasts("tournament_clock_#{@tournament.id}") do
+      state.pause!(at: 1.minute.from_now)
+    end
+
+    assert_equal 1, messages.size
+    assert_equal "paused", messages.first.fetch("status")
+    assert_equal state.remaining_seconds, messages.first.fetch("remaining_seconds")
+    assert_equal @first_level.id, messages.first.dig("current_level", "id")
+  end
+
+  test "broadcasts an automatic transition to overtime" do
+    last_level = @tournament.blind_levels.last
+    state = build_clock_state(
+      current_blind_level: last_level,
+      status: :running,
+      remaining_seconds: 1,
+      started_at: 2.seconds.ago
+    )
+    state.save!
+
+    messages = capture_broadcasts("tournament_clock_#{@tournament.id}") do
+      state.refresh!
+    end
+
+    assert_equal 1, messages.size
+    assert_equal "overtime", messages.first.fetch("status")
+    assert_equal last_level.id, messages.first.dig("current_level", "id")
   end
 
   private

@@ -27,8 +27,21 @@ class PlayerTournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".player-tournaments-page__section:nth-of-type(1) .club-events__filters",
                   count: 1
     assert_select ".player-tournaments-page__section:nth-of-type(2) .club-events__filters",
-                  count: 0
+                  count: 1
+    assert_select ".player-tournaments-page__section .club-events__filter[data-filter='all']",
+                  count: 2
+    assert_select ".player-tournaments-page__section .club-events__filter[data-filter='live']",
+                  count: 2
+    assert_select ".player-tournaments-page__section .club-events__filter[data-filter='upcoming']",
+                  count: 2
     assert_select ".player-tournaments-page__section:nth-of-type(1) .tournament-card__title", 2
+    assert_select ".player-tournaments-page__section:nth-of-type(1) .tournament-card__club-name",
+                  text: @club.name,
+                  count: 1
+    assert_select ".player-tournaments-page__section:nth-of-type(1) .tournament-card__club-name",
+                  text: second_membership_club.name,
+                  count: 1
+    assert_select ".player-tournaments-page__section .tournament-card__link[href*='join=true']", count: 2
     assert_operator response.body.index(earliest.name), :<, response.body.index(latest.name)
     assert_not_includes response.body, "Private Tournament"
   end
@@ -72,6 +85,20 @@ class PlayerTournamentsControllerTest < ActionDispatch::IntegrationTest
                   text: "Meus torneios"
     assert_select ".player-tournaments-page__section:nth-of-type(2)", text: /Registered Tournament/
     assert_select ".player-tournaments-page__section:nth-of-type(2)", text: /Other Registration/, count: 0
+  end
+
+  test "registered tournaments appear only in my tournaments" do
+    available_tournament = create_tournament(@club, name: "Available Tournament", starts_at: 1.day.from_now, status: :posted)
+    registered_tournament = create_tournament(@club, name: "My Tournament", starts_at: 2.days.from_now, status: :posted)
+    TournamentRegistration.create!(tournament: registered_tournament, user: @player, status: :pending)
+
+    sign_in @player
+    get player_tournaments_path
+
+    assert_response :success
+    assert_select ".player-tournaments-page__section:nth-of-type(1)", text: /Available Tournament/
+    assert_select ".player-tournaments-page__section:nth-of-type(1)", text: /My Tournament/, count: 0
+    assert_select ".player-tournaments-page__section:nth-of-type(2)", text: /My Tournament/
   end
 
   test "unauthenticated users are redirected to login" do

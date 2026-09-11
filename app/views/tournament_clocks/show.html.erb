@@ -18,6 +18,8 @@
            data-tournament-clock-current-level-id-value="<%= @current_blind_level.id %>"
            data-tournament-clock-total-levels-value="<%= @tournament.blind_levels.size %>"
            data-tournament-clock-state-url-value="<%= state_club_tournament_clock_path(@club, @tournament) %>"
+           data-tournament-clock-club-id-value="<%= @club.id %>"
+           data-tournament-clock-tournament-id-value="<%= @tournament.id %>"
            data-tournament-clock-sound-storage-key-value="tournament-clock-sound-<%= @tournament.id %>">
     <%= render "tournament_clocks/header",
                club: @club,

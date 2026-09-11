@@ -13,6 +13,8 @@
                section_id: "upcoming-tournaments-title",
                empty_message: "Nenhum torneio encontrado.",
                show_filters: true,
+               show_join_prompt: true,
+               show_club_name: true,
                current_membership: nil,
                current_memberships_by_club_id: @current_memberships_by_club_id,
                confirmed_registrations_by_tournament: @confirmed_registrations_by_tournament %>
@@ -24,7 +26,9 @@
                section_title: "Meus torneios",
                section_id: "my-tournaments-title",
                empty_message: "Você ainda não está inscrito em nenhum torneio.",
-               show_filters: false,
+               show_filters: true,
+               show_join_prompt: true,
+               show_club_name: true,
                current_membership: nil,
                current_memberships_by_club_id: @current_memberships_by_club_id,
                confirmed_registrations_by_tournament: @confirmed_registrations_by_tournament %>

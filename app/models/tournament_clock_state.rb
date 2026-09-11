@@ -30,6 +30,8 @@ class TournamentClockState < ApplicationRecord
 
   validate :current_blind_level_belongs_to_tournament
 
+  after_update_commit :broadcast_state_update
+
   class << self
     def create_initial_for!(tournament)
       tournament.with_lock do
@@ -131,7 +133,45 @@ class TournamentClockState < ApplicationRecord
     completed_level_seconds + current_level_elapsed_seconds
   end
 
+  def realtime_payload
+    next_blind_level = tournament.blind_levels.find_by(
+      "level > ?",
+      current_blind_level.level
+    )
+
+    {
+      status: status,
+      started_at: started_at&.iso8601(3),
+      current_blind_level_id: current_blind_level_id,
+      remaining_seconds: remaining_seconds,
+      overtime_elapsed_seconds: overtime_seconds,
+      tournament_elapsed_seconds: tournament_elapsed_seconds,
+      current_level: blind_level_payload(current_blind_level),
+      next_level: blind_level_payload(next_blind_level)
+    }
+  end
+
   private
+
+  def broadcast_state_update
+    ActionCable.server.broadcast(
+      "tournament_clock_#{tournament.id}",
+      realtime_payload
+    )
+  end
+
+  def blind_level_payload(blind_level)
+    return if blind_level.blank?
+
+    blind_level.slice(
+      :id,
+      :level,
+      :duration_minutes,
+      :small_blind,
+      :big_blind,
+      :ante
+    )
+  end
 
   def refresh_running!(at:, persist:)
     return self unless running?

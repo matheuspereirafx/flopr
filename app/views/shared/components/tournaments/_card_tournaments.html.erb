@@ -66,6 +66,11 @@
                option.buy_in? && option.active?
              end %>
           <% confirmed_registrations_count = confirmed_registrations_by_tournament.fetch(tournament.id, 0) %>
+          <% tournament_path = if local_assigns.fetch(:show_join_prompt, false)
+                                 club_tournament_path(tournament.club, tournament, join: true)
+                               else
+                                 club_tournament_path(tournament.club, tournament)
+                               end %>
 
           <article
             class="tournament-card"
@@ -74,7 +79,7 @@
             data-clock-status="<%= tournament.clock_state&.status %>"
             data-starts-at="<%= tournament.starts_at.iso8601 %>"
           >
-            <%= link_to club_tournament_path(tournament.club, tournament),
+            <%= link_to tournament_path,
                         class: "tournament-card__link",
                         data: { turbo_prefetch: false },
                         aria: { label: "Ver detalhes do torneio #{tournament.name}" } do %>
@@ -113,6 +118,9 @@
 
             <div class="tournament-card__content">
               <div class="tournament-card__heading">
+                <% if local_assigns.fetch(:show_club_name, false) %>
+                  <p class="tournament-card__club-name"><%= tournament.club.name %></p>
+                <% end %>
                 <h3 class="tournament-card__title">
                   <%= tournament.name %>
                 </h3>

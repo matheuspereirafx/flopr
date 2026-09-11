@@ -18,4 +18,10 @@ export default class extends Controller {
     this.triggerTarget?.setAttribute("aria-expanded", "false")
   }
 
+  async copyPixKey() {
+    if (!this.hasPixKeyTarget) return
+
+    await navigator.clipboard.writeText(this.pixKeyTarget.textContent.trim())
+  }
+
 }

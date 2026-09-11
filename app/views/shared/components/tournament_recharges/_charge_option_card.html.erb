@@ -62,6 +62,16 @@
         <% end %>
         <div class="recharge-payment-modal__total"><dt>Total</dt><dd data-recharge-payment-target="total"><%= number_to_currency(charge_option.amount) %> · <%= number_with_delimiter(charge_option.chip_amount) %> fichas</dd></div>
       </dl>
+      <% if club.pix_key.present? %>
+        <div class="recharge-payment-modal__pix">
+          <strong>Envie o valor via PIX</strong>
+          <span><%= club.pix_recipient_name %></span>
+          <code data-recharge-payment-target="pixKey"><%= club.pix_key %></code>
+          <button type="button" data-action="recharge-payment#copyPixKey">Copiar chave PIX</button>
+        </div>
+      <% else %>
+        <p class="recharge-payment-modal__pix-warning">O clube ainda não configurou uma chave PIX.</p>
+      <% end %>
       <%= form_with url: club_tournament_recharges_path(club, tournament), method: :post do %>
         <%= hidden_field_tag "registration_payment[tournament_charge_option_id]", charge_option.id %>
         <%= hidden_field_tag "registration_payment[include_fee]", "0", data: { recharge_payment_target: "includeFeeValue" } %>

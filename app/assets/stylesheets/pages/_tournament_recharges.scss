@@ -224,6 +224,23 @@
   font-weight: 700;
 }
 
+.recharge-payment-modal__pix {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 16px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 10px;
+  background: #151516;
+}
+
+.recharge-payment-modal__pix strong { color: #f0eff4; font: 700 14px/1.3 $font-secondary; }
+.recharge-payment-modal__pix span { color: #a1a1aa; font: 400 12px/1.5 $font-secondary; }
+.recharge-payment-modal__pix code { display: block; padding: 10px 12px; overflow-wrap: anywhere; border: 1px solid rgba(152, 143, 215, .3); border-radius: 8px; color: #c7bfff; background: #201f20; font: 600 13px/1.4 $font-secondary; }
+.recharge-payment-modal__pix button { width: 100%; min-height: 38px; margin-top: 4px; border: 1px solid rgba(152, 143, 215, .5); border-radius: 999px; color: #c7bfff; background: transparent; font: 700 12px $font-secondary; cursor: pointer; }
+.recharge-payment-modal__pix button:hover { background: rgba(82, 72, 156, .25); }
+.recharge-payment-modal__pix-warning { margin: 0 0 16px; padding: 16px; border: 1px solid rgba(255, 255, 255, .1); border-radius: 10px; color: #a1a1aa; background: #151516; font: 400 12px/1.5 $font-secondary; }
+
 .recharge-payment-modal__fee-choice {
   display: flex;
   align-items: center;

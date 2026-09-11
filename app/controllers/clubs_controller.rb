@@ -74,7 +74,10 @@ class ClubsController < ApplicationController
   def club_params
     params.require(:club).permit(
       :name,
-      :whatsapp_contact_number
+      :whatsapp_contact_number,
+      :pix_key,
+      :pix_key_type,
+      :pix_recipient_name
     )
   end
 

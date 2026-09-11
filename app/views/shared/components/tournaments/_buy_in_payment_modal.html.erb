@@ -27,15 +27,24 @@
       </div>
     </dl>
 
+    <% if club.pix_key.present? %>
+      <div class="tournament-buy-in-modal__pix" role="status">
+        <p>Envie o valor via PIX</p>
+        <span><%= club.pix_recipient_name %></span>
+        <code data-buy-in-payment-target="pixKey"><%= club.pix_key %></code>
+        <button type="button" data-action="buy-in-payment#copyPixKey">Copiar chave PIX</button>
+      </div>
+    <% else %>
+      <div class="tournament-buy-in-modal__manual-instructions" role="status">
+        <p>Pagamento por Pix</p>
+        <span>O clube ainda não configurou uma chave PIX.</span>
+      </div>
+    <% end %>
+
     <% if payment.present? %>
       <div class="tournament-buy-in-modal__manual-instructions" role="status">
         <p>Aguardando pagamento.</p>
         <span>Realize o Pix usando os dados informados pelo organizador. Após a confirmação, sua inscrição será concluída.</span>
-      </div>
-    <% else %>
-      <div class="tournament-buy-in-modal__manual-instructions">
-        <p>Pagamento por Pix</p>
-        <span>A chave Pix do clube será exibida aqui após o cadastro pelo organizador.</span>
       </div>
     <% end %>
     <button type="button"

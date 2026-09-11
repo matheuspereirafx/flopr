@@ -92,6 +92,21 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "pending", registration.status
     assert_equal 1, registration.registration_payments.count
     assert_equal "pending", registration.registration_payments.first.status
+    sign_out @player
+  end
+
+  test "player sees the club PIX key after confirming participation" do
+    @club.update!(pix_key: "pix@example.com", pix_key_type: "email", pix_recipient_name: "Poker House")
+    tournament = published_tournament
+    sign_in @player
+
+    patch join_club_tournament_path(@club, tournament)
+
+    follow_redirect!
+
+    assert_includes response.body, "pix@example.com"
+    assert_includes response.body, "Copiar chave PIX"
+    sign_out @player
   end
 
   test "only players can confirm participation from the tournament page" do

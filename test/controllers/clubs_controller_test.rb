@@ -26,6 +26,31 @@ class ClubsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".clubs-header a[data-turbo-prefetch='false'][href='#{new_club_path}']", count: 1
   end
 
+  test "owner can configure the club PIX payment settings" do
+    sign_in @owner
+
+    patch club_path(@club), params: {
+      club: {
+        pix_key: "owner@example.com",
+        pix_key_type: "email",
+        pix_recipient_name: "Poker House"
+      }
+    }
+
+    assert_redirected_to clubs_path
+    assert_equal "owner@example.com", @club.reload.pix_key
+    assert_equal "email", @club.pix_key_type
+  end
+
+  test "player cannot configure the club PIX payment settings" do
+    sign_in @player
+
+    patch club_path(@club), params: { club: { pix_key: "player@example.com" } }
+
+    assert_response :not_found
+    assert_nil @club.reload.pix_key
+  end
+
   test "owner, admin and dealer can view the club but player cannot" do
     [@owner, @admin, @dealer].each do |user|
       sign_in user

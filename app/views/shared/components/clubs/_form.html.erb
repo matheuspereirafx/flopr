@@ -92,6 +92,36 @@
 
         </div>
 
+        <div class="form-section payment-section">
+          <h3>Pagamento via PIX</h3>
+          <p class="form-help">
+            Esta chave será exibida aos jogadores nas solicitações de recarga dos torneios deste clube.
+          </p>
+
+          <%= f.input :pix_key,
+            label: "Chave PIX",
+            placeholder: "Informe a chave PIX",
+            required: false,
+            input_html: { class: "dark-input", autocomplete: "off" },
+            label_html: { class: "form-label" } %>
+
+          <%= f.input :pix_key_type,
+            collection: [["CPF", "cpf"], ["CNPJ", "cnpj"], ["E-mail", "email"],
+                         ["Telefone", "phone"], ["Chave aleatória", "random"]],
+            label: "Tipo da chave",
+            include_blank: "Selecione o tipo",
+            required: false,
+            input_html: { class: "dark-input" },
+            label_html: { class: "form-label" } %>
+
+          <%= f.input :pix_recipient_name,
+            label: "Nome do recebedor",
+            placeholder: "Nome exibido ao jogador",
+            required: false,
+            input_html: { class: "dark-input", autocomplete: "name" },
+            label_html: { class: "form-label" } %>
+        </div>
+
       </div>
 
 

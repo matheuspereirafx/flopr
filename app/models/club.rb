@@ -15,4 +15,9 @@ class Club < ApplicationRecord
           source: :user
 
   validates :name, presence: true
+  validates :pix_key_type,
+            inclusion: { in: %w[cpf cnpj email phone random] },
+            allow_blank: true
+  validates :pix_recipient_name, presence: true, if: -> { pix_key.present? }
+  validates :pix_key, presence: true, if: -> { pix_key_type.present? || pix_recipient_name.present? }
 end

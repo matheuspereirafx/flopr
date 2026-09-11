@@ -26,6 +26,18 @@ class TournamentRechargesControllerTest < ActionDispatch::IntegrationTest
     assert_not_includes response.body, @other_player.name
   end
 
+  test "confirmed player sees the club PIX key in the recharge modal" do
+    @club.update!(pix_key: "pix@example.com", pix_key_type: "email", pix_recipient_name: "Poker House")
+    sign_in @player
+
+    get recharges_path
+
+    assert_response :success
+    assert_includes response.body, "pix@example.com"
+    assert_includes response.body, "Poker House"
+    assert_includes response.body, "Copiar chave PIX"
+  end
+
   test "owner, admin and dealer cannot access the player page" do
     [@owner, @admin, @dealer].each do |user|
       sign_in user

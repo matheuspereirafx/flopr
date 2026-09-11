@@ -13,6 +13,12 @@ export default class extends Controller {
     this.overlayTarget.hidden = true
   }
 
+  async copyPixKey() {
+    if (!this.hasPixKeyTarget) return
+
+    await navigator.clipboard.writeText(this.pixKeyTarget.textContent.trim())
+  }
+
   toggleFee() {
     if (this.hasFeeDetailsTarget) this.feeDetailsTarget.hidden = !this.feeToggleTarget.checked
     this.updateTotal()

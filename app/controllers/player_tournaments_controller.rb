@@ -4,6 +4,9 @@ class PlayerTournamentsController < ApplicationController
 
     @upcoming_tournaments = Tournament
                             .where(club_id: member_club_ids)
+                            .where.not(
+                              id: current_user.tournament_registrations.select(:tournament_id)
+                            )
                             .upcoming
                             .with_attached_cover
                             .includes(:club, :charge_options)

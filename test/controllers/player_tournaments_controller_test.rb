@@ -81,6 +81,20 @@ class PlayerTournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".player-tournaments-page__section:nth-of-type(2)", text: /Other Registration/, count: 0
   end
 
+  test "registered tournaments appear only in my tournaments" do
+    available_tournament = create_tournament(@club, name: "Available Tournament", starts_at: 1.day.from_now, status: :posted)
+    registered_tournament = create_tournament(@club, name: "My Tournament", starts_at: 2.days.from_now, status: :posted)
+    TournamentRegistration.create!(tournament: registered_tournament, user: @player, status: :pending)
+
+    sign_in @player
+    get player_tournaments_path
+
+    assert_response :success
+    assert_select ".player-tournaments-page__section:nth-of-type(1)", text: /Available Tournament/
+    assert_select ".player-tournaments-page__section:nth-of-type(1)", text: /My Tournament/, count: 0
+    assert_select ".player-tournaments-page__section:nth-of-type(2)", text: /My Tournament/
+  end
+
   test "unauthenticated users are redirected to login" do
     get player_tournaments_path
 

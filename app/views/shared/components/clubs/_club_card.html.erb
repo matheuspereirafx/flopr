@@ -1,4 +1,7 @@
-<div class="club-card">
+<% tournament ||= nil %>
+<% tournament_live = tournament&.clock_state&.running? || tournament&.clock_state&.paused? || tournament&.clock_state&.overtime? %>
+<% tournament_state = tournament_live ? :live : (tournament.present? ? :scheduled : :empty) %>
+<article class="club-card club-card--<%= tournament_state %>">
 
   <%= link_to club_path(club),
       class: "club-card-link",
@@ -15,7 +18,7 @@
       <h3><%= club.name %></h3>
 
       <span class="count-member">
-        0 membros
+        <%= club.club_memberships.size %> <%= club.club_memberships.size == 1 ? 'membro' : 'membros' %>
       </span>
     </div>
 
@@ -26,10 +29,12 @@
 
 
   <%= render "shared/components/clubs/club_tournament_card",
-      club: club %>
+      club: club,
+      tournament: tournament,
+      state: tournament_state %>
 
-  <%#= link_to "Gerenciar clube",
-      club_path(club),
-      class: "club-button" %>
+  <div class="club-card__footer">
+    <%= link_to "Gerenciar clube", club_path(club), class: "club-card__manage", data: { turbo_prefetch: false } %>
+  </div>
 
-</div>
+</article>

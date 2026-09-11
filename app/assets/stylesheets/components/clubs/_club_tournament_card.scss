@@ -6,6 +6,16 @@
 
     padding:16px;
 
-    min-height:110px;
+    min-height: 110px;
+    color: #e5e1e3;
+
+    &__status, &__live { margin-bottom: 8px; color: #c7bfff; font: 700 10px $font-secondary; letter-spacing: .05em; text-transform: uppercase; }
+    &__live { color: #ffb4ab; display: flex; align-items: center; gap: 6px; }
+    &__live span { width: 8px; height: 8px; border-radius: 50%; background: #ffb4ab; box-shadow: 0 0 0 3px rgba(255,180,171,.2); }
+    strong { display: block; font: 600 14px $font-secondary; }
+    &__details { display: flex; justify-content: space-between; gap: 8px; margin-top: 12px; color: #c9c4d3; font: 400 12px $font-secondary; }
+    &__details span { display: flex; flex-direction: column; gap: 4px; }
+    &__details small { color: #c9c4d3; font-size: 11px; letter-spacing: .05em; text-transform: uppercase; }
+    &__empty { min-height: 100px; display: grid; place-items: center; border: 1px dashed rgba(71,69,81,.3); border-radius: 8px; color: rgba(201,196,211,.7); text-align: center; }
 
 }

@@ -1,6 +1,19 @@
-  <div class="club-tournament">
-     <%#= Criar um card para torneio Componente %>
-    <div class="no-tournament">
-      Nenhum torneio agendado
-    </div>
+  <div class="club-tournament club-tournament--<%= state %>">
+    <% if state == :live %>
+      <div class="club-tournament__live"><span></span> Ao vivo agora</div>
+      <strong><%= tournament.name %></strong>
+      <div class="club-tournament__details">
+        <span><small>Blinds</small><%= tournament.blind_levels.first&.small_blind || "—" %> / <%= tournament.blind_levels.first&.big_blind || "—" %></span>
+        <span><small>Jogadores</small><%= tournament.tournament_registrations.count(&:confirmed?) %> / <%= tournament.max_players %></span>
+      </div>
+    <% elsif state == :scheduled %>
+      <div class="club-tournament__status">Agendado · <%= l(tournament.starts_at, format: :short) %></div>
+      <strong><%= tournament.name %></strong>
+      <div class="club-tournament__details">
+        <span><small>Buy-in</small><%= number_to_currency(tournament.charge_options.first&.amount || 0, unit: "R$ ") %></span>
+        <span><%= tournament.tournament_registrations.size %>/<%= tournament.max_players %> inscritos</span>
+      </div>
+    <% else %>
+      <div class="club-tournament__empty">Nenhum torneio agendado</div>
+    <% end %>
   </div>

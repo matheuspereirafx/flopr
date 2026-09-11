@@ -118,6 +118,9 @@
 
             <div class="tournament-card__content">
               <div class="tournament-card__heading">
+                <% if local_assigns.fetch(:show_club_name, false) %>
+                  <p class="tournament-card__club-name"><%= tournament.club.name %></p>
+                <% end %>
                 <h3 class="tournament-card__title">
                   <%= tournament.name %>
                 </h3>

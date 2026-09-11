@@ -453,14 +453,17 @@ table {
   }
 
   &__image {
-    position: absolute;
-    left: $space-4;
-    top: 50%;
-    transform: translateY(-50%);
     width: 16px;
     height: 16px;
-    pointer-events: none;
   }
+}
+
+.financial-chips .input-icon__image {
+  position: absolute;
+  left: $space-4;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
 }
 
 .input--with-icon {

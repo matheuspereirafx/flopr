@@ -149,9 +149,8 @@
                     </label>
                   </div>
 
-                  <div class="financial-option__fields"
-                       data-financial-options-target="fields"
-                            %= "hidden" unless option.active? %>>
+                  <div data-financial-options-target="fields"
+                       <%= " hidden" unless option.active? %>>
                     <%= render "shared/components/tournaments/charge_option_fields",
                                option: option,
                                kind: kind,

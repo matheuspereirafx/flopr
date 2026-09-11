@@ -30,21 +30,27 @@
     <%= label_tag "#{kind}_chip_amount_display",
                   chips_optional ? "#{chips_label} (opcional)" : chips_label,
                   class: "field__label" %>
-    <%= text_field_tag nil,
-                       option.chip_amount.present? ? number_with_delimiter(
-                         option.chip_amount,
-                         delimiter: "."
-                       ) : nil,
-                       id: "#{kind}_chip_amount_display",
-                       class: "input",
-                       placeholder: "0",
-                       inputmode: "numeric",
-                       autocomplete: "off",
-                       data: {
-                         financial_options_target: "chipsDisplay",
-                         financial_option_value: true,
-                         action: "input->financial-options#formatChips"
-                       } %>
+    <div class="input-icon">
+      <%= image_tag "icons/stackicon.svg",
+                    class: "input-icon__image",
+                    alt: "",
+                    aria: { hidden: true } %>
+      <%= text_field_tag nil,
+                         option.chip_amount.present? ? number_with_delimiter(
+                           option.chip_amount,
+                           delimiter: "."
+                         ) : nil,
+                         id: "#{kind}_chip_amount_display",
+                         class: "input input--with-icon",
+                         placeholder: "0",
+                         inputmode: "numeric",
+                         autocomplete: "off",
+                         data: {
+                           financial_options_target: "chipsDisplay",
+                           financial_option_value: true,
+                           action: "input->financial-options#formatChips"
+                         } %>
+    </div>
     <%= hidden_field_tag "financial_configuration[charge_options][#{kind}][chip_amount]",
                          option.chip_amount,
                          data: { financial_options_target: "chipsValue" } %>

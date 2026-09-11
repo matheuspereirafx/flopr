@@ -50,7 +50,7 @@
     display:flex;
     justify-content:space-between;
     align-items:center;
-    margin-bottom:48px;
+    margin-bottom:24px;
 
 }
 
@@ -81,24 +81,28 @@
     display:flex;
     gap:8px;
     margin-bottom:24px;
+    align-items: stretch;
 
 }
 
-.search-input{
-
-    width:320px;
-
-}
+.clubs-search, .clubs-filter-submit { min-height: 44px; border: 1px solid rgba(71,69,81,.5); border-radius: 8px; background: #201f20; color: #e5e1e3; padding: 10px 16px; font-family: $font-secondary; }
+.clubs-search { width: 100%; max-width: 448px; }
+.clubs-filter-submit { cursor: pointer; }
+.clubs-search:focus, .clubs-filter-submit:focus { outline: 2px solid #c7bfff; outline-offset: 2px; }
 
 .clubs-grid{
   width: 100%;
   min-height: 350px;
 
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
 
   gap: 24px;
 }
+
+.clubs-empty { margin-top: 24px; padding: 48px 24px; border: 1px dashed rgba(71,69,81,.5); border-radius: 12px; text-align: center; color: #c9c4d3; }
+.clubs-empty h2 { margin: 0 0 8px; color: #e5e1e3; font-family: $font-primary; }
+.clubs-empty p { margin: 0; }
 
 
 
@@ -114,6 +118,8 @@
   }
 
   .clubs-header {
+    position: relative;
+    z-index: 10;
     flex-direction: column;
     align-items: center;
     gap: 24px;
@@ -123,5 +129,26 @@
   .clubs-header > div {
     width: 100%;
   }
+
+  .clubs-toolbar { flex-wrap: wrap; }
+  .clubs-search { flex: 1 1 100%; width: 100%; max-width: none; }
+  .clubs-filter-submit { flex: 1; }
+
+  .clubs-page .club-show__create-tournament {
+    display: inline-flex;
+    position: fixed;
+    z-index: 1000;
+    right: 20px;
+    bottom: 36px;
+    width: 56px;
+    height: 56px;
+    min-height: 56px;
+    padding: 0;
+    border-radius: 50%;
+    box-shadow: 0 12px 26px rgba(0, 0, 0, .35);
+  }
+
+  .clubs-page .club-show__create-tournament span:not(.btn-icon) { display: none; }
+  .clubs-page .club-show__create-tournament .btn-icon { width: auto; height: auto; font-size: 30px; transform: none; }
 
 }

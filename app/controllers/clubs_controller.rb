@@ -4,7 +4,10 @@ class ClubsController < ApplicationController
   before_action :set_owned_club, only: %i[edit update destroy]
 
   def index
-    @clubs = current_user.owned_clubs
+    @clubs = current_user.clubs
+                       .includes(:club_memberships, tournaments: %i[tournament_registrations clock_state blind_levels charge_options])
+                       .then { |clubs| filter_clubs(clubs) }
+    @tournaments_by_club = @clubs.index_with { |club| club_featured_tournament(club) }
   end
 
   def show
@@ -102,4 +105,20 @@ class ClubsController < ApplicationController
                           .group(:tournament_id)
                           .count
   end
+
+  def filter_clubs(clubs)
+    return clubs if params[:query].blank?
+
+    query = "%#{Club.sanitize_sql_like(params[:query].strip)}%"
+    clubs.where("clubs.name ILIKE ?", query)
+  end
+
+  def club_featured_tournament(club)
+    live = club.tournaments.select { |tournament| tournament.clock_state&.running? || tournament.clock_state&.paused? || tournament.clock_state&.overtime? }
+    return live.max_by(&:starts_at) if live.any?
+
+    club.tournaments.select { |tournament| tournament.posted? && tournament.starts_at >= Time.current }
+        .max_by(&:starts_at)
+  end
+
 end

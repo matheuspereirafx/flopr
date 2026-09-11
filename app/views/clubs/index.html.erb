@@ -1,35 +1,49 @@
-<div class="clubs-page">
+<main class="clubs-page">
 
   <div class="clubs-header">
 
     <div>
-      <h1>Meus Clubes</h1>
+      <h1>Meus clubes</h1>
 
       <p>
-        Gerencie suas organizações de pôquer, visualize torneios ativos
-        e acompanhe as estatísticas dos membros em todos os seus locais.
+        Gerencie seus clubes de pôquer, visualize torneios ativos e acompanhe
+        os próximos eventos em cada local.
       </p>
 
     </div>
 
     <%= render "shared/components/buttons/button_create",
-        text: "Criar Novo Clube",
+        text: "Criar novo clube",
         path: new_club_path,
+        class: "width-g club-show__create-tournament",
         data: { turbo_prefetch: false } %>
 
 
   </div>
 
 
+  <%= form_with url: clubs_path, method: :get, class: "clubs-toolbar" do |form| %>
+    <%= form.search_field :query, value: params[:query], placeholder: "Buscar clubes...", class: "clubs-search", aria: { label: "Buscar clubes" } %>
+    <%= form.submit "Buscar", class: "clubs-filter-submit" %>
+  <% end %>
+
   <div class="clubs-grid">
 
       <% @clubs.each do |club| %>
 
           <%= render "shared/components/clubs/club_card",
-              club: club %>
+              club: club,
+              tournament: @tournaments_by_club[club] %>
 
       <% end %>
 
   </div>
 
-</div>
+  <% if @clubs.empty? %>
+    <section class="clubs-empty" aria-live="polite">
+      <h2>Nenhum clube encontrado</h2>
+      <p>Tente outra busca ou crie um novo clube para começar.</p>
+    </section>
+  <% end %>
+
+</main>

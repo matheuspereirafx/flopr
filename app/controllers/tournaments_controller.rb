@@ -1,9 +1,10 @@
 class TournamentsController < ApplicationController
   before_action :set_member_club
   before_action :authorize_owner!, only: %i[new create edit update destroy]
-  before_action :set_tournament, only: %i[show edit update destroy finish]
+  before_action :set_tournament, only: %i[show edit update destroy finish join]
   before_action :authorize_tournament_deletion!, only: :destroy
   before_action :authorize_tournament_finishing!, only: :finish
+  before_action :authorize_tournament_join!, only: :join
 
   def index
     @tournaments = @club.tournaments.with_attached_cover.order(starts_at: :asc)
@@ -36,6 +37,9 @@ class TournamentsController < ApplicationController
     @invite_registration = current_user.tournament_registrations.find_by(
       tournament: @tournament
     )
+    @show_join_tournament_modal = join_tournament_request? &&
+                                  @current_membership&.player? &&
+                                  @invite_registration.blank?
     @pending_buy_in_payment = @invite_registration&.registration_payments
                                                    &.joins(:tournament_charge_option)
                                                    &.where(
@@ -109,6 +113,16 @@ class TournamentsController < ApplicationController
     redirect_to club_tournament_path(@club, @tournament), alert: "Não foi possível finalizar o torneio."
   end
 
+  def join
+    TournamentRegistrationConfirmation.call(tournament: @tournament, user: current_user)
+
+    redirect_to club_tournament_path(@club, @tournament, payment: "buy_in"),
+                notice: "Presença confirmada. Finalize o pagamento do buy-in para concluir sua inscrição."
+  rescue TournamentRegistrationConfirmation::CapacityReached
+    redirect_to club_tournament_path(@club, @tournament),
+                alert: "Não há mais vagas disponíveis para este torneio."
+  end
+
   private
 
   def set_member_club
@@ -144,6 +158,13 @@ class TournamentsController < ApplicationController
   def authorize_tournament_finishing!
     return if performed?
     return if @current_membership.owner? || @current_membership.admin?
+
+    render plain: "Forbidden", status: :forbidden
+  end
+
+  def authorize_tournament_join!
+    return if performed?
+    return if @current_membership.player? && @tournament.posted?
 
     render plain: "Forbidden", status: :forbidden
   end
@@ -197,6 +218,10 @@ class TournamentsController < ApplicationController
 
   def invitation_show_request?
     action_name == "show" && params[:invite_token].present?
+  end
+
+  def join_tournament_request?
+    action_name == "show" && params[:join] == "true"
   end
 
   def set_invited_tournament

@@ -18,6 +18,7 @@ Rails.application.routes.draw do
     resources :tournaments, only: %i[index show new create edit update destroy] do
       member do
         patch :finish
+        patch :join
       end
 
       resource :invite_link,

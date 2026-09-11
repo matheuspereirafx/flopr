@@ -87,8 +87,6 @@
   outline-offset: 2px;
 }
 
-.tournament-navigation__item--active { margin-bottom: 8px; }
-
 .tournament-navigation__item--disabled {
   color: #77727f;
   cursor: not-allowed;
@@ -203,6 +201,8 @@
     font-size: 11px;
     text-align: center;
   }
+
+  .tournament-navigation__item--active { margin-bottom: 12px; }
 
   .tournament-navigation__item span { display: block; }
   .tournament-navigation__item--disabled { opacity: .6; }

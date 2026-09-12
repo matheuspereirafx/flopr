@@ -1,0 +1,24 @@
+<article class="landing-feature-card<%= ' is-active' if index.zero? %>" data-landing-showcase-target="card" data-index="<%= index %>" aria-hidden="<%= !index.zero? %>">
+  <header class="landing-feature-card__header">
+    <div class="landing-feature-card__identity">
+      <div class="landing-feature-card__rank"><%= feature[:rank] %></div>
+      <div>
+        <div class="landing-feature-card__meta"><strong><%= feature[:label] %></strong></div>
+        <h3><%= feature[:title] %></h3>
+      </div>
+    </div>
+    <span class="landing-feature-card__suit">♠</span>
+  </header>
+  <div class="landing-feature-card__body">
+    <p><%= feature[:description] %></p>
+  </div>
+  <div class="landing-feature-card__hud">
+    <div class="landing-feature-card__hud-header"><strong><i></i> <%= feature[:status] %></strong><span><%= feature[:value] %></span></div>
+    <div class="landing-feature-card__hud-grid">
+      <div><span>STACK INICIAL</span><strong>50.000 chips</strong></div>
+      <div><span>PRIZE POOL CALC</span><strong class="is-green">100% Automático</strong></div>
+      <div><span>ICM SPLIT</span><strong class="is-yellow">Integrado</strong></div>
+    </div>
+  </div>
+  <footer class="landing-feature-card__footer"><span>BLACK EDITION • LUXURY COPAG FEEL</span><span>FLOPR ENGINE&nbsp; ♠</span></footer>
+</article>

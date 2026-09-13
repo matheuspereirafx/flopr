@@ -9,7 +9,7 @@
       <%= link_to "Comunidade", "#comunidade" %>
     </div>
     <div class="landing-nav__actions">
-      <%= link_to "Entrar", access_path, class: "landing-nav__login" %>
+      <%= link_to "Entrar", access_path, class: "landing-nav__login" unless user_signed_in? %>
       <%= link_to "Criar conta", new_user_registration_path, class: "landing-button landing-button--small" %>
     </div>
   </nav>

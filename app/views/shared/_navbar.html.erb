@@ -1,9 +1,9 @@
-<nav class="app-navbar" aria-label="Navegação autenticada">
+<nav class="app-navbar <%= "app-navbar--tournament-area" if tournament_area? %>" aria-label="Navegação autenticada">
   <%= link_to root_path, class: "app-navbar__brand", aria: { label: "Flopr - início" } do %>
     <span>Flopr</span><strong aria-hidden="true">.</strong>
   <% end %>
 
-  <% unless controller_name == "tournaments" && action_name == "show" %>
+  <% unless tournament_area? %>
     <div class="app-navbar__links">
       <%= link_to "Organizador", clubs_path,
                   class: ["app-navbar__link", ("is-active" if controller_name == "clubs")] %>

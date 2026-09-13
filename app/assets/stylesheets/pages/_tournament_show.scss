@@ -130,6 +130,7 @@
 .overview-prize-pool { min-height: 487px; padding: 0; background: transparent; }
 
 .overview-details {
+  margin-bottom: 48px;
 }
 
 .overview-details__header,
@@ -224,6 +225,7 @@
   .overview-header__content { gap: 16px; }
   .overview-header h1 { font-size: 36px; }
   .overview-details, .overview-prize-pool, .overview-participation { padding: 20px; }
+  .overview-details { padding-bottom: 0; }
   .overview-details__item { padding: 12px; }
   .overview-participation__item { padding: 14px 12px; }
 }

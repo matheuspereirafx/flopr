@@ -127,6 +127,12 @@
   color:#ff9999;
 }
 
+@media (min-width:577px){
+  .app-navbar--tournament-area{
+    display:none;
+  }
+}
+
 @media (max-width:576px){
   .app-navbar{
     padding:0 16px;

@@ -253,12 +253,6 @@
 
 }
 
-.login-footer{
-  display:none;
-}
-
-
-
 // Responsividade
 @media (max-width: 576px){
 
@@ -300,21 +294,6 @@
 
   .subtitle{
     margin-bottom:20px;
-  }
-
-  .login-footer{
-    display:block;
-    width:100%;
-    min-height:0;
-    margin:0;
-    background:transparent;
-    color:#737373;
-    text-align:center;
-    font:14px/20px $font-secondary;
-  }
-
-  .login-footer p{
-    margin:0;
   }
 
 }

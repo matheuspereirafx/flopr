@@ -24,7 +24,7 @@
   </head>
 
   <body><%= render "shared/navbar" if user_signed_in? && controller_name != "pages" && !devise_controller? && controller_name != "onboarding" %>
-<%= render "shared/flashes" %>
+    <%= render "shared/flashes" %>
 
     <%= yield %>
   </body>

@@ -11,6 +11,7 @@ import PrizePoolFormController from "./prize_pool_form_controller"
 import PrizePoolScrollController from "./prize_pool_scroll_controller"
 import PlaceAutocompleteController from "./place_autocomplete_controller"
 import LandingShowcaseController from "./landing_showcase_controller"
+import LandingNavController from "./landing_nav_controller"
 
 eagerLoadControllersFrom("controllers", application)
 
@@ -38,3 +39,4 @@ application.register("prize-pool-form", PrizePoolFormController)
 application.register("prize-pool-scroll", PrizePoolScrollController)
 application.register("place-autocomplete", PlaceAutocompleteController)
 application.register("landing-showcase", LandingShowcaseController)
+application.register("landing-nav", LandingNavController)

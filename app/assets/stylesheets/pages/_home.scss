@@ -98,3 +98,5 @@
 .landing-feature-card,.landing-feature-card.is-active{border-color:transparent}
 @media(max-width:480px){.landing-plan__intro h3{font-size:16px;line-height:20px}.landing-plan__intro p{font-size:11px;line-height:14px}}
 .landing-nav{border-bottom:0}
+.landing-nav{position:sticky;top:0;z-index:20;background:#0a0a0c;transition:transform .25s ease}.landing-nav.is-hidden{transform:translateY(-100%)}
+.landing-page{padding-top:81px}.landing-nav{position:fixed;top:0;left:0;right:0}

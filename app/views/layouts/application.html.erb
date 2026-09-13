@@ -23,7 +23,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body><%= render "shared/navbar" unless tournament_area? || controller_name == "pages" || devise_controller? %>
+  <body><%= render "shared/navbar" unless tournament_area? || controller_name == "pages" || devise_controller? || %w[onboarding profiles].include?(controller_name) %>
 <%= render "shared/flashes" %>
 
     <%= yield %>

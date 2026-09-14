@@ -71,6 +71,7 @@
 .registration-summary__card--pending strong { color: #ffb3b4; }
 
 .registrations-section {
+  margin-bottom: 48px;
   min-width: 0;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, .1);
@@ -102,6 +103,7 @@
   width: 100%;
   min-width: 0;
   max-width: 100%;
+  margin-bottom: 48px;
   border-collapse: collapse;
   table-layout: fixed;
 }

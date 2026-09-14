@@ -1,19 +1,144 @@
-.navbar-lewagon {
-  justify-content: space-between;
-  background: white;
-  width: 100%;
-  max-width: 100%;
+.app-navbar{
+  box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  width:100%;
+  height:64px;
+  min-height:64px;
+  padding:0 20px;
+  border-bottom:0;
+  background:$backgroundclub;
 }
 
-.navbar-lewagon .container-fluid {
-  width: 100%;
-  max-width: 100%;
+.app-navbar__brand{
+  display:inline-flex;
+  align-items:center;
+  color:#c7bfff;
+  font:24px/32px $font-primary;
+  letter-spacing:-.4px;
+  text-decoration:none;
 }
 
-.navbar-lewagon .navbar-collapse {
-  flex-grow: 0;
+.app-navbar__brand strong{
+  color:#eb5160;
+  font-weight:700;
 }
 
-.navbar-lewagon .navbar-brand img {
-  width: 40px;
+.app-navbar__links{
+  display:flex;
+  align-items:center;
+  gap:28px;
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+}
+
+.app-navbar__link{
+  color:#e5e1e3;
+  font:16px/22px $font-secondary;
+  text-decoration:none;
+}
+
+.app-navbar__link:hover,
+.app-navbar__link:focus-visible{
+  color:#c7bfff;
+}
+
+.app-navbar__link.is-active{
+  color:#eb5160;
+}
+
+.app-navbar__profile-menu{
+  position:relative;
+  margin-left:auto;
+}
+
+.app-navbar__profile{
+  display:block;
+  width:32px;
+  height:32px;
+  padding:0;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:50%;
+  background:#2a2a2b;
+  cursor:pointer;
+}
+
+.app-navbar__profile img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.app-navbar__profile-dropdown{
+  position:absolute;
+  top:calc(100% + 8px);
+  right:0;
+  z-index:20;
+  width:180px;
+  padding:8px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;
+  background:#201f26;
+  box-shadow:0 12px 30px rgba(0,0,0,.45);
+}
+
+.app-navbar__profile-dropdown[hidden]{
+  display:none;
+}
+
+.app-navbar__profile-dropdown form{
+  margin:0;
+}
+
+.app-navbar__profile-link{
+  display:flex;
+  align-items:center;
+  width:100%;
+  min-height:40px;
+  box-sizing:border-box;
+  padding:10px 12px;
+  border:0;
+  border-radius:8px;
+  background:transparent;
+  color:#c9c4d3;
+  font:14px/20px $font-secondary;
+  text-align:left;
+  text-decoration:none;
+  cursor:pointer;
+}
+
+.app-navbar__profile-link:hover,
+.app-navbar__profile-link:focus-visible{
+  background:rgba(255,255,255,.06);
+  color:#fff;
+}
+
+.app-navbar__profile-link--danger{
+  color:#ff7b7b;
+}
+
+.app-navbar__profile-link--danger:hover,
+.app-navbar__profile-link--danger:focus-visible{
+  background:rgba(255,70,70,.12);
+  color:#ff9999;
+}
+
+@media (min-width:577px){
+  .app-navbar--tournament-area{
+    display:none;
+  }
+}
+
+@media (max-width:576px){
+  .app-navbar{
+    padding:0 16px;
+  }
+
+  .app-navbar__links{
+    gap:20px;
+  }
 }

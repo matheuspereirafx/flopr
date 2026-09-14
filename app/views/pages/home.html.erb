@@ -1,2 +1,133 @@
-<h1>Pages#home</h1>
-<p>Find me in app/views/pages/home.html.erb</p>
+<main class="landing-page">
+  <nav class="landing-nav" aria-label="Navegação principal" data-controller="landing-nav">
+    <%= link_to root_path, class: "landing-brand", aria: { label: "Flopr - início" } do %>
+      <span>Flopr</span><i aria-hidden="true"></i>
+    <% end %>
+    <div class="landing-nav__links">
+      <%= link_to "Produto", "#pilares" %>
+      <%= link_to "Preços", "#planos" %>
+      <%= link_to "Comunidade", "#comunidade" %>
+    </div>
+    <div class="landing-nav__actions">
+      <%= link_to "Entrar", access_path, class: "landing-nav__login" unless user_signed_in? %>
+      <%= link_to "Criar conta", new_user_registration_path, class: "landing-button landing-button--small" %>
+    </div>
+  </nav>
+
+  <section class="landing-hero" aria-labelledby="landing-title">
+    <div class="landing-hero__glow landing-hero__glow--purple"></div>
+    <div class="landing-hero__glow landing-hero__glow--red"></div>
+    <div class="landing-shell landing-hero__grid">
+      <div class="landing-hero__copy">
+        <span class="landing-badge"><i></i> Plataforma 100% otimizada para Home Games e Clubes</span>
+        <h1 id="landing-title">Gerencie seus<br>homegame<br>facilmente</h1>
+        <p class="landing-eyebrow">Convide, gerencie os pagamentos e controle o timer blind</p>
+        <div class="landing-hero__actions">
+          <%= link_to "Criar conta", new_user_registration_path, class: "landing-button" %>
+          <%= link_to "Explorar os 4 Pilares", "#pilares", class: "landing-button landing-button--secondary" %>
+        </div>
+        <div class="landing-stats" aria-label="Indicadores da plataforma">
+          <div><strong>+12.000</strong><span>Torneios criados</span></div>
+          <div><strong>R$ 2.8M</strong><span>Pagamentos geridos</span></div>
+          <div><strong>99.9%</strong><span>Uptime do Blind Clock</span></div>
+        </div>
+      </div>
+      <div class="landing-hero__visual" aria-hidden="true">
+        <div class="landing-hero__stage">
+          <div class="landing-hero__glow landing-hero__glow--chip"></div>
+          <div class="landing-hero__particles"><span>♠</span><span>♦</span><span>♣</span><span>♥</span><b>✦</b><b>✧</b></div>
+          <article class="landing-hero__playing-card landing-hero__playing-card--left"><div><strong>A</strong><span>♠</span></div><em>VIP</em><b>♠</b><small>A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FLOPR</small></article>
+          <article class="landing-hero__playing-card landing-hero__playing-card--right"><div><strong>K</strong><span>♠</span></div><i></i><b>K</b><small>DEEPSTACK</small><em>K</em></article>
+          <div class="landing-hero__chip">
+            <div class="landing-hero__chip-art">
+              <%= image_tag "landing/hero-fidelity-01.svg", alt: "" %><%= image_tag "landing/hero-fidelity-02.svg", alt: "" %><%= image_tag "landing/hero-fidelity-03.svg", alt: "" %><%= image_tag "landing/hero-fidelity-04.svg", alt: "" %><%= image_tag "landing/hero-fidelity-05.svg", alt: "" %><%= image_tag "landing/hero-fidelity-06.svg", alt: "" %><%= image_tag "landing/hero-fidelity-07.svg", alt: "" %><%= image_tag "landing/hero-fidelity-08.svg", alt: "" %><%= image_tag "landing/hero-fidelity-09.svg", alt: "" %><%= image_tag "landing/hero-fidelity-10.svg", alt: "" %><%= image_tag "landing/hero-fidelity-11.svg", alt: "" %><%= image_tag "landing/hero-fidelity-12.svg", alt: "" %><%= image_tag "landing/hero-fidelity-13.svg", alt: "" %><%= image_tag "landing/hero-fidelity-14.svg", alt: "" %><%= image_tag "landing/hero-fidelity-15.svg", alt: "" %><%= image_tag "landing/hero-fidelity-16.svg", alt: "" %><%= image_tag "landing/hero-fidelity-17.svg", alt: "" %>
+            </div>
+            <span class="landing-hero__chip-label">FLOPR • CHIP #01</span>
+          </div>
+          <div class="landing-hero__mini-chip landing-hero__mini-chip--gold"><strong>5.000</strong><span>CHIP</span></div>
+          <div class="landing-hero__mini-chip landing-hero__mini-chip--coral"><strong>1.000</strong><span>VALUE</span></div>
+          <div class="landing-hero__widget landing-hero__widget--clock"><span class="landing-hero__widget-icon">♠</span><div><strong><i></i> Nível 08 • 500 / 1.000</strong><small><b>12:45 restante</b>&nbsp;&nbsp; Ante 1k</small></div></div>
+          <div class="landing-hero__widget landing-hero__widget--payment">
+            <span class="landing-hero__payment-icon"><%= image_tag "landing/payment-check.svg", alt: "" %></span>
+            <div class="landing-hero__payment-copy">
+              <div class="landing-hero__payment-header"><strong>Alex Costa pediu Rebuy</strong><em>PIX</em></div>
+              <small>R$ 100 • Aprovado instantaneamente</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="landing-showcase landing-section" id="pilares" aria-labelledby="showcase-title" data-controller="landing-showcase">
+    <div class="landing-showcase__glow"></div>
+    <div class="landing-shell">
+      <div class="landing-section-heading">
+        <span class="landing-kicker">A plataforma para organizar sem complicação</span>
+        <h2 id="showcase-title">Tudo o que seu jogo precisa para<br>rodar no piloto automático</h2>
+        <p>Chega de planilhas desorganizadas, discussões sobre buy-in e erros em premiações. O Flopr centraliza tudo em um só lugar.</p>
+      </div>
+      <div class="landing-showcase__content" data-landing-showcase-target="viewport">
+        <div class="landing-showcase__cards">
+          <% features = [
+            { rank: "A", label: "PILAR I • O MOTOR", title: "Estrutura & Wizard Matemático", description: "Calibre blinds milimetricamente planejados, stacks iniciais dinâmicos, controle de rebuys e add-ons com fórmula de premiação líquida calculada em tempo real sem margem para equívocos.", status: "Blind Calibrado", value: "15 min • Turbo Blind" },
+            { rank: "02", label: "PILAR II • O CONTROLE", title: "Painel Operacional do Host", description: "Centralize as decisões do torneio em uma visão clara para acompanhar jogadores, mesas e andamento da operação.", status: "Operação ativa", value: "Host dashboard" },
+            { rank: "03", label: "PILAR III • O TEMPO", title: "Timer de Blinds ao Vivo", description: "Mantenha todos no mesmo ritmo com um relógio de blinds claro, confiável e pronto para acompanhar cada nível.", status: "Blind em andamento", value: "Nível atual" },
+            { rank: "04", label: "PILAR IV • O JOGADOR", title: "Experiência do Jogador", description: "Ofereça aos participantes uma experiência simples para conferir torneios, inscrições, pagamentos e informações importantes.", status: "Jogador conectado", value: "Player app" },
+            { rank: "05", label: "PILAR V • O ACESSO", title: "Convites e Inscrições", description: "Organize o acesso ao seu homegame com convites, confirmações e inscrições reunidos em um único fluxo.", status: "Inscrições abertas", value: "Link do torneio" },
+            { rank: "06", label: "PILAR VI • O HISTÓRICO", title: "Resultados & Histórico", description: "Tenha uma visão organizada dos torneios realizados, resultados e informações que ajudam a planejar os próximos jogos.", status: "Dados sincronizados", value: "Histórico Flopr" }
+          ] %>
+          <% features.each_with_index do |feature, index| %>
+            <%= render "pages/feature_card", feature: feature, index: index %>
+          <% end %>
+        </div>
+        <aside class="landing-showcase__controls" aria-label="Navegar entre os pilares">
+          <button type="button" class="landing-showcase__control landing-showcase__control--previous" aria-label="Card anterior" data-landing-showcase-target="previous" data-action="landing-showcase#previous" disabled>
+            <%= image_tag "landing/showcase-previous.svg", alt: "" %>
+          </button>
+          <div class="landing-showcase__indicators" aria-hidden="true" data-landing-showcase-target="indicators">
+            <% features.each_with_index do |_, index| %><span data-landing-showcase-target="indicator" class="<%= 'is-active' if index.zero? %>"></span><% end %>
+          </div>
+          <button type="button" class="landing-showcase__control" aria-label="Próximo card" data-landing-showcase-target="next" data-action="landing-showcase#next">
+            <%= image_tag "landing/showcase-next.svg", alt: "" %>
+          </button>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="landing-pricing landing-section" id="planos" aria-labelledby="pricing-title">
+    <div class="landing-shell">
+      <div class="landing-section-heading landing-section-heading--center">
+        <span class="landing-kicker">Investimento inteligente</span>
+        <h2 id="pricing-title">Planos transparentes para jogos<br>entre amigos e grandes clubes</h2>
+        <p>Comece gratuitamente e evolua para ferramentas avançadas conforme seu nível crescer.</p>
+      </div>
+      <div class="landing-pricing__grid">
+        <%= render "pages/pricing_card", name: "Home Game", description: "Para quem joga casualmente com amigos no fim de semana.", price: "R$ 0", features: [{ text: "Até 1 torneio por semana", state: :included }, { text: "Timer de blinds básico no navegador", state: :included }, { text: "Até 15 jogadores por torneio", state: :included }, { text: "Sem integração com pagamentos PIX", state: :unavailable }], action: "Começar grátis" %>
+        <%= render "pages/pricing_card", name: "Club Pro", description: "Para organizadores frequentes e clubes de poker locais.", price: "R$ 49", annual_price: "ou R$ 399 ao ano (32% de desconto)", features: [{ text: "Torneios e mesas ilimitadas", state: :included }, { text: "Aprovação automática de PIX e buy-ins", state: :included }, { text: "Telão TV Fullscreen com logomarca própria", state: :included }, { text: "Player App com Ranking Semestral/Anual", state: :included }, { text: "Histórico financeiro e exportação de relatórios", state: :included }], action: "Assinar Pro", highlighted: true %>
+        <%= render "pages/pricing_card", name: "Series & Cassino", description: "Para grandes etapas de circuitos, ligas regionais e clubes federados.", price: "R$ 119", features: ["Tudo incluso do Club Pro", "Multi-mesas e operadores/dealers ilimitados", "Relatórios fiscais, rake e balanço contábil", "Suporte prioritário via WhatsApp 24/7"], action: "Falar com especialista" %>
+      </div>
+    </div>
+  </section>
+
+  <section class="landing-cta landing-section" id="comunidade" aria-labelledby="cta-title">
+    <div class="landing-shell landing-cta__inner">
+      <h2 id="cta-title">Pronto para elevar o nível do seu próximo<br>jogo?</h2>
+      <p>Leva menos de 2 minutos para configurar seu primeiro torneio e enviar o link para o grupo da galera.</p>
+      <%= link_to "Criar meu torneio agora", new_user_registration_path, class: "landing-button" %>
+    </div>
+  </section>
+
+  <footer class="landing-footer">
+    <div class="landing-shell">
+      <div class="landing-footer__grid">
+        <div><%= link_to "Flopr", root_path, class: "landing-brand" %><p>A infraestrutura digital completa para organizadores de torneios de poker presenciais e online.</p><small>PIX Instantâneo&nbsp;&nbsp;•&nbsp;&nbsp; Cloud Sync&nbsp;&nbsp;•&nbsp;&nbsp; SSL 256-bit</small></div>
+        <div><h3>Produto</h3><a href="#pilares">Blind Timer</a><a href="#pilares">Player App</a><a href="#planos">Gestão PIX</a><a href="#planos">Planos &amp; Preços</a></div>
+        <div><h3>Comunidade</h3><a href="#comunidade">Blog do Host</a><a href="#comunidade">Discord dos Clubes</a></div>
+        <div><h3>Legal</h3><a href="#comunidade">Termos de Uso</a><a href="#comunidade">Privacidade (LGPD)</a><a href="#comunidade">Segurança</a><a href="#comunidade">Contato</a></div>
+      </div>
+      <div class="landing-footer__bottom"><span>© 2024 Flopr Technologies. All rights reserved.</span><span>Feito para apaixonados por poker.</span></div>
+    </div>
+  </footer>
+</main>

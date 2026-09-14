@@ -1,0 +1,28 @@
+.mobile-footer {
+  display: none;
+  width: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  color: #737373;
+  text-align: center;
+  font: 14px/20px $font-secondary;
+}
+
+.mobile-footer p {
+  margin: 0;
+}
+
+@media (max-width: 576px) {
+  .mobile-footer {
+    display: block;
+  }
+}
+
+@media (max-width: 680px) {
+  .tournament-show-shell .mobile-footer,
+  .tournament-show-shell ~ .mobile-footer {
+    display: block;
+  }
+}

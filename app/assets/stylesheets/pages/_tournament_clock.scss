@@ -1,4 +1,9 @@
-.tournament-clock-shell { display: flex; min-height: 100vh; background: #07090b; }
+.tournament-clock-shell {
+  display: flex;
+  min-height: 100vh;
+  min-height: 100svh;
+  background: #07090b;
+}
 
 .tournament-clock-shell:has(.tournament-navigation.is-collapsed) .tournament-navigation {
   width: 76px;
@@ -6,9 +11,12 @@
 }
 
 .tournament-clock-page {
+  box-sizing: border-box;
   position: relative;
   min-width: 0;
   flex: 1 1 auto;
+  min-height: 100vh;
+  min-height: 100svh;
   min-height: 100dvh;
   padding: clamp(24px, 4vw, 64px);
   overflow: hidden;
@@ -207,6 +215,21 @@
 .tournament-clock-next-level__duration { width: 100%; }
 .tournament-clock-summary-card { min-height: 210px; } }
 @media (max-width: 680px) {
-  .tournament-clock-shell { display: block; }
-  .tournament-clock-page { padding-bottom: 112px; }
+  .tournament-clock-shell {
+    display: block;
+    min-height: 100svh;
+    min-height: 100dvh;
+  }
+
+  .tournament-clock-page {
+    min-height: 100svh;
+    min-height: 100dvh;
+    padding-bottom: calc(112px + env(safe-area-inset-bottom));
+    overflow: hidden;
+  }
+
+  .tournament-clock-page__background {
+    position: absolute;
+    inset: 0;
+  }
 }

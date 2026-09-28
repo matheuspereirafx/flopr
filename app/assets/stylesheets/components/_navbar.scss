@@ -25,30 +25,6 @@
   font-weight:700;
 }
 
-.app-navbar__links{
-  display:flex;
-  align-items:center;
-  gap:28px;
-  position:absolute;
-  left:50%;
-  transform:translateX(-50%);
-}
-
-.app-navbar__link{
-  color:#e5e1e3;
-  font:16px/22px $font-secondary;
-  text-decoration:none;
-}
-
-.app-navbar__link:hover,
-.app-navbar__link:focus-visible{
-  color:#c7bfff;
-}
-
-.app-navbar__link.is-active{
-  color:#eb5160;
-}
-
 .app-navbar__profile-menu{
   position:relative;
   margin-left:auto;
@@ -105,7 +81,7 @@
   border-radius:8px;
   background:transparent;
   color:#c9c4d3;
-  font:14px/20px $font-secondary;
+  font:12px/20px $font-secondary;
   text-align:left;
   text-decoration:none;
   cursor:pointer;
@@ -136,9 +112,5 @@
 @media (max-width:576px){
   .app-navbar{
     padding:0 16px;
-  }
-
-  .app-navbar__links{
-    gap:20px;
   }
 }

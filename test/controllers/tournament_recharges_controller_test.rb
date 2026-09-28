@@ -38,15 +38,37 @@ class TournamentRechargesControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Copiar chave PIX"
   end
 
-  test "owner, admin and dealer cannot access the player page" do
-    [@owner, @admin, @dealer].each do |user|
+  test "owner and admin need a confirmed registration to access the player page" do
+    [@owner, @admin].each do |user|
       sign_in user
 
       get recharges_path
 
-      assert_response :forbidden
+      assert_response :not_found
       sign_out user
     end
+  end
+
+  test "confirmed owner and admin can access their own player recharges" do
+    [@owner, @admin].each do |user|
+      payment_create_registration(tournament: @tournament, user: user)
+      sign_in user
+
+      get recharges_path
+
+      assert_response :success
+      assert_includes response.body, "Recargas disponíveis"
+      sign_out user
+    end
+  end
+
+  test "dealer cannot access the player page even with a confirmed registration" do
+    payment_create_registration(tournament: @tournament, user: @dealer)
+    sign_in @dealer
+
+    get recharges_path
+
+    assert_response :forbidden
   end
 
   test "user without membership cannot access recharges" do

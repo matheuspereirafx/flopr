@@ -8,7 +8,7 @@
 
 <main class="tournament-overview-page" aria-labelledby="tournament-title">
   <header class="tournament-overview-page__header overview-header">
-    <% if @current_membership&.player? %>
+    <% if @current_membership&.player? || @invite_registration.present? %>
       <%= link_to "← Voltar aos torneios",
                   player_tournaments_path,
                   class: "overview-header__back",

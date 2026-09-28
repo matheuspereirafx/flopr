@@ -12,7 +12,13 @@ class PlayerTournamentsController < ApplicationController
                             .includes(:club, :charge_options)
                             .order(starts_at: :asc)
 
+    participant_club_ids = current_user.club_memberships
+                                      .where(role: %i[player owner admin])
+                                      .select(:club_id)
+
     @my_tournaments = current_user.tournament_registrations
+                                  .joins(:tournament)
+                                  .where(tournaments: { club_id: participant_club_ids })
                                   .includes(tournament: [
                                     :club,
                                     :charge_options,

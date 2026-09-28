@@ -126,7 +126,8 @@
 /* Blocos internos */
 
 .club-name-section,
-.contact-section {
+.contact-section,
+.payment-section {
   padding: 24px;
 
   background: #201f24;
@@ -139,7 +140,7 @@
 }
 
 .contact-section {
-  margin-bottom: 0;
+  margin-bottom: 36px;
 
   h3 {
     margin: 0 0 22px;
@@ -153,6 +154,30 @@
     font-weight: 700;
 
     color: #f2edf4;
+  }
+}
+
+.payment-section {
+  margin-bottom: 0;
+
+  h3 {
+    margin: 0 0 8px;
+
+    font-family: $font-primary;
+    font-size: 18px;
+    font-weight: 700;
+
+    color: #f2edf4;
+  }
+
+  .form-help {
+    margin: 0 0 22px;
+
+    font-family: $font-secondary;
+    font-size: 12px;
+    line-height: 1.45;
+
+    color: #aaa4b1;
   }
 }
 

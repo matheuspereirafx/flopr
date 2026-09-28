@@ -4,6 +4,10 @@ class TournamentTransactionsController < ApplicationController
   before_action :authorize_transactions_view!
 
   def index
+    @current_registration = current_user.tournament_registrations.find_by(
+      tournament: @tournament
+    )
+
     @transactions = @tournament.registration_payments
                                   .includes(
                                     tournament_registration: :user,

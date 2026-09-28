@@ -33,6 +33,17 @@ class TournamentTransactionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "owner with a confirmed registration sees the recharge navigation from transactions" do
+    payment_create_registration(tournament: @tournament, user: @owner)
+    sign_in @owner
+
+    get transactions_path(@club, @tournament)
+
+    assert_response :success
+    assert_select ".tournament-navigation a", text: "Recargas", count: 1
+    assert_select ".tournament-navigation a[href='#{club_tournament_recharges_path(@club, @tournament)}']", count: 1
+  end
+
   test "displays pending payment status in Portuguese" do
     create_payment_for(@player, status: :pending)
     sign_in @owner

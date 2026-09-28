@@ -9,8 +9,12 @@
       <%= link_to "Comunidade", "#comunidade" %>
     </div>
     <div class="landing-nav__actions">
-      <%= link_to "Entrar", access_path, class: "landing-nav__login" unless user_signed_in? %>
-      <%= link_to "Criar conta", new_user_registration_path, class: "landing-button landing-button--small" %>
+      <% if user_signed_in? %>
+        <%= render "shared/navbar_profile" %>
+      <% else %>
+        <%= link_to "Entrar", access_path, class: "landing-nav__login" %>
+        <%= link_to "Criar conta", new_user_registration_path, class: "landing-button landing-button--small" %>
+      <% end %>
     </div>
   </nav>
 
@@ -23,7 +27,7 @@
         <h1 id="landing-title">Gerencie seus<br>homegame<br>facilmente</h1>
         <p class="landing-eyebrow">Convide, gerencie os pagamentos e controle o timer blind</p>
         <div class="landing-hero__actions">
-          <%= link_to "Criar conta", new_user_registration_path, class: "landing-button" %>
+          <%= link_to "Criar conta", new_user_registration_path, class: "landing-button" unless user_signed_in? %>
           <%= link_to "Explorar os 4 Pilares", "#pilares", class: "landing-button landing-button--secondary" %>
         </div>
         <div class="landing-stats" aria-label="Indicadores da plataforma">
@@ -115,7 +119,7 @@
     <div class="landing-shell landing-cta__inner">
       <h2 id="cta-title">Pronto para elevar o nível do seu próximo<br>jogo?</h2>
       <p>Leva menos de 2 minutos para configurar seu primeiro torneio e enviar o link para o grupo da galera.</p>
-      <%= link_to "Criar meu torneio agora", new_user_registration_path, class: "landing-button" %>
+      <%= link_to "Criar meu torneio agora", new_user_registration_path, class: "landing-button" unless user_signed_in? %>
     </div>
   </section>
 

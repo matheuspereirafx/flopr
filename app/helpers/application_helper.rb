@@ -35,6 +35,18 @@ module ApplicationHelper
           club_tournament_transactions_path(club, tournament)
         )
       )
+      if registration&.confirmed?
+        items.insert(
+          3,
+          navigation_item(
+            "Recargas",
+            "icons/iconcash.png",
+            :recharges,
+            active_page,
+            club_tournament_recharges_path(club, tournament)
+          )
+        )
+      end
       items << navigation_item(
         "Configurações",
         "icons/iconconfiguracoes.svg",

@@ -101,6 +101,33 @@ class PlayerTournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".player-tournaments-page__section:nth-of-type(2)", text: /My Tournament/
   end
 
+  test "my tournaments includes player owner and admin registrations but excludes dealer registrations" do
+    owner_club = Club.create!(name: "Owner Poker House")
+    admin_club = Club.create!(name: "Admin Poker House")
+    dealer_club = Club.create!(name: "Dealer Poker House")
+    create_membership(@player, owner_club, :owner)
+    create_membership(@player, admin_club, :admin)
+    create_membership(@player, dealer_club, :dealer)
+
+    player_tournament = create_tournament(@club, name: "Player Tournament", starts_at: 1.day.from_now)
+    owner_tournament = create_tournament(owner_club, name: "Owner Tournament", starts_at: 2.days.from_now)
+    admin_tournament = create_tournament(admin_club, name: "Admin Tournament", starts_at: 3.days.from_now)
+    dealer_tournament = create_tournament(dealer_club, name: "Dealer Tournament", starts_at: 4.days.from_now)
+
+    [player_tournament, owner_tournament, admin_tournament, dealer_tournament].each do |tournament|
+      TournamentRegistration.create!(tournament:, user: @player, status: :confirmed)
+    end
+
+    sign_in @player
+    get player_tournaments_path
+
+    my_tournaments_section = ".player-tournaments-page__section:nth-of-type(2)"
+    assert_select my_tournaments_section, text: /Player Tournament/
+    assert_select my_tournaments_section, text: /Owner Tournament/
+    assert_select my_tournaments_section, text: /Admin Tournament/
+    assert_select my_tournaments_section, text: /Dealer Tournament/, count: 0
+  end
+
   test "unauthenticated users are redirected to login" do
     get player_tournaments_path
 

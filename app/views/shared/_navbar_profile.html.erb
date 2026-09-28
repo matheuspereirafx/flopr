@@ -1,0 +1,23 @@
+<div
+  class="app-navbar__profile-menu"
+  data-controller="inside-menu"
+  data-action="click@window->inside-menu#closeOutside">
+  <button
+    class="app-navbar__profile"
+    type="button"
+    aria-label="Abrir menu de perfil"
+    aria-expanded="false"
+    data-inside-menu-target="button"
+    data-action="click->inside-menu#toggle">
+    <%= image_tag "https://kitt.lewagon.com/placeholder/users/ssaunier", alt: "" %>
+  </button>
+
+  <div
+    class="app-navbar__profile-dropdown"
+    data-inside-menu-target="dropdown"
+    hidden>
+    <%= link_to "Escolha sua navegação", access_path, class: "app-navbar__profile-link" %>
+    <%= link_to "Meu perfil", onboarding_profile_path, class: "app-navbar__profile-link" %>
+    <%= button_to "Sair", destroy_user_session_path, method: :delete, class: "app-navbar__profile-link app-navbar__profile-link--danger" %>
+  </div>
+</div>

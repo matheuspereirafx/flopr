@@ -15,6 +15,7 @@
 .landing-hero__copy { grid-column:span 7; position:relative; z-index:1; }
 .landing-badge { display:inline-flex; align-items:center; gap:8px; padding:5px 13px; border:1px solid rgba(255,255,255,.08); border-radius:999px; background:#131316; color:#a3a3a3; font-size:12px; letter-spacing:.3px; }
 .landing-badge i { width:8px; height:8px; border-radius:50%; background:#34d399; }
+@media(max-width:576px){.landing-badge{display:none}}
 .landing-hero h1 { margin:24px 0; font:700 clamp(48px,5.6vw,72px)/1 $font-primary; letter-spacing:-1.8px; text-transform:uppercase; }
 .landing-eyebrow { max-width:576px; margin:0 0 40px; color:#d4d4d4; font-size:14px; font-weight:600; letter-spacing:2.24px; line-height:20px; text-transform:uppercase; }
 .landing-hero__actions { display:flex; gap:16px; }

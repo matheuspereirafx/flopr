@@ -1,7 +1,7 @@
 class TournamentRechargesController < ApplicationController
   before_action :set_member_club
   before_action :set_tournament
-  before_action :authorize_player!
+  before_action :authorize_participant!
   before_action :set_registration
   before_action :load_recharge_data
 
@@ -82,9 +82,11 @@ class TournamentRechargesController < ApplicationController
     render plain: "Not found", status: :not_found
   end
 
-  def authorize_player!
+  def authorize_participant!
     return if performed?
-    return if @current_membership.player?
+    return if @current_membership.player? ||
+              @current_membership.owner? ||
+              @current_membership.admin?
 
     render plain: "Forbidden", status: :forbidden
   end

@@ -109,28 +109,38 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     sign_out @player
   end
 
-  test "only players can confirm participation from the tournament page" do
+  test "player owner and admin can confirm participation from the tournament page" do
     tournament = published_tournament
 
-    [@owner, @admin, @dealer].each do |user|
+    [@player, @owner, @admin].each do |user|
       sign_in user
 
-      assert_no_difference "TournamentRegistration.count" do
+      assert_difference "TournamentRegistration.count", 1 do
         patch join_club_tournament_path(@club, tournament)
       end
 
-      assert_response :forbidden
+      assert_redirected_to club_tournament_path(@club, tournament, payment: "buy_in")
       sign_out user
     end
+
+    sign_in @dealer
+    assert_no_difference "TournamentRegistration.count" do
+      patch join_club_tournament_path(@club, tournament)
+    end
+
+    assert_response :forbidden
+    sign_out @dealer
   end
 
   test "tournament navigation follows each member role" do
     tournament = create_tournament(@club)
     TournamentRegistration.create!(tournament: tournament, user: @player, status: :confirmed)
+    TournamentRegistration.create!(tournament: tournament, user: @owner, status: :confirmed)
+    TournamentRegistration.create!(tournament: tournament, user: @admin, status: :confirmed)
 
     {
-      @owner => %w[Visão geral Jogadores Transações Relógio],
-      @admin => %w[Visão geral Jogadores Transações Relógio],
+      @owner => %w[Visão geral Jogadores Transações Recargas Relógio Configurações],
+      @admin => %w[Visão geral Jogadores Transações Recargas Relógio Configurações],
       @dealer => %w[Visão geral Jogadores Recargas Relógio],
       @player => %w[Visão geral Jogadores Recargas Relógio]
     }.each do |user, visible_items|
@@ -196,7 +206,7 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
       sign_in user
       get club_tournament_path(@club, tournament)
 
-      assert_select "button[data-controller='copy-invite-link']", count: 0
+      assert_select "button[data-copied-message='Link copiado']", count: 0
       sign_out user
     end
   end

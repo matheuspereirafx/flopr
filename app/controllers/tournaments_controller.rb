@@ -38,7 +38,7 @@ class TournamentsController < ApplicationController
       tournament: @tournament
     )
     @show_join_tournament_modal = join_tournament_request? &&
-                                  @current_membership&.player? &&
+                                  can_participate_as_player? &&
                                   @invite_registration.blank?
     @pending_buy_in_payment = @invite_registration&.registration_payments
                                                    &.joins(:tournament_charge_option)
@@ -164,7 +164,7 @@ class TournamentsController < ApplicationController
 
   def authorize_tournament_join!
     return if performed?
-    return if @current_membership.player? && @tournament.posted?
+    return if can_participate_as_player? && @tournament.posted?
 
     render plain: "Forbidden", status: :forbidden
   end
@@ -222,6 +222,12 @@ class TournamentsController < ApplicationController
 
   def join_tournament_request?
     action_name == "show" && params[:join] == "true"
+  end
+
+  def can_participate_as_player?
+    @current_membership&.player? ||
+      @current_membership&.owner? ||
+      @current_membership&.admin?
   end
 
   def set_invited_tournament

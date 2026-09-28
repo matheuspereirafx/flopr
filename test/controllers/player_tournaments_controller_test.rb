@@ -101,7 +101,7 @@ class PlayerTournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".player-tournaments-page__section:nth-of-type(2)", text: /My Tournament/
   end
 
-  test "my tournaments only shows registrations from clubs where the user is a player" do
+  test "my tournaments includes player owner and admin registrations but excludes dealer registrations" do
     owner_club = Club.create!(name: "Owner Poker House")
     admin_club = Club.create!(name: "Admin Poker House")
     dealer_club = Club.create!(name: "Dealer Poker House")
@@ -123,8 +123,8 @@ class PlayerTournamentsControllerTest < ActionDispatch::IntegrationTest
 
     my_tournaments_section = ".player-tournaments-page__section:nth-of-type(2)"
     assert_select my_tournaments_section, text: /Player Tournament/
-    assert_select my_tournaments_section, text: /Owner Tournament/, count: 0
-    assert_select my_tournaments_section, text: /Admin Tournament/, count: 0
+    assert_select my_tournaments_section, text: /Owner Tournament/
+    assert_select my_tournaments_section, text: /Admin Tournament/
     assert_select my_tournaments_section, text: /Dealer Tournament/, count: 0
   end
 

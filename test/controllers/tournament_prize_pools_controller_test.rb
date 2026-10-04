@@ -24,7 +24,8 @@ class TournamentPrizePoolsControllerTest < ActionDispatch::IntegrationTest
       get new_club_tournament_prize_pool_path(@club, @tournament)
 
       assert_response :success
-      assert_select "input[name='prize_pool[total_amount]']", count: 1
+      assert_select "input[name='prize_pool[rake_percentage]']", count: 1
+      assert_select "input[name='prize_pool[total_amount]']", count: 0
       assert_select "input[name^='prize_pool[prize_positions_attributes]']", minimum: 1
       sign_out user
     end
@@ -54,18 +55,18 @@ class TournamentPrizePoolsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_user_session_path
   end
 
-  test "owner creates a prize pool with positions" do
+  test "owner creates a prize pool with a rake percentage and positions" do
     sign_in @owner
 
     assert_difference "TournamentPrizePool.count", 1 do
       assert_difference "TournamentPrizePosition.count", 2 do
         post club_tournament_prize_pool_path(@club, @tournament),
-             params: prize_pool_payload
+             params: prize_pool_payload(rake_percentage: "15")
       end
     end
 
     prize_pool = @tournament.reload.prize_pool
-    assert_equal 1000.to_d, prize_pool.total_amount
+    assert_equal 15, prize_pool.rake_percentage
     assert_equal [1, 2], prize_pool.prize_positions.order(:position).pluck(:position)
     assert_redirected_to club_tournament_path(@club, @tournament)
   end
@@ -76,6 +77,17 @@ class TournamentPrizePoolsControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference "TournamentPrizePool.count" do
       post club_tournament_prize_pool_path(@club, @tournament),
            params: prize_pool_payload(percentages: [30, 25])
+    end
+
+    assert_response :unprocessable_entity
+  end
+
+  test "cannot save an invalid rake percentage" do
+    sign_in @owner
+
+    assert_no_difference "TournamentPrizePool.count" do
+      post club_tournament_prize_pool_path(@club, @tournament),
+           params: prize_pool_payload(rake_percentage: "101")
     end
 
     assert_response :unprocessable_entity
@@ -92,13 +104,52 @@ class TournamentPrizePoolsControllerTest < ActionDispatch::IntegrationTest
 
     patch club_tournament_prize_pool_path(@club, @tournament),
           params: prize_pool_payload(
-            total_amount: "1500.00",
+            rake_percentage: "15",
             percentages: [60, 40],
             first_position_id: prize_pool.prize_positions.first.id
           )
 
     assert_redirected_to club_tournament_path(@club, @tournament)
-    assert_equal 1500.to_d, prize_pool.reload.total_amount
+    assert_equal 15, prize_pool.reload.rake_percentage
+  end
+
+  test "owner can edit the rake after tournament completion" do
+    prize_pool = @tournament.create_prize_pool!(
+      rake_percentage: 10,
+      prize_positions_attributes: { "0" => { position: 1, percentage: 100 } }
+    )
+    @tournament.update!(status: :finished)
+    sign_in @owner
+
+    patch club_tournament_prize_pool_path(@club, @tournament),
+          params: prize_pool_payload(
+            rake_percentage: "25",
+            percentages: [100, 0],
+            first_position_id: prize_pool.prize_positions.first.id
+          )
+
+    assert_redirected_to club_tournament_path(@club, @tournament)
+    assert_equal 25, prize_pool.reload.rake_percentage
+  end
+
+  test "sensitive parameters are not accepted" do
+    sign_in @owner
+
+    post club_tournament_prize_pool_path(@club, @tournament),
+         params: prize_pool_payload(rake_percentage: "20").deep_merge(
+           prize_pool: {
+             club_id: @other_club.id,
+             tournament_id: @tournament.id,
+             user_id: @owner.id,
+             role: "owner",
+             total_amount: "999999.99"
+           }
+         )
+
+    assert_redirected_to club_tournament_path(@club, @tournament)
+    prize_pool = @tournament.reload.prize_pool
+    assert_equal 20, prize_pool.rake_percentage
+    assert_nil prize_pool.total_amount
   end
 
   test "financial configuration leads to prize pool edit when it already exists" do
@@ -117,10 +168,10 @@ class TournamentPrizePoolsControllerTest < ActionDispatch::IntegrationTest
 
   private
 
-  def prize_pool_payload(total_amount: "1000.00", percentages: [60, 40], first_position_id: nil)
+  def prize_pool_payload(rake_percentage: "0", percentages: [60, 40], first_position_id: nil)
     {
       prize_pool: {
-        total_amount: total_amount,
+        rake_percentage: rake_percentage,
         prize_positions_attributes: {
           "0" => { id: first_position_id, position: 1, percentage: percentages[0] },
           "1" => { position: 2, percentage: percentages[1] }

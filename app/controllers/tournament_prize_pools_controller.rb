@@ -6,7 +6,7 @@ class TournamentPrizePoolsController < ApplicationController
   before_action :set_prize_pool, only: %i[edit update]
 
   def new
-    @prize_pool = @tournament.build_prize_pool
+    @prize_pool = @tournament.build_prize_pool(rake_percentage: 0)
     @prize_pool.prize_positions.build(position: 1)
   end
 
@@ -64,7 +64,7 @@ class TournamentPrizePoolsController < ApplicationController
 
   def prize_pool_params
     params.require(:prize_pool).permit(
-      :total_amount,
+      :rake_percentage,
       prize_positions_attributes: %i[id position percentage _destroy]
     )
   end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_10_020000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_04_150000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -114,15 +114,53 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_10_020000) do
     t.string "whatsapp_contact_number"
   end
 
-  create_table "registration_payment_groups", force: :cascade do |t|
+  create_table "payment_webhook_events", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.string "provider", null: false
+    t.string "provider_event_id", null: false
+    t.bigint "registration_payment_group_id"
+    t.bigint "registration_payment_id"
+    t.datetime "updated_at", null: false
+    t.index ["provider", "provider_event_id"], name: "index_payment_webhook_events_on_provider_and_event_id", unique: true
+    t.index ["registration_payment_group_id"], name: "index_payment_webhook_events_on_registration_payment_group_id"
+    t.index ["registration_payment_id"], name: "index_payment_webhook_events_on_registration_payment_id"
+    t.check_constraint "(registration_payment_id IS NOT NULL) <> (registration_payment_group_id IS NOT NULL)", name: "payment_webhook_events_exactly_one_payment_resource"
+  end
+
+  create_table "platform_payment_settings", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.decimal "gateway_fee_amount", precision: 10, scale: 2, default: "0.0", null: false
+    t.decimal "platform_fee_amount", precision: 10, scale: 2, default: "0.0", null: false
+    t.datetime "updated_at", null: false
+    t.check_constraint "gateway_fee_amount >= 0::numeric", name: "platform_payment_settings_gateway_fee_non_negative"
+    t.check_constraint "platform_fee_amount >= 0::numeric", name: "platform_payment_settings_platform_fee_non_negative"
+  end
+
+  create_table "registration_payment_groups", force: :cascade do |t|
+    t.decimal "charged_amount", precision: 10, scale: 2, default: "0.0", null: false
+    t.datetime "created_at", null: false
+    t.decimal "gateway_fee_amount", precision: 10, scale: 2, default: "0.0", null: false
+    t.string "payment_mode", default: "manual", null: false
+    t.datetime "pix_expiration_date"
+    t.text "pix_payload"
+    t.text "pix_qr_code_image"
+    t.decimal "platform_fee_amount", precision: 10, scale: 2, default: "0.0", null: false
+    t.string "provider", default: "manual", null: false
+    t.string "provider_payment_id"
+    t.string "provider_pix_qr_code_id"
+    t.string "provider_status"
     t.string "status", default: "pending", null: false
     t.decimal "total_amount", precision: 10, scale: 2, null: false
     t.integer "total_chip_amount", null: false
     t.bigint "tournament_registration_id", null: false
     t.datetime "updated_at", null: false
+    t.index ["provider", "provider_payment_id"], name: "index_registration_payment_groups_on_provider_and_payment_id", unique: true, where: "(provider_payment_id IS NOT NULL)"
+    t.index ["provider", "provider_pix_qr_code_id"], name: "idx_registration_payment_groups_provider_pix_qr_code", unique: true, where: "(provider_pix_qr_code_id IS NOT NULL)"
     t.index ["status"], name: "index_registration_payment_groups_on_status"
     t.index ["tournament_registration_id"], name: "idx_on_tournament_registration_id_7a2647e908"
+    t.check_constraint "charged_amount >= 0::numeric", name: "registration_payment_groups_charged_amount_non_negative"
+    t.check_constraint "gateway_fee_amount >= 0::numeric", name: "registration_payment_groups_gateway_fee_non_negative"
+    t.check_constraint "platform_fee_amount >= 0::numeric", name: "registration_payment_groups_platform_fee_non_negative"
     t.check_constraint "total_amount >= 0::numeric", name: "registration_payment_groups_total_amount_non_negative"
     t.check_constraint "total_chip_amount >= 0", name: "registration_payment_groups_total_chips_non_negative"
   end
@@ -132,24 +170,29 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_10_020000) do
     t.decimal "charged_amount", precision: 10, scale: 2
     t.integer "chip_amount"
     t.datetime "created_at", null: false
-    t.decimal "gateway_fee_amount", precision: 10, scale: 2
+    t.decimal "gateway_fee_amount", precision: 10, scale: 2, default: "0.0", null: false
     t.decimal "net_amount", precision: 10, scale: 2
     t.datetime "paid_at"
     t.string "payment_method", null: false
+    t.string "payment_mode", default: "manual", null: false
     t.datetime "pix_expiration_date"
     t.text "pix_payload"
     t.text "pix_qr_code_image"
+    t.decimal "platform_fee_amount", precision: 10, scale: 2, default: "0.0", null: false
     t.string "provider", null: false
     t.string "provider_payment_id"
     t.string "provider_payment_url"
+    t.string "provider_pix_qr_code_id"
     t.string "provider_status"
     t.bigint "recorded_by_id", null: false
     t.bigint "registration_payment_group_id"
     t.string "status", default: "pending", null: false
+    t.decimal "total_amount", precision: 10, scale: 2, default: "0.0", null: false
     t.bigint "tournament_charge_option_id", null: false
     t.bigint "tournament_registration_id", null: false
     t.datetime "updated_at", null: false
     t.index ["provider", "provider_payment_id"], name: "idx_on_provider_provider_payment_id_d5c7638595", unique: true, where: "(provider_payment_id IS NOT NULL)"
+    t.index ["provider", "provider_pix_qr_code_id"], name: "idx_registration_payments_provider_pix_qr_code", unique: true, where: "(provider_pix_qr_code_id IS NOT NULL)"
     t.index ["recorded_by_id"], name: "index_registration_payments_on_recorded_by_id"
     t.index ["registration_payment_group_id"], name: "index_registration_payments_on_registration_payment_group_id"
     t.index ["status"], name: "index_registration_payments_on_status"
@@ -157,6 +200,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_10_020000) do
     t.index ["tournament_registration_id"], name: "index_registration_payments_on_tournament_registration_id"
     t.check_constraint "amount >= 0::numeric", name: "registration_payments_amount_non_negative"
     t.check_constraint "chip_amount IS NULL OR chip_amount >= 0", name: "registration_payments_chips_non_negative"
+    t.check_constraint "gateway_fee_amount >= 0::numeric", name: "registration_payments_gateway_fee_non_negative"
+    t.check_constraint "platform_fee_amount >= 0::numeric", name: "registration_payments_platform_fee_non_negative"
+    t.check_constraint "total_amount >= 0::numeric", name: "registration_payments_total_amount_non_negative"
   end
 
   create_table "tournament_charge_options", force: :cascade do |t|
@@ -210,10 +256,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_10_020000) do
 
   create_table "tournament_prize_pools", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.decimal "total_amount", precision: 10, scale: 2, null: false
+    t.integer "rake_percentage", default: 0, null: false
+    t.decimal "total_amount", precision: 10, scale: 2
     t.bigint "tournament_id", null: false
     t.datetime "updated_at", null: false
     t.index ["tournament_id"], name: "index_tournament_prize_pools_on_tournament_id", unique: true
+    t.check_constraint "rake_percentage >= 0 AND rake_percentage <= 100", name: "tournament_prize_pools_rake_percentage_in_range"
     t.check_constraint "total_amount > 0::numeric", name: "tournament_prize_pools_total_amount_positive"
   end
 
@@ -242,11 +290,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_10_020000) do
   end
 
   create_table "tournaments", force: :cascade do |t|
+    t.boolean "automatic_pix_enabled"
     t.bigint "club_id", null: false
     t.datetime "created_at", null: false
     t.string "google_place_id"
     t.string "invite_token", null: false
     t.string "location", null: false
+    t.boolean "manual_pix_enabled"
     t.integer "max_players", null: false
     t.string "name", null: false
     t.datetime "starts_at", null: false
@@ -294,6 +344,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_10_020000) do
   add_foreign_key "club_payouts", "club_payout_destinations"
   add_foreign_key "club_payouts", "clubs"
   add_foreign_key "club_payouts", "users", column: "requested_by_id"
+  add_foreign_key "payment_webhook_events", "registration_payment_groups"
+  add_foreign_key "payment_webhook_events", "registration_payments"
   add_foreign_key "registration_payment_groups", "tournament_registrations"
   add_foreign_key "registration_payments", "registration_payment_groups"
   add_foreign_key "registration_payments", "tournament_charge_options"

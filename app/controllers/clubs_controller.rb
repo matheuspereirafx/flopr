@@ -4,7 +4,8 @@ class ClubsController < ApplicationController
   before_action :set_owned_club, only: %i[edit update destroy]
 
   def index
-    @clubs = current_user.clubs
+    @clubs = Club.joins(:club_memberships)
+                 .where(club_memberships: { user_id: current_user.id, role: %i[owner admin] })
                        .includes(:club_memberships, tournaments: %i[tournament_registrations clock_state blind_levels charge_options])
                        .then { |clubs| filter_clubs(clubs) }
     @tournaments_by_club = @clubs.index_with { |club| club_featured_tournament(club) }

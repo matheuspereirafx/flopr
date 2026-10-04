@@ -8,7 +8,11 @@ export default class extends Controller {
 
   addPosition() {
     const remaining = 100 - this.currentTotal()
-    if (remaining <= 0) return
+    if (remaining <= 0) {
+      this.totalTarget.dataset.state = "exceeded"
+      this.totalMessageTarget.textContent = "100% preenchido. Para adicionar outra posição, libere espaço reduzindo algum percentual."
+      return
+    }
 
     this.positionsTarget.insertAdjacentHTML("beforeend", this.templateTarget.innerHTML.replaceAll("NEW_RECORD", Date.now()))
     const row = this.rowTargets.at(-1)

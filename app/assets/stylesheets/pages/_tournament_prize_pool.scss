@@ -1,5 +1,5 @@
 .prize-pool-form__step { margin: 0 0 8px; color: #988fd7; font-size: 14px; }
-.prize-pool-form__grid { grid-template-columns: minmax(260px, .75fr) minmax(0, 1.25fr); }
+.prize-pool-form__grid { grid-template-columns: minmax(260px, .75fr) minmax(0, 1.25fr); height: auto; }
 .prize-pool-panel { min-width: 0; }
 .prize-pool-panel__description { color: #a1a1aa; font-size: 14px; }
 .prize-pool-amount { display: flex; align-items: center; gap: 10px; }
@@ -22,4 +22,5 @@
 .prize-pool-total[data-state="complete"] .prize-pool-total__message { color: #20d273; }
 .overview-prize-pool__amount { margin: 16px 0; color: #a1a1aa; }
 .overview-prize-pool__amount strong { display: block; margin-top: 6px; color: #fffbfc; font-size: 28px; }
+@media (min-width: 761px) { .prize-pool-form__grid { margin-bottom: 48px; } }
 @media (max-width: 760px) { .prize-pool-form__grid { grid-template-columns: 1fr; } .prize-pool-positions__header, .prize-pool-position { grid-template-columns: 1fr 120px 32px; } }

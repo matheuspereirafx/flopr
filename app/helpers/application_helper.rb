@@ -40,7 +40,7 @@ module ApplicationHelper
           3,
           navigation_item(
             "Recargas",
-            "icons/iconcash.png",
+            "icons/iconrecharge.svg",
             :recharges,
             active_page,
             club_tournament_recharges_path(club, tournament)
@@ -55,13 +55,13 @@ module ApplicationHelper
         edit_club_tournament_path(club, tournament)
       )
     elsif membership.dealer?
-      items.insert(2, navigation_item("Recargas", "icons/iconcash.png", :reloads, active_page))
+      items.insert(2, navigation_item("Recargas", "icons/iconrecharge.svg", :reloads, active_page))
     elsif registration&.confirmed?
       items.insert(
         2,
         navigation_item(
           "Recargas",
-          "icons/iconcash.png",
+          "icons/iconrecharge.svg",
           :recharges,
           active_page,
           club_tournament_recharges_path(club, tournament)

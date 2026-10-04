@@ -26,6 +26,7 @@ class TournamentTransactionsController < ApplicationController
                                   .map(&:user)
     paid_transactions = @transactions.paid
     @paid_total = paid_transactions.sum(:amount)
+    @rake_total = @tournament.prize_pool&.rake_amount || 0.to_d
     @paid_counts_by_kind = paid_transactions
                             .unscope(:order)
                             .joins(:tournament_charge_option)

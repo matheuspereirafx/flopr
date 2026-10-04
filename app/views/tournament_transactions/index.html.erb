@@ -22,6 +22,11 @@
           <strong class="transactions-summary__value"><%= number_to_currency(@paid_total) %></strong>
         </article>
 
+        <article class="transactions-summary__item transactions-summary__item--featured">
+          <span class="transactions-summary__label">Rake</span>
+          <strong class="transactions-summary__value"><%= number_to_currency(@rake_total) %></strong>
+        </article>
+
         <article class="transactions-summary__item">
           <span class="transactions-summary__label">Buy-ins</span>
           <strong class="transactions-summary__value"><%= @paid_counts_by_kind.fetch("buy_in", 0) %></strong>

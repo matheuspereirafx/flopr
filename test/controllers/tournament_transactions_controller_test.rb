@@ -33,6 +33,20 @@ class TournamentTransactionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "displays the total rake calculated from eligible paid payments" do
+    create_payment_for(@player, amount: 800)
+    @tournament.create_prize_pool!(
+      rake_percentage: 10,
+      prize_positions_attributes: { "0" => { position: 1, percentage: 100 } }
+    )
+    sign_in @owner
+
+    get transactions_path(@club, @tournament)
+
+    assert_response :success
+    assert_select ".transactions-summary__item", text: /Rake.*R\$ 80,00/m
+  end
+
   test "owner with a confirmed registration sees the recharge navigation from transactions" do
     payment_create_registration(tournament: @tournament, user: @owner)
     sign_in @owner

@@ -11,6 +11,13 @@
           R$ <%= number_to_currency(prize_pool.net_amount, unit: "", separator: ",", delimiter: ".") %>
         </strong>
       </p>
+      <ol class="overview-prize-pool__placements">
+        <% prize_pool.prize_distribution.each do |entry| %>
+          <%= render "shared/components/tournaments/overview_prize_position",
+                     prize_position: entry[:position],
+                     prize_amount: entry[:amount] %>
+        <% end %>
+      </ol>
     </div>
   <% else %>
     <p class="overview-prize-pool__hint">Premiação ainda não configurada.</p>

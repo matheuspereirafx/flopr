@@ -105,6 +105,51 @@ class TournamentPrizePoolTest < ActiveSupport::TestCase
     assert_not prize_pool.valid?
   end
 
+  test "does not allow zero or decimal percentages" do
+    [0, "12.5"].each do |percentage|
+      prize_pool = @tournament.build_prize_pool(rake_percentage: 0)
+      prize_pool.prize_positions.build(position: 1, percentage: percentage)
+
+      assert_not prize_pool.valid?
+    end
+  end
+
+  test "requires at least one prize position" do
+    prize_pool = @tournament.build_prize_pool(rake_percentage: 0)
+
+    assert_not prize_pool.valid?
+    assert_includes prize_pool.errors[:base], "deve existir pelo menos uma posição"
+  end
+
+  test "requires sequential prize positions" do
+    prize_pool = @tournament.build_prize_pool(rake_percentage: 0)
+    prize_pool.prize_positions.build(position: 1, percentage: 50)
+    prize_pool.prize_positions.build(position: 3, percentage: 50)
+
+    assert_not prize_pool.valid?
+    assert_includes prize_pool.errors[:base], "as posições devem ser sequenciais"
+  end
+
+  test "distributes the net prize pool and assigns rounding balance to the last position" do
+    owner = User.create!(email: "distribution-owner@example.com", username: "distribution_owner", password: "password123", name: "Owner")
+    player = User.create!(email: "distribution-player@example.com", username: "distribution_player", password: "password123", name: "Player")
+    registration = @tournament.tournament_registrations.create!(user: player, status: :confirmed)
+    @tournament.charge_options.create!(kind: :buy_in, amount: 100, chip_amount: 10_000)
+    create_payment(registration, :buy_in, 100.01, owner, :paid)
+
+    prize_pool = @tournament.create_prize_pool!(
+      rake_percentage: 0,
+      prize_positions_attributes: {
+        "0" => { position: 1, percentage: 33 },
+        "1" => { position: 2, percentage: 33 },
+        "2" => { position: 3, percentage: 34 }
+      }
+    )
+
+    assert_equal [33.00.to_d, 33.00.to_d, 34.01.to_d],
+                 prize_pool.prize_distribution.map { |entry| entry[:amount] }
+  end
+
   test "does not allow duplicated positions" do
     prize_pool = @tournament.build_prize_pool(rake_percentage: 0)
     prize_pool.prize_positions.build(position: 1, percentage: 50)

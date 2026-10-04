@@ -15,6 +15,7 @@
                   method: editing ? :patch : :post,
                   class: "tournament-form__body",
                   data: { controller: "prize-pool-form",
+                          "prize-pool-form-net-amount-value": prize_pool.net_amount.to_s,
                           action: "input->prize-pool-form#updateTotal" } do |form| %>
       <div class="tournament-form__content">
         <div class="form-grid prize-pool-form__grid">
@@ -44,7 +45,8 @@
               </div>
               <%= form.fields_for :prize_positions do |position_fields| %>
                 <%= render "shared/components/tournaments/prize_position_fields",
-                           position_fields: position_fields %>
+                           position_fields: position_fields,
+                           prize_amount: prize_pool.prize_amount_for(position_fields.object) %>
               <% end %>
             </div>
 
@@ -53,7 +55,8 @@
                                   TournamentPrizePosition.new,
                                   child_index: "NEW_RECORD" do |position_fields| %>
                 <%= render "shared/components/tournaments/prize_position_fields",
-                           position_fields: position_fields %>
+                           position_fields: position_fields,
+                           prize_amount: 0 %>
               <% end %>
             </template>
 

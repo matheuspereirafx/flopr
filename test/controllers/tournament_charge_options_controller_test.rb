@@ -25,6 +25,7 @@ class TournamentChargeOptionsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".financial-panel--required .panel__title", "Buy-in obrigatório"
     assert_select ".financial-panel--optional .panel__title", "Recargas e opções adicionais"
     assert_select ".financial-options-list [data-kind]", count: 4
+    assert_select "[data-kind='fee'] .financial-option__hint", text: /Não entra na distribuição da premiação/
     assert_select ".financial-switch__control", count: 4
     assert_select "[data-kind='rebuy'] input[data-financial-options-target='toggle'][disabled]", count: 1
     assert_select "[data-kind='double_rebuy'] input[data-financial-options-target='toggle'][disabled]", count: 1

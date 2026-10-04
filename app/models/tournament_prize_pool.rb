@@ -18,6 +18,18 @@ class TournamentPrizePool < ApplicationRecord
   validate :percentages_total_one_hundred
   validate :positions_are_unique
 
+  def gross_amount
+    tournament.registration_payments.eligible_for_prize_pool.sum(:amount)
+  end
+
+  def rake_amount
+    (gross_amount * rake_percentage.to_d / 100).round(2)
+  end
+
+  def net_amount
+    (gross_amount - rake_amount).round(2)
+  end
+
   private
 
   def rake_percentage_is_integer_input

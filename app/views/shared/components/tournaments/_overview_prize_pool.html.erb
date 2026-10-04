@@ -1,35 +1,17 @@
 <section class="overview-prize-pool" aria-labelledby="overview-prize-pool-title">
   <h2 id="overview-prize-pool-title">Resultados do torneio</h2>
 
-  <% if prize_pool.present? && prize_pool.prize_positions.any? %>
-    <% prize_positions = prize_pool.prize_positions.order(:position) %>
-    <p class="overview-prize-pool__amount">Premiação total: <strong>R$ <%= number_to_currency(prize_pool.total_amount, unit: "", separator: ",", delimiter: ".") %></strong></p>
-
-    <% winner = prize_positions.first %>
-    <div class="overview-prize-pool__winner" aria-label="Premiação do 1º lugar">
-      <span class="overview-prize-pool__trophy" aria-hidden="true">♛</span>
-      <div class="overview-prize-pool__winner-player">
-        <span><%= winner.position %>º lugar</span>
-        <strong>Premiação configurada</strong>
-      </div>
-      <strong class="overview-prize-pool__winner-value">
-        <%= number_to_percentage(winner.percentage, precision: 2, strip_insignificant_zeros: true) %>
-      </strong>
+  <% if can_view_amount && prize_pool.present? %>
+    <div data-controller="tournament-financials"
+         data-tournament-financials-club-id-value="<%= club.id %>"
+         data-tournament-financials-tournament-id-value="<%= tournament.id %>">
+      <p class="overview-prize-pool__amount">
+        Premiação total:
+        <strong data-tournament-financials-target="amount">
+          R$ <%= number_to_currency(prize_pool.net_amount, unit: "", separator: ",", delimiter: ".") %>
+        </strong>
+      </p>
     </div>
-
-    <% if prize_positions.drop(1).any? %>
-      <div class="overview-prize-pool__placements" aria-label="Próximas colocações"
-           data-controller="prize-pool-scroll"
-           data-action="mouseenter->prize-pool-scroll#pause mouseleave->prize-pool-scroll#resume focusin->prize-pool-scroll#pause focusout->prize-pool-scroll#resume">
-        <% prize_positions.drop(1).each do |prize_position| %>
-          <article class="overview-prize-pool__placement">
-            <strong class="overview-prize-pool__position"><%= prize_position.position %>º</strong>
-            <span>Premiação configurada</span>
-            <strong><%= number_to_percentage(prize_position.percentage, precision: 2, strip_insignificant_zeros: true) %></strong>
-          </article>
-        <% end %>
-      </div>
-    <% end %>
   <% else %>
     <p class="overview-prize-pool__hint">Premiação ainda não configurada.</p>
   <% end %>

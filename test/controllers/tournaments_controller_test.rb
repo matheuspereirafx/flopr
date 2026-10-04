@@ -171,6 +171,36 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-participation-status='available-slots'] strong", "2"
   end
 
+  test "overview displays only the net prize pool to owner and admin" do
+    tournament = create_tournament(@club)
+    tournament.charge_options.create!(kind: :buy_in, active: true, amount: 100, chip_amount: 10_000)
+    registration = tournament.tournament_registrations.create!(user: @player, status: :confirmed)
+    RegistrationPayment.create!(
+      tournament_registration: registration,
+      tournament_charge_option: tournament.charge_options.find_by!(kind: :buy_in),
+      amount: 100,
+      status: :paid,
+      provider: "manual",
+      payment_method: :manual,
+      recorded_by: @owner
+    )
+    tournament.create_prize_pool!(
+      rake_percentage: 15,
+      prize_positions_attributes: { "0" => { position: 1, percentage: 100 } }
+    )
+
+    [@owner, @admin].each do |user|
+      sign_in user
+      get club_tournament_path(@club, tournament)
+
+      assert_response :success
+      assert_select ".overview-prize-pool__amount", text: /Premiação total:.*R\$ 85,00/m
+      assert_select ".overview-prize-pool__winner", count: 0
+      assert_select ".overview-prize-pool__placements", count: 0
+      sign_out user
+    end
+  end
+
   test "overview details displays the chip amount for active charge options" do
     tournament = create_tournament(@club)
     tournament.charge_options.create!(kind: :buy_in, active: true, amount: 180, chip_amount: 20_000)

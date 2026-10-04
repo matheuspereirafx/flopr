@@ -53,6 +53,33 @@ class TournamentPrizePoolTest < ActiveSupport::TestCase
     assert_equal 1000.50.to_d, prize_pool.total_amount
   end
 
+  test "calculates the net prize pool from eligible paid payments" do
+    owner = User.create!(email: "prize-owner@example.com", username: "prize_owner", password: "password123", name: "Owner")
+    player = User.create!(email: "prize-player@example.com", username: "prize_player", password: "password123", name: "Player")
+    registration = @tournament.tournament_registrations.create!(user: player, status: :confirmed)
+    @tournament.charge_options.create!(kind: :buy_in, amount: 100, chip_amount: 10_000)
+    @tournament.charge_options.create!(kind: :rebuy, amount: 50, chip_amount: 5_000)
+    @tournament.charge_options.create!(kind: :double_rebuy, amount: 90, chip_amount: 9_000)
+    @tournament.charge_options.create!(kind: :addon, amount: 25, chip_amount: 2_500)
+    @tournament.charge_options.create!(kind: :fee, amount: 10, chip_amount: 1_000)
+
+    create_payment(registration, :buy_in, 100, owner, :paid)
+    create_payment(registration, :rebuy, 50, owner, :paid)
+    create_payment(registration, :double_rebuy, 90, owner, :paid)
+    create_payment(registration, :addon, 25, owner, :paid)
+    create_payment(registration, :fee, 10, owner, :paid)
+    create_payment(registration, :buy_in, 100, owner, :pending)
+
+    prize_pool = @tournament.create_prize_pool!(
+      rake_percentage: 10,
+      prize_positions_attributes: { "0" => { position: 1, percentage: 100 } }
+    )
+
+    assert_equal 265.to_d, prize_pool.gross_amount
+    assert_equal 26.5.to_d, prize_pool.rake_amount
+    assert_equal 238.5.to_d, prize_pool.net_amount
+  end
+
   test "requires prize percentages to total 100 percent" do
     prize_pool = @tournament.build_prize_pool(rake_percentage: 0)
     prize_pool.prize_positions.build(position: 1, percentage: 30)
@@ -107,6 +134,18 @@ class TournamentPrizePoolTest < ActiveSupport::TestCase
   end
 
   private
+
+  def create_payment(registration, kind, amount, recorded_by, status)
+    RegistrationPayment.create!(
+      tournament_registration: registration,
+      tournament_charge_option: @tournament.charge_options.find_by!(kind: kind),
+      amount: amount,
+      status: status,
+      provider: "manual",
+      payment_method: :manual,
+      recorded_by: recorded_by
+    )
+  end
 
   def create_tournament(attributes = {})
     defaults = {

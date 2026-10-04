@@ -1,6 +1,8 @@
 require "test_helper"
 
 class TournamentTransactionConfirmationsControllerTest < ActionDispatch::IntegrationTest
+  include ActionCable::TestHelper
+
   test "owner confirms a pending buy-in and registration" do
     sign_in @owner
 
@@ -10,6 +12,18 @@ class TournamentTransactionConfirmationsControllerTest < ActionDispatch::Integra
     assert_predicate @payment.reload, :paid?
     assert_not_nil @payment.paid_at
     assert_predicate @registration.reload, :confirmed?
+  end
+
+  test "confirming an eligible payment broadcasts the updated net prize pool" do
+    @tournament.create_prize_pool!(
+      rake_percentage: 10,
+      prize_positions_attributes: { "0" => { position: 1, percentage: 100 } }
+    )
+    sign_in @owner
+
+    assert_broadcast_on("tournament_financials_#{@tournament.id}", net_amount: "90.0") do
+      patch confirm_path
+    end
   end
 
   test "admin confirms a pending recharge without changing the registration status" do

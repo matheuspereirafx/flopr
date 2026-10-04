@@ -16,16 +16,36 @@ class TournamentPrizePoolTest < ActiveSupport::TestCase
                  TournamentPrizePool.reflect_on_association(:prize_positions).macro
   end
 
-  test "requires a positive total amount" do
-    prize_pool = @tournament.build_prize_pool(total_amount: 0)
+  test "defaults rake percentage to zero" do
+    prize_pool = @tournament.build_prize_pool(rake_percentage: 0)
+    prize_pool.prize_positions.build(position: 1, percentage: 100)
 
-    assert_not prize_pool.valid?
-    assert_includes prize_pool.errors[:total_amount], "deve ser maior que 0"
+    assert prize_pool.valid?
+    assert_equal 0, prize_pool.rake_percentage
   end
 
-  test "stores the total amount with two decimal places" do
+  test "accepts rake percentages from zero to one hundred" do
+    [0, 37, 100].each do |rake_percentage|
+      prize_pool = @tournament.build_prize_pool(rake_percentage: rake_percentage)
+      prize_pool.prize_positions.build(position: 1, percentage: 100)
+
+      assert prize_pool.valid?
+    end
+  end
+
+  test "rejects negative, greater than one hundred, and non-integer rake percentages" do
+    [-1, 101, "12.5", "12,5"].each do |rake_percentage|
+      prize_pool = @tournament.build_prize_pool(rake_percentage: rake_percentage)
+
+      assert_not prize_pool.valid?
+      assert prize_pool.errors[:rake_percentage].any?
+    end
+  end
+
+  test "stores the existing total amount when provided" do
     prize_pool = @tournament.create_prize_pool!(
       total_amount: "1000.50",
+      rake_percentage: 10,
       prize_positions_attributes: { "0" => { position: 1, percentage: 100 } }
     )
 
@@ -34,7 +54,7 @@ class TournamentPrizePoolTest < ActiveSupport::TestCase
   end
 
   test "requires prize percentages to total 100 percent" do
-    prize_pool = @tournament.build_prize_pool(total_amount: 1000)
+    prize_pool = @tournament.build_prize_pool(rake_percentage: 0)
     prize_pool.prize_positions.build(position: 1, percentage: 30)
     prize_pool.prize_positions.build(position: 2, percentage: 25)
 
@@ -43,7 +63,7 @@ class TournamentPrizePoolTest < ActiveSupport::TestCase
   end
 
   test "allows positions to be configured without registrations" do
-    prize_pool = @tournament.build_prize_pool(total_amount: 1000)
+    prize_pool = @tournament.build_prize_pool(rake_percentage: 0)
     prize_pool.prize_positions.build(position: 1, percentage: 60)
     prize_pool.prize_positions.build(position: 2, percentage: 40)
 
@@ -51,7 +71,7 @@ class TournamentPrizePoolTest < ActiveSupport::TestCase
   end
 
   test "does not allow negative percentages" do
-    prize_pool = @tournament.build_prize_pool(total_amount: 1000)
+    prize_pool = @tournament.build_prize_pool(rake_percentage: 0)
     prize_pool.prize_positions.build(position: 1, percentage: -10)
     prize_pool.prize_positions.build(position: 2, percentage: 110)
 
@@ -59,7 +79,7 @@ class TournamentPrizePoolTest < ActiveSupport::TestCase
   end
 
   test "does not allow duplicated positions" do
-    prize_pool = @tournament.build_prize_pool(total_amount: 1000)
+    prize_pool = @tournament.build_prize_pool(rake_percentage: 0)
     prize_pool.prize_positions.build(position: 1, percentage: 50)
     prize_pool.prize_positions.build(position: 1, percentage: 50)
 
@@ -77,12 +97,13 @@ class TournamentPrizePoolTest < ActiveSupport::TestCase
     tournament.update!(status: :posted)
     prize_pool = tournament.create_prize_pool!(
       total_amount: 1000,
+      rake_percentage: 0,
       prize_positions_attributes: { "0" => { position: 1, percentage: 100 } }
     )
 
-    prize_pool.update!(total_amount: 1500)
+    prize_pool.update!(rake_percentage: 15)
 
-    assert_equal 1500.to_d, prize_pool.reload.total_amount
+    assert_equal 15, prize_pool.reload.rake_percentage
   end
 
   private

@@ -7,6 +7,8 @@ class ClubSubscriptionsController < ApplicationController
 
   def new
     redirect_to new_user_session_path(plan_id: params[:plan_id]) unless user_signed_in?
+
+    @owned_clubs = current_user.owned_clubs.order(:name) if user_signed_in?
   end
 
   def create

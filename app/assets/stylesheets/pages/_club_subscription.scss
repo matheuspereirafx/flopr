@@ -1,0 +1,165 @@
+.club-subscription-page {
+  min-height: calc(100vh - 81px);
+  padding: 64px 24px;
+  background: #0a0a0c;
+  color: #fffbfc;
+}
+
+.club-subscription-shell {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.club-subscription-header {
+  max-width: 680px;
+  margin-bottom: 40px;
+}
+
+.club-subscription-back {
+  display: inline-block;
+  margin-bottom: 40px;
+  color: #a1a1aa;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.club-subscription-back:hover {
+  color: #fffbfc;
+}
+
+.club-subscription-kicker,
+.club-subscription-summary__label {
+  color: #eb5160;
+  font: 700 11px/16px $font-primary;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.club-subscription-header h1 {
+  margin: 10px 0 14px;
+  font: 700 clamp(32px, 5vw, 48px)/1.1 $font-primary;
+  letter-spacing: -1px;
+}
+
+.club-subscription-header p,
+.club-subscription-summary p,
+.club-subscription-form-card__hint {
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 15px;
+  line-height: 24px;
+}
+
+.club-subscription-layout {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(320px, 1.1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.club-subscription-summary,
+.club-subscription-form-card {
+  padding: 32px;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 16px;
+  background: #131316;
+}
+
+.club-subscription-summary h2,
+.club-subscription-form-card h2 {
+  margin: 12px 0 8px;
+  font: 700 28px/34px $font-primary;
+}
+
+.club-subscription-summary__price {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-top: 32px;
+}
+
+.club-subscription-summary__price strong {
+  font: 700 36px/40px $font-primary;
+}
+
+.club-subscription-summary__price span {
+  color: #a1a1aa;
+  font-size: 14px;
+}
+
+.club-subscription-form-card__hint {
+  margin-bottom: 28px;
+}
+
+.club-subscription-form {
+  display: grid;
+  gap: 24px;
+}
+
+.club-subscription-field {
+  display: grid;
+  gap: 8px;
+}
+
+.club-subscription-field label {
+  color: #fffbfc;
+  font: 600 13px/18px $font-primary;
+}
+
+.club-subscription-field select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 8px;
+  outline: none;
+  background: #201f20;
+  color: #fffbfc;
+  font: 14px/20px $font-secondary;
+}
+
+.club-subscription-field select:focus {
+  border-color: #c7bfff;
+}
+
+.club-subscription-security-note {
+  margin: 0;
+  padding: 12px 14px;
+  border-left: 2px solid #52489c;
+  background: rgba(82, 72, 156, .12);
+  color: #c9c4d3;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.club-subscription-submit {
+  min-height: 48px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: 999px;
+  background: #eb5160;
+  color: #fffbfc;
+  cursor: pointer;
+  font: 700 13px/18px $font-primary;
+  letter-spacing: .4px;
+}
+
+.club-subscription-submit:hover {
+  filter: brightness(1.08);
+}
+
+@media (max-width: 720px) {
+  .club-subscription-page {
+    padding: 40px 16px;
+  }
+
+  .club-subscription-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .club-subscription-summary,
+  .club-subscription-form-card {
+    padding: 24px;
+  }
+}

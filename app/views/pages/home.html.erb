@@ -108,9 +108,42 @@
         <p>Comece gratuitamente e evolua para ferramentas avançadas conforme seu nível crescer.</p>
       </div>
       <div class="landing-pricing__grid">
-        <%= render "pages/pricing_card", name: "Home Game", description: "Para quem joga casualmente com amigos no fim de semana.", price: "R$ 0", features: [{ text: "Até 1 torneio por semana", state: :included }, { text: "Timer de blinds básico no navegador", state: :included }, { text: "Até 15 jogadores por torneio", state: :included }, { text: "Sem integração com pagamentos PIX", state: :unavailable }], action: "Começar grátis" %>
-        <%= render "pages/pricing_card", name: "Club Pro", description: "Para organizadores frequentes e clubes de poker locais.", price: "R$ 49", annual_price: "ou R$ 399 ao ano (32% de desconto)", features: [{ text: "Torneios e mesas ilimitadas", state: :included }, { text: "Aprovação automática de PIX e buy-ins", state: :included }, { text: "Telão TV Fullscreen com logomarca própria", state: :included }, { text: "Player App com Ranking Semestral/Anual", state: :included }, { text: "Histórico financeiro e exportação de relatórios", state: :included }], action: "Assinar Pro", highlighted: true %>
-        <%= render "pages/pricing_card", name: "Series & Cassino", description: "Para grandes etapas de circuitos, ligas regionais e clubes federados.", price: "R$ 119", features: ["Tudo incluso do Club Pro", "Multi-mesas e operadores/dealers ilimitados", "Relatórios fiscais, rake e balanço contábil", "Suporte prioritário via WhatsApp 24/7"], action: "Falar com especialista" %>
+        <% plan_presentations = {
+          "Free" => {
+            features: [
+              { text: "Até 1 torneio por semana", state: :included },
+              { text: "Timer de blinds básico no navegador", state: :included },
+              { text: "Até 15 jogadores por torneio", state: :included },
+              { text: "Sem integração com pagamentos PIX", state: :unavailable }
+            ],
+            action: "Começar grátis"
+          },
+          "Iniciante" => {
+            features: [
+              { text: "Torneios e mesas ilimitadas", state: :included },
+              { text: "Aprovação automática de PIX e buy-ins", state: :included },
+              { text: "Telão TV Fullscreen com logomarca própria", state: :included },
+              { text: "Player App com Ranking Semestral/Anual", state: :included },
+              { text: "Histórico financeiro e exportação de relatórios", state: :included }
+            ],
+            action: "Assinar Iniciante",
+            highlighted: true,
+            annual_price: "ou R$ 399 ao ano (32% de desconto)"
+          },
+          "Profissional" => {
+            features: [
+              { text: "Tudo incluso do plano Iniciante", state: :included },
+              { text: "Multi-mesas e operadores/dealers ilimitados", state: :included },
+              { text: "Relatórios fiscais, rake e balanço contábil", state: :included },
+              { text: "Suporte prioritário via WhatsApp 24/7", state: :included }
+            ],
+            action: "Falar com especialista"
+          }
+        } %>
+        <% @plans.each do |plan| %>
+          <% presentation = plan_presentations.fetch(plan.name, { features: [], action: "Contratar plano" }) %>
+          <%= render "pages/pricing_card", plan: plan, **presentation %>
+        <% end %>
       </div>
     </div>
   </section>

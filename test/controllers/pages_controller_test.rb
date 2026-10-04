@@ -23,7 +23,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
   test "visitor sees the active global plans without creating a subscription" do
     free = Plan.create!(name: "Free", description: "Plano gratuito", price: 0, billing_period: "monthly", active: true)
     beginner = Plan.create!(name: "Iniciante", description: "Para clubes iniciantes", price: 49, billing_period: "monthly", active: true)
-    master = Plan.create!(name: "Mestre", description: "Para clubes avançados", price: 119, billing_period: "monthly", active: true)
+    professional = Plan.create!(name: "Profissional", description: "Para clubes avançados", price: 119, billing_period: "monthly", active: true)
     Plan.create!(name: "Plano indisponível", description: "Não deve aparecer", price: 999, billing_period: "monthly", active: false)
 
     assert_no_difference("ClubSubscription.count") do
@@ -31,13 +31,13 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :success
-    [free, beginner, master].each do |plan|
-      assert_select ".landing-plan", text: /#{plan.name}/, count: 1
-      assert_select ".landing-plan", text: /#{plan.description}/, count: 1
-      assert_select ".landing-plan", text: /#{plan.price}/, count: 1
-      assert_select ".landing-plan", text: /#{plan.billing_period}/, count: 1
+    [free, beginner, professional].each do |plan|
+      assert_select ".landing-plan h3", text: plan.name, count: 1
+      assert_select ".landing-plan__intro p", text: plan.description, count: 1
+      assert_select ".landing-plan__price", text: /#{plan.price}/, count: 1
       assert_select ".landing-plan a[href='#{new_club_subscription_path(plan_id: plan.id)}']", count: 1
     end
+    assert_select ".landing-plan__price-row small", text: "/ mês", count: 3
     assert_not_includes response.body, "Plano indisponível"
   end
 

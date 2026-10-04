@@ -26,6 +26,42 @@ class ClubsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".clubs-header a[data-turbo-prefetch='false'][href='#{new_club_path}']", count: 1
   end
 
+  test "lists only clubs where the user is an owner or admin" do
+    admin_club = Club.create!(name: "Admin Club")
+    dealer_club = Club.create!(name: "Dealer Club")
+    player_club = Club.create!(name: "Player Club")
+
+    ClubMembership.create!(user: @owner, club: admin_club, role: :admin)
+    ClubMembership.create!(user: @owner, club: dealer_club, role: :dealer)
+    ClubMembership.create!(user: @owner, club: player_club, role: :player)
+
+    sign_in @owner
+    get clubs_path
+
+    assert_response :success
+    assert_select ".club-card h3", text: "Poker House", count: 1
+    assert_select ".club-card h3", text: "Admin Club", count: 1
+    assert_select ".club-card h3", text: "Dealer Club", count: 0
+    assert_select ".club-card h3", text: "Player Club", count: 0
+  end
+
+  test "does not return dealer or player clubs when filtering the index" do
+    dealer_club = Club.create!(name: "Dealer Poker Club")
+    player_club = Club.create!(name: "Player Poker Club")
+
+    ClubMembership.create!(user: @owner, club: dealer_club, role: :dealer)
+    ClubMembership.create!(user: @owner, club: player_club, role: :player)
+
+    sign_in @owner
+    get clubs_path, params: { query: "Poker" }
+
+    assert_response :success
+    assert_select ".club-card", count: 1
+    assert_select ".club-card h3", text: "Poker House", count: 1
+    assert_select ".club-card h3", text: "Dealer Poker Club", count: 0
+    assert_select ".club-card h3", text: "Player Poker Club", count: 0
+  end
+
   test "owner can configure the club PIX payment settings" do
     sign_in @owner
 

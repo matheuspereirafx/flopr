@@ -124,7 +124,7 @@ class TournamentPrizePoolsControllerTest < ActionDispatch::IntegrationTest
     patch club_tournament_prize_pool_path(@club, @tournament),
           params: prize_pool_payload(
             rake_percentage: "25",
-            percentages: [100, 0],
+            percentages: [100],
             first_position_id: prize_pool.prize_positions.first.id
           )
 
@@ -169,13 +169,15 @@ class TournamentPrizePoolsControllerTest < ActionDispatch::IntegrationTest
   private
 
   def prize_pool_payload(rake_percentage: "0", percentages: [60, 40], first_position_id: nil)
+    positions = {
+      "0" => { id: first_position_id, position: 1, percentage: percentages[0] }
+    }
+    positions["1"] = { position: 2, percentage: percentages[1] } if percentages[1]
+
     {
       prize_pool: {
         rake_percentage: rake_percentage,
-        prize_positions_attributes: {
-          "0" => { id: first_position_id, position: 1, percentage: percentages[0] },
-          "1" => { position: 2, percentage: percentages[1] }
-        }
+        prize_positions_attributes: positions
       }
     }
   end

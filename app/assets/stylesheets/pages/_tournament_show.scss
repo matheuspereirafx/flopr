@@ -168,12 +168,13 @@
   overscroll-behavior: contain;
 
   &__trophy { display: grid; width: 86px; height: 86px; place-items: center; border-radius: 50%; color: #ffb3b4; background: rgba(255, 179, 180, .1); font-size: 42px; }
-  &__winner { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 16px; min-height: 114px; padding: 18px 24px; border: 1px solid rgba(152, 143, 215, .5); border-radius: 10px; background: linear-gradient(105deg, rgba(152, 143, 215, .85), rgba(57, 52, 78, .78)); }
-  &__winner .overview-prize-pool__trophy { width: 52px; height: 52px; font-size: 30px; }
+  &__winner { display: flex; min-height: 0; align-items: center; justify-content: space-between; gap: 16px; padding: 17px; border: 1px solid rgba(82, 72, 156, .3); border-radius: 12px; background: rgba(82, 72, 156, .2); }
+  &__winner .overview-prize-pool__trophy { width: 18px; height: 18px; border-radius: 0; background: transparent; font-size: 0; }
   &__winner-player { display: grid; gap: 4px; min-width: 0; }
-  &__winner-player span, &__hint { color: #e8e3ff; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
-  &__winner-player strong { overflow: hidden; color: #f0eff4; font-family: $font-secondary; font-size: 30px; text-overflow: ellipsis; white-space: nowrap; }
-  &__winner-value { color: #e1dcff; font-family: $font-primary; font-size: 28px; }
+  &__winner-player span { color: #c9c4d3; font-size: 16px; letter-spacing: 0; text-transform: none; }
+  &__hint { color: #e8e3ff; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
+  &__winner-player strong { overflow: hidden; color: #e5e1e3; font-family: $font-secondary; font-size: 16px; text-overflow: ellipsis; white-space: nowrap; }
+  &__winner > strong { color: #f0eff4; font-family: $font-secondary; font-size: 16px; font-weight: 600; }
   // Mantém três cards de colocação visíveis; posições adicionais avançam automaticamente.
   &__placements { display: grid; gap: 8px; max-height: 210px; margin-top: 12px; overflow: hidden; }
   &__placement { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; min-height: 62px; align-items: center; gap: 12px; padding: 12px 16px; border: 1px solid rgba(255, 255, 255, .06); border-radius: 10px; background: rgba(19, 19, 20, .5); transition: border-color .2s ease, background-color .2s ease, transform .2s ease; }

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_04_150000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_04_160000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -267,14 +267,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_04_150000) do
 
   create_table "tournament_prize_positions", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.decimal "percentage", precision: 5, scale: 2, null: false
+    t.integer "percentage", null: false
     t.integer "position", null: false
     t.bigint "tournament_prize_pool_id", null: false
     t.datetime "updated_at", null: false
     t.index ["tournament_prize_pool_id", "position"], name: "index_prize_positions_on_pool_and_position", unique: true
     t.index ["tournament_prize_pool_id"], name: "index_tournament_prize_positions_on_tournament_prize_pool_id"
     t.check_constraint "\"position\" > 0", name: "tournament_prize_positions_position_positive"
-    t.check_constraint "percentage >= 0::numeric AND percentage <= 100::numeric", name: "tournament_prize_positions_percentage_in_range"
+    t.check_constraint "percentage > 0 AND percentage <= 100", name: "tournament_prize_positions_percentage_in_range"
   end
 
   create_table "tournament_registrations", force: :cascade do |t|

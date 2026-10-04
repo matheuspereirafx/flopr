@@ -2,9 +2,12 @@
   <span class="prize-pool-position__number" data-prize-pool-form-target="positionLabel"></span>
   <%= position_fields.hidden_field :position, data: { prize_pool_form_target: "positionInput" } %>
   <div class="prize-pool-position__percentage">
-    <%= position_fields.number_field :percentage, class: "input", min: 0, max: 100, step: "0.01", placeholder: "0" %>
+    <%= position_fields.number_field :percentage, class: "input", min: 1, max: 100, step: 1, placeholder: "1" %>
     <span aria-hidden="true">%</span>
   </div>
+  <span class="prize-pool-position__amount" data-prize-pool-form-target="amount">
+    <%= number_to_currency(prize_amount, unit: "R$ ", separator: ",", delimiter: ".") %>
+  </span>
   <%= position_fields.hidden_field :_destroy, value: "0", data: { prize_pool_form_target: "destroyInput" } %>
   <button type="button" class="icon-button icon-button--danger" aria-label="Remover posição"
           data-action="prize-pool-form#removePosition"><span class="icon-button__symbol" aria-hidden="true">×</span></button>

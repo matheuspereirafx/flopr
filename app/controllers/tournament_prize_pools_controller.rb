@@ -7,7 +7,7 @@ class TournamentPrizePoolsController < ApplicationController
 
   def new
     @prize_pool = @tournament.build_prize_pool(rake_percentage: 0)
-    @prize_pool.prize_positions.build(position: 1)
+    @prize_pool.prize_positions.build(position: 1, percentage: 100)
   end
 
   def create

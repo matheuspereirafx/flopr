@@ -1,6 +1,11 @@
 class Club < ApplicationRecord
   has_many :tournaments, dependent: :destroy
   has_many :club_memberships, dependent: :destroy
+  has_many :club_subscriptions, dependent: :restrict_with_exception
+
+  has_one :active_club_subscription,
+          -> { where(status: "active") },
+          class_name: "ClubSubscription"
 
   has_many :members,
            through: :club_memberships,

@@ -64,7 +64,7 @@ class ClubSubscriptionsControllerTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
 
-    assert_select ".flash, .notice", text: /contrat/i
+    assert_select ".alert", text: /contrat/i
   end
 
   test "does not create a subscription for a club owned by another user" do

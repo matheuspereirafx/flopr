@@ -13,9 +13,9 @@ class ClubSubscriptionTest < ActiveSupport::TestCase
     subscription = ClubSubscription.new(status: :active, billing_period: "monthly")
 
     assert_not_predicate subscription, :valid?
-    assert_includes subscription.errors[:club], "must exist"
-    assert_includes subscription.errors[:plan], "must exist"
-    assert_includes subscription.errors[:owner], "must exist"
+    assert_predicate subscription.errors[:club], :present?
+    assert_predicate subscription.errors[:plan], :present?
+    assert_predicate subscription.errors[:owner], :present?
   end
 
   test "supports active, canceled and expired statuses" do

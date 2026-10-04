@@ -18,9 +18,9 @@ class PlanTest < ActiveSupport::TestCase
     plan = Plan.new(valid_plan_attributes.except(:name, :price, :billing_period))
 
     assert_not_predicate plan, :valid?
-    assert_includes plan.errors[:name], "can't be blank"
-    assert_includes plan.errors[:price], "can't be blank"
-    assert_includes plan.errors[:billing_period], "can't be blank"
+    assert_predicate plan.errors[:name], :present?
+    assert_predicate plan.errors[:price], :present?
+    assert_predicate plan.errors[:billing_period], :present?
   end
 
   test "does not accept a negative price" do

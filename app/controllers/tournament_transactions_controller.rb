@@ -53,6 +53,8 @@ class TournamentTransactionsController < ApplicationController
 
     payment.tournament_registration.update!(status: :confirmed) if payment.tournament_charge_option.buy_in?
 
+    TournamentFinancialsChannel.broadcast_summary(@tournament)
+
     redirect_to club_tournament_transactions_path(@club, @tournament),
                 notice: "Pagamento confirmado com sucesso."
   rescue ActiveRecord::RecordInvalid

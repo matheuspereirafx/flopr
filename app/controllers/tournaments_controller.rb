@@ -30,6 +30,7 @@ class TournamentsController < ApplicationController
 
   def show
     @prize_pool = @tournament.prize_pool
+    @can_view_prize_pool_amount = @current_membership&.owner? || @current_membership&.admin?
     @buy_in = @tournament.charge_options.find do |option|
       option.buy_in? && option.active?
     end

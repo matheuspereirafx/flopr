@@ -1,4 +1,6 @@
 class RegistrationPayment < ApplicationRecord
+  ELIGIBLE_PRIZE_POOL_KINDS = %w[buy_in rebuy double_rebuy addon].freeze
+
   belongs_to :tournament_registration
   belongs_to :registration_payment_group, optional: true
   belongs_to :tournament_charge_option
@@ -18,6 +20,11 @@ class RegistrationPayment < ApplicationRecord
     card: "card",
     manual: "manual"
   }, validate: true
+
+  scope :eligible_for_prize_pool, -> {
+    joins(:tournament_charge_option)
+      .where(status: :paid, tournament_charge_options: { kind: ELIGIBLE_PRIZE_POOL_KINDS })
+  }
 
   validates :amount,
             presence: true,

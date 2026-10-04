@@ -1,20 +1,20 @@
 <% if prize_position.position == 1 %>
   <li class="overview-prize-pool__winner">
-    <%= image_tag "icons/figma-trophy.svg",
-                  class: "overview-prize-pool__trophy",
-                  alt: "" %>
+    <span class="overview-prize-pool__trophy">
+      <%= image_tag "icons/figma-trophy.svg", alt: "" %>
+    </span>
     <div class="overview-prize-pool__winner-player">
-      <strong>1º lugar</strong>
-      <span><%= prize_position.percentage %>% do prize pool</span>
+      <span>Campeão</span>
+      <strong>Jogador não definido</strong>
     </div>
-    <strong>
+    <strong class="overview-prize-pool__winner-value">
       <%= number_to_currency(prize_amount, unit: "R$ ", separator: ",", delimiter: ".") %>
     </strong>
   </li>
 <% else %>
   <li class="overview-prize-pool__placement">
-    <span class="overview-prize-pool__position"><%= prize_position.position %>º</span>
-    <span><%= prize_position.percentage %>%</span>
+    <strong class="overview-prize-pool__position"><%= prize_position.position %>º</strong>
+    <span>Jogador não definido</span>
     <strong><%= number_to_currency(prize_amount, unit: "R$ ", separator: ",", delimiter: ".") %></strong>
   </li>
 <% end %>

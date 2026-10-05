@@ -1,20 +1,24 @@
 <article class="landing-plan<%= ' landing-plan--highlighted' if local_assigns[:highlighted] %>">
   <% if local_assigns[:highlighted] %><span class="landing-plan__badge">Mais popular</span><% end %>
   <div class="landing-plan__body">
-    <div class="landing-plan__intro"><h3><%= name %></h3><p><%= description %></p></div>
+    <div class="landing-plan__intro"><h3><%= plan.name %></h3><p><%= plan.description %></p></div>
     <div class="landing-plan__price-row">
-      <strong class="landing-plan__price"><%= price %></strong><small>/ mês</small>
+      <strong class="landing-plan__price"><%= number_to_currency(plan.price, unit: "R$ ", separator: ",", delimiter: ".") %></strong>
+      <small>/ <%= plan.monthly? ? "mês" : "ano" %></small>
       <% if local_assigns[:annual_price] %><span class="landing-plan__annual"><%= annual_price %></span><% end %>
     </div>
     <ul>
       <% features.each do |feature| %>
-        <% feature_data = feature.is_a?(Hash) ? feature : { text: feature, state: :included } %>
-        <% unavailable = feature_data[:state].to_sym == :unavailable %>
+        <% unavailable = feature[:state].to_sym == :unavailable %>
         <li class="<%= 'is-unavailable' if unavailable %>">
-          <%= image_tag(unavailable ? 'landing/pricing-cross.svg' : (local_assigns[:highlighted] ? 'landing/pricing-check-highlighted.svg' : 'landing/pricing-check.svg'), alt: '', aria: { hidden: true }) %>
-          <%= feature_data[:text] %>
+          <%= image_tag(unavailable ? "landing/pricing-cross.svg" : (local_assigns[:highlighted] ? "landing/pricing-check-highlighted.svg" : "landing/pricing-check.svg"), alt: "", aria: { hidden: true }) %>
+          <%= feature[:text] %>
         </li>
-      <% end %></ul>
+      <% end %>
+    </ul>
   </div>
-  <a href="#comunidade" class="landing-plan__action"><%= action %></a>
+  <% cta_path = user_signed_in? && current_user.owned_clubs.none? ?
+                  new_club_path(plan_id: plan.id) :
+                  new_club_subscription_path(plan_id: plan.id) %>
+  <%= link_to action, cta_path, class: "landing-plan__action" %>
 </article>

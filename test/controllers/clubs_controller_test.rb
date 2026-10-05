@@ -26,6 +26,98 @@ class ClubsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".clubs-header a[data-turbo-prefetch='false'][href='#{new_club_path}']", count: 1
   end
 
+  test "owner can create a second club" do
+    sign_in @owner
+
+    assert_difference("Club.count", 1) do
+      assert_difference("ClubMembership.count", 1) do
+        post clubs_path, params: { club: { name: "Second Club" } }
+      end
+    end
+
+    assert_redirected_to clubs_path
+    assert_equal :owner, Club.find_by!(name: "Second Club").club_memberships.find_by!(user: @owner).role.to_sym
+  end
+
+  test "redirects a new club to the selected plan after creation" do
+    user = User.create!(
+      email: "new-club-owner@example.com",
+      password: "password123",
+      name: "New Club Owner",
+      username: "new_club_owner"
+    )
+    plan = Plan.create!(
+      name: "Profissional",
+      description: "Para clubes avançados",
+      price: 119,
+      billing_period: "monthly",
+      active: true
+    )
+    sign_in user
+
+    get new_club_path(plan_id: plan.id)
+
+    assert_response :success
+    assert_select "input[type='hidden'][name='plan_id'][value='#{plan.id}']", count: 1
+
+    post clubs_path, params: { club: { name: "New Club" }, plan_id: plan.id }
+
+    assert_redirected_to new_club_subscription_path(plan_id: plan.id)
+    assert_equal "New Club", user.reload.owned_clubs.first.name
+  end
+
+  test "owner cannot create a third club" do
+    second_club = Club.create!(name: "Second Club")
+    ClubMembership.create!(user: @owner, club: second_club, role: :owner)
+    sign_in @owner
+
+    assert_no_difference(["Club.count", "ClubMembership.count"]) do
+      post clubs_path, params: { club: { name: "Third Club" } }
+    end
+
+    assert_redirected_to clubs_path
+    assert_equal "Você já possui o limite de 2 clubes.", flash[:alert]
+    assert_nil Club.find_by(name: "Third Club")
+  end
+
+  test "does not show the create club button after reaching the owner limit" do
+    second_club = Club.create!(name: "Second Club")
+    ClubMembership.create!(user: @owner, club: second_club, role: :owner)
+    sign_in @owner
+
+    get clubs_path
+
+    assert_response :success
+    assert_select ".clubs-header a[href='#{new_club_path}']", count: 0
+    assert_select ".clubs-header__limit-message", text: /limite de 2 clubes/
+  end
+
+  test "does not allow access to the new club form after reaching the owner limit" do
+    second_club = Club.create!(name: "Second Club")
+    ClubMembership.create!(user: @owner, club: second_club, role: :owner)
+    sign_in @owner
+
+    get new_club_path
+
+    assert_redirected_to clubs_path
+    assert_equal "Você já possui o limite de 2 clubes.", flash[:alert]
+  end
+
+  test "does not expose a club deletion route" do
+    delete club_path(@club)
+
+    assert_response :not_found
+  end
+
+  test "does not show the club deletion action" do
+    sign_in @owner
+    get clubs_path
+
+    assert_response :success
+    assert_select ".inside-menu-item--danger", count: 0
+    assert_select "form[action='#{club_path(@club)}'][method='post'] input[name='_method'][value='delete']", count: 0
+  end
+
   test "lists only clubs where the user is an owner or admin" do
     admin_club = Club.create!(name: "Admin Club")
     dealer_club = Club.create!(name: "Dealer Club")

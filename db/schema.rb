@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_04_160000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_04_180100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -104,6 +104,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_04_160000) do
     t.check_constraint "net_amount > 0::numeric", name: "club_payouts_net_amount_positive"
   end
 
+  create_table "club_subscriptions", force: :cascade do |t|
+    t.string "billing_period", null: false
+    t.bigint "club_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "owner_id", null: false
+    t.bigint "plan_id", null: false
+    t.string "status", default: "active", null: false
+    t.datetime "updated_at", null: false
+    t.index ["club_id"], name: "index_club_subscriptions_on_active_club", unique: true, where: "((status)::text = 'active'::text)"
+    t.index ["club_id"], name: "index_club_subscriptions_on_club_id"
+    t.index ["owner_id"], name: "index_club_subscriptions_on_owner_id"
+    t.index ["plan_id"], name: "index_club_subscriptions_on_plan_id"
+    t.index ["status"], name: "index_club_subscriptions_on_status"
+  end
+
   create_table "clubs", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name"
@@ -125,6 +140,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_04_160000) do
     t.index ["registration_payment_group_id"], name: "index_payment_webhook_events_on_registration_payment_group_id"
     t.index ["registration_payment_id"], name: "index_payment_webhook_events_on_registration_payment_id"
     t.check_constraint "(registration_payment_id IS NOT NULL) <> (registration_payment_group_id IS NOT NULL)", name: "payment_webhook_events_exactly_one_payment_resource"
+  end
+
+  create_table "plans", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.string "billing_period", null: false
+    t.datetime "created_at", null: false
+    t.text "description", null: false
+    t.string "name", null: false
+    t.decimal "price", precision: 10, scale: 2, null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_plans_on_active"
+    t.index ["name"], name: "index_plans_on_name", unique: true
+    t.check_constraint "price >= 0::numeric", name: "plans_price_non_negative"
   end
 
   create_table "platform_payment_settings", force: :cascade do |t|
@@ -344,6 +372,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_04_160000) do
   add_foreign_key "club_payouts", "club_payout_destinations"
   add_foreign_key "club_payouts", "clubs"
   add_foreign_key "club_payouts", "users", column: "requested_by_id"
+  add_foreign_key "club_subscriptions", "clubs"
+  add_foreign_key "club_subscriptions", "plans"
+  add_foreign_key "club_subscriptions", "users", column: "owner_id"
   add_foreign_key "payment_webhook_events", "registration_payment_groups"
   add_foreign_key "payment_webhook_events", "registration_payments"
   add_foreign_key "registration_payment_groups", "tournament_registrations"

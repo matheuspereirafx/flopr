@@ -1,0 +1,72 @@
+<main class="club-subscription-page" aria-labelledby="club-subscription-title">
+  <div class="club-subscription-shell">
+    <header class="club-subscription-header">
+      <%= link_to "← Voltar para os planos", root_path(anchor: "planos"), class: "club-subscription-back" %>
+      <span class="club-subscription-kicker">Contratação do plano</span>
+      <h1 id="club-subscription-title">Escolha o clube da assinatura</h1>
+      <p>Confirme o plano selecionado e escolha um clube em que você é owner.</p>
+    </header>
+
+    <div class="club-subscription-layout">
+      <section class="club-subscription-summary" aria-labelledby="selected-plan-title">
+        <span class="club-subscription-summary__label">Plano selecionado</span>
+        <h2 id="selected-plan-title"><%= @plan.name %></h2>
+        <p><%= @plan.description %></p>
+        <div class="club-subscription-summary__price">
+          <strong><%= number_to_currency(@plan.price, unit: "R$ ", separator: ",", delimiter: ".") %></strong>
+          <span>/ <%= @plan.monthly? ? "mês" : "ano" %></span>
+        </div>
+      </section>
+
+      <section class="club-subscription-form-card" aria-labelledby="club-selection-title">
+        <h2 id="club-selection-title">Clube</h2>
+        <p class="club-subscription-form-card__hint">A assinatura ficará vinculada ao clube selecionado.</p>
+
+        <%= form_with url: club_subscriptions_path,
+                      method: :post,
+                      class: "club-subscription-form",
+                      data: {
+                        controller: "subscription-flow",
+                        subscription_flow_new_plan_price_value: @plan.price.to_f,
+                        action: "submit->subscription-flow#confirm"
+                      } do |form| %>
+          <%= form.hidden_field :plan_id, value: @plan.id %>
+
+          <div class="club-subscription-field">
+            <%= form.label :club_id, "Selecione um clube" %>
+            <select name="club_id"
+                    id="club_id"
+                    required
+                    data-subscription-flow-target="club"
+                    data-action="change->subscription-flow#checkDowngrade">
+              <option value="">Escolha um clube</option>
+              <% @owned_clubs.each do |club| %>
+                <% same_plan = club.active_club_subscription&.plan_id == @plan.id %>
+                <option value="<%= club.id %>"
+                        data-current-plan-price="<%= club.active_club_subscription&.plan&.price %>"
+                        <%= "disabled" if same_plan %>>
+                  <%= club.name %><%= " (plano já ativo)" if same_plan %>
+                </option>
+              <% end %>
+            </select>
+          </div>
+
+          <% available_club = @owned_clubs.any? { |club| club.active_club_subscription&.plan_id != @plan.id } %>
+          <% if available_club %>
+            <p class="club-subscription-security-note">A contratação será registrada em seu nome como responsável histórico.</p>
+            <div class="club-subscription-downgrade-warning"
+                 data-subscription-flow-target="downgradeWarning"
+                 hidden>
+              <strong>Atenção: redução de plano</strong>
+              <span>O plano escolhido pode ter menos acessos que o plano atual deste clube.</span>
+            </div>
+            <%= form.submit "Confirmar contratação", class: "club-subscription-submit" %>
+          <% else %>
+            <p class="club-subscription-security-note">Todos os seus clubes já possuem este plano ativo.</p>
+            <%= form.submit "Plano já contratado", class: "club-subscription-submit", disabled: true %>
+          <% end %>
+        <% end %>
+      </section>
+    </div>
+  </div>
+</main>

@@ -7,3 +7,28 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+[
+  {
+    name: "Free",
+    description: "Para quem joga casualmente com amigos no fim de semana.",
+    price: 0,
+    billing_period: :monthly
+  },
+  {
+    name: "Iniciante",
+    description: "Para organizadores frequentes e clubes de poker locais.",
+    price: 49,
+    billing_period: :monthly
+  },
+  {
+    name: "Profissional",
+    description: "Para grandes etapas de circuitos, ligas regionais e clubes federados.",
+    price: 119,
+    billing_period: :monthly
+  }
+].each do |attributes|
+  plan = Plan.find_or_initialize_by(name: attributes[:name])
+  plan.assign_attributes(attributes.merge(active: true))
+  plan.save!
+end

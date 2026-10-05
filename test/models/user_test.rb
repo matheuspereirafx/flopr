@@ -93,4 +93,23 @@ class UserTest < ActiveSupport::TestCase
     assert_not user.valid?
     assert user.errors[:cpf].any?
   end
+
+  test "counts only owned clubs against the club creation limit" do
+    user = User.create!(
+      username: "club.owner",
+      email: "club-owner@example.com",
+      password: "password123"
+    )
+    owned_club = Club.create!(name: "Owned Club")
+    member_club = Club.create!(name: "Member Club")
+    ClubMembership.create!(user: user, club: owned_club, role: :owner)
+    ClubMembership.create!(user: user, club: member_club, role: :player)
+
+    assert user.can_create_club?
+
+    second_owned_club = Club.create!(name: "Second Owned Club")
+    ClubMembership.create!(user: user, club: second_owned_club, role: :owner)
+
+    assert_not user.can_create_club?
+  end
 end

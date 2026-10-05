@@ -1,8 +1,14 @@
 class User < ApplicationRecord
+  MAX_OWNED_CLUBS = 2
+
   attribute :terms, :boolean, default: false
 
   has_many :club_memberships, dependent: :destroy
   has_many :tournament_registrations, dependent: :destroy
+  has_many :club_subscriptions_as_owner,
+           class_name: "ClubSubscription",
+           foreign_key: :owner_id,
+           dependent: :restrict_with_exception
 
   has_many :recorded_registration_payments,
            class_name: "RegistrationPayment",
@@ -36,6 +42,10 @@ class User < ApplicationRecord
 
   def profile_incomplete?
     provider == "google_oauth2" && profile_completed_at.nil?
+  end
+
+  def can_create_club?
+    owned_clubs.count < MAX_OWNED_CLUBS
   end
 
   class << self

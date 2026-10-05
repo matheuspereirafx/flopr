@@ -1,0 +1,56 @@
+<main class="club-subscriptions-page" aria-labelledby="club-subscriptions-title">
+  <div class="club-subscriptions-shell">
+    <header class="club-subscriptions-header">
+      <span class="club-subscriptions-kicker">Gestão de assinaturas</span>
+      <h1 id="club-subscriptions-title">Meus planos</h1>
+      <p>Consulte e altere as assinaturas dos clubes em que você é owner.</p>
+    </header>
+
+    <% if @clubs.any? %>
+      <section class="club-subscriptions-grid" aria-label="Assinaturas dos meus clubes">
+        <% @clubs.each do |club| %>
+          <% subscription = club.active_club_subscription %>
+          <% plan = subscription&.plan %>
+          <article class="club-subscription-card">
+            <div class="club-subscription-card__header">
+              <span class="club-subscription-card__label">Clube</span>
+              <h2><%= club.name %></h2>
+            </div>
+
+            <% if subscription && plan %>
+              <dl class="club-subscription-card__details">
+                <div>
+                  <dt>Assinatura atual</dt>
+                  <dd><%= plan.name %></dd>
+                </div>
+                <div>
+                  <dt>Valor</dt>
+                  <dd><%= number_to_currency(plan.price, unit: "R$ ", separator: ",", delimiter: ".") %> / <%= plan.monthly? ? "mês" : "ano" %></dd>
+                </div>
+                <div>
+                  <dt>Expiração da assinatura</dt>
+                  <dd><%= subscription.respond_to?(:expires_at) && subscription.expires_at.present? ? l(subscription.expires_at.to_date) : "Não definida" %></dd>
+                </div>
+              </dl>
+            <% else %>
+              <div class="club-subscription-card__empty">
+                <strong>Nenhuma assinatura ativa</strong>
+                <p>Escolha um plano para começar a utilizar o clube.</p>
+              </div>
+            <% end %>
+
+            <%= link_to(subscription ? "Mudar assinatura" : "Contratar plano",
+                        root_path(anchor: "planos"),
+                        class: "club-subscription-card__action") %>
+          </article>
+        <% end %>
+      </section>
+    <% else %>
+      <section class="club-subscriptions-empty" aria-live="polite">
+        <h2>Nenhum clube disponível</h2>
+        <p>Crie um clube ou torne-se owner de um clube para gerenciar planos.</p>
+        <%= link_to "Meus clubes", clubs_path, class: "club-subscription-card__action" %>
+      </section>
+    <% end %>
+  </div>
+</main>

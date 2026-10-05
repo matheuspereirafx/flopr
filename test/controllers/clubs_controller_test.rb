@@ -2,6 +2,13 @@ require "test_helper"
 
 class ClubsControllerTest < ActionDispatch::IntegrationTest
   def setup
+    Plan.create!(
+      name: "Free",
+      description: "Plano gratuito",
+      price: 0,
+      billing_period: :monthly,
+      active: true
+    )
     @club = Club.create!(name: "Poker House")
     @owner = User.create!(
       email: "owner@example.com",
@@ -37,6 +44,23 @@ class ClubsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to clubs_path
     assert_equal :owner, Club.find_by!(name: "Second Club").club_memberships.find_by!(user: @owner).role.to_sym
+  end
+
+  test "creates a free active subscription for a new club" do
+    sign_in @owner
+
+    assert_difference ["Club.count", "ClubMembership.count", "ClubSubscription.count"], 1 do
+      post clubs_path, params: { club: { name: "Free Club" } }
+    end
+
+    club = Club.find_by!(name: "Free Club")
+    subscription = club.active_club_subscription
+
+    assert_redirected_to clubs_path
+    assert_equal "Free", subscription.plan.name
+    assert_equal @owner, subscription.owner
+    assert_predicate subscription, :active?
+    assert_equal "monthly", subscription.billing_period
   end
 
   test "redirects a new club to the selected plan after creation" do

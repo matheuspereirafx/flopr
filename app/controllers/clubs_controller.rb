@@ -88,10 +88,19 @@ class ClubsController < ApplicationController
       return :limit_reached unless current_user.can_create_club?
 
       ActiveRecord::Base.transaction do
+        free_plan = Plan.active.find_by(name: "Free")
+        return :invalid unless free_plan
+
         @club.save!
         @club.club_memberships.create!(
           user: current_user,
           role: :owner
+        )
+        @club.club_subscriptions.create!(
+          plan: free_plan,
+          owner: current_user,
+          status: :active,
+          billing_period: free_plan.billing_period
         )
       end
     end

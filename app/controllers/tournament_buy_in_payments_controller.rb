@@ -1,6 +1,7 @@
 class TournamentBuyInPaymentsController < ApplicationController
   before_action :set_member_club
   before_action :set_tournament
+  before_action -> { authorize_plan_feature!(:buy_ins) }
   before_action :set_registration
 
   def create

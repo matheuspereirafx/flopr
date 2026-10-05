@@ -10,6 +10,7 @@ class TournamentChargeOptionsControllerTest < ActionDispatch::IntegrationTest
     ClubMembership.create!(user: @owner, club: @club, role: :owner)
     ClubMembership.create!(user: @admin, club: @club, role: :admin)
     ClubMembership.create!(user: @outsider, club: @other_club, role: :owner)
+    enable_paid_plan(@club, @owner)
     @tournament = create_draft_tournament
   end
 

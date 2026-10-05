@@ -15,6 +15,7 @@ class TournamentPrizePoolsControllerTest < ActionDispatch::IntegrationTest
     create_membership(@dealer, @club, :dealer)
     create_membership(@player, @club, :player)
     create_membership(@outsider, @other_club, :owner)
+    enable_paid_plan(@club, @owner)
     @tournament = create_tournament(@club)
   end
 

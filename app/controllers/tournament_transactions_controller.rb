@@ -1,6 +1,7 @@
 class TournamentTransactionsController < ApplicationController
   before_action :set_member_club
   before_action :set_tournament
+  before_action -> { authorize_plan_feature!(:transactions) }
   before_action :authorize_transactions_view!
 
   def index

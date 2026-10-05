@@ -18,24 +18,32 @@ module ApplicationHelper
 
     items = [
       overview_navigation_item(club, tournament, active_page),
-      navigation_item("Jogadores", "icons/Iconplayer.svg", :players, active_page,
-                      club_tournament_registrations_path(club, tournament)),
       navigation_item("Relógio", "icons/timericon.png", :clock, active_page,
                       club_tournament_clock_path(club, tournament))
     ]
 
-    if membership.owner? || membership.admin?
+    if club.plan_allows?(:guest_list)
       items.insert(
-        2,
-        navigation_item(
-          "Transações",
-          "icons/iconcash.png",
-          :transactions,
-          active_page,
-          club_tournament_transactions_path(club, tournament)
-        )
+        1,
+        navigation_item("Jogadores", "icons/Iconplayer.svg", :players, active_page,
+                        club_tournament_registrations_path(club, tournament))
       )
-      if registration&.confirmed?
+    end
+
+    if membership.owner? || membership.admin?
+      if club.plan_allows?(:transactions)
+        items.insert(
+          2,
+          navigation_item(
+            "Transações",
+            "icons/iconcash.png",
+            :transactions,
+            active_page,
+            club_tournament_transactions_path(club, tournament)
+          )
+        )
+      end
+      if registration&.confirmed? && club.plan_allows?(:recharges)
         items.insert(
           3,
           navigation_item(
@@ -54,9 +62,9 @@ module ApplicationHelper
         active_page,
         edit_club_tournament_path(club, tournament)
       )
-    elsif membership.dealer?
+    elsif membership.dealer? && club.plan_allows?(:recharges)
       items.insert(2, navigation_item("Recargas", "icons/iconrecharge.svg", :reloads, active_page))
-    elsif registration&.confirmed?
+    elsif registration&.confirmed? && club.plan_allows?(:recharges)
       items.insert(
         2,
         navigation_item(

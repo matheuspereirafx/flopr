@@ -111,31 +111,33 @@
         <% plan_presentations = {
           "Free" => {
             features: [
-              { text: "Até 1 torneio por semana", state: :included },
-              { text: "Timer de blinds básico no navegador", state: :included },
-              { text: "Até 15 jogadores por torneio", state: :included },
-              { text: "Sem integração com pagamentos PIX", state: :unavailable }
+              { text: "Até 1 torneio iniciado por mês", state: :included },
+              { text: "Configuração de blinds", state: :included },
+              { text: "Timer de blinds", state: :included },
+              { text: "Convites, buy-ins e transações", state: :unavailable },
+              { text: "Recargas e prize pool", state: :unavailable }
             ],
             action: "Começar grátis"
           },
           "Iniciante" => {
             features: [
-              { text: "Torneios e mesas ilimitadas", state: :included },
-              { text: "Aprovação automática de PIX e buy-ins", state: :included },
-              { text: "Telão TV Fullscreen com logomarca própria", state: :included },
-              { text: "Player App com Ranking Semestral/Anual", state: :included },
-              { text: "Histórico financeiro e exportação de relatórios", state: :included }
+              { text: "Até 4 torneios iniciados por mês", state: :included },
+              { text: "Convites e lista de convidados", state: :included },
+              { text: "Buy-ins e transações", state: :included },
+              { text: "Solicitações de recarga", state: :included },
+              { text: "Prize pool", state: :included }
             ],
             action: "Assinar Iniciante",
             highlighted: true,
-            annual_price: "ou R$ 399 ao ano (32% de desconto)"
+            annual_price: nil
           },
           "Profissional" => {
             features: [
-              { text: "Tudo incluso do plano Iniciante", state: :included },
-              { text: "Multi-mesas e operadores/dealers ilimitados", state: :included },
-              { text: "Relatórios fiscais, rake e balanço contábil", state: :included },
-              { text: "Suporte prioritário via WhatsApp 24/7", state: :included }
+              { text: "Até 9 torneios iniciados por mês", state: :included },
+              { text: "Convites e lista de convidados", state: :included },
+              { text: "Buy-ins e transações", state: :included },
+              { text: "Solicitações de recarga", state: :included },
+              { text: "Prize pool", state: :included }
             ],
             action: "Assinar Profissional"
           }

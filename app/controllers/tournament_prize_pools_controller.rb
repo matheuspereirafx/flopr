@@ -1,6 +1,7 @@
 class TournamentPrizePoolsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_member_club
+  before_action -> { authorize_plan_feature!(:prize_pool) }
   before_action :authorize_configuration!
   before_action :set_tournament
   before_action :set_prize_pool, only: %i[edit update]

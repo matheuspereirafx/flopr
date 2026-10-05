@@ -5,6 +5,18 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  def authorize_plan_feature!(feature)
+    return if performed? || @club&.plan_allows?(feature)
+
+    render plain: "Forbidden", status: :forbidden
+  end
+
+  def authorize_tournament_plan_feature!(feature)
+    return if performed? || @tournament&.club&.plan_allows?(feature)
+
+    render plain: "Forbidden", status: :forbidden
+  end
+
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(
       :sign_up,

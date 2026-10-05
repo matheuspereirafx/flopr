@@ -84,6 +84,10 @@ class Tournament < ApplicationRecord
     !finished? && !capacity_reached?
   end
 
+  def clock_started?
+    clock_started_at.present?
+  end
+
   private
 
   def status_cannot_move_backwards

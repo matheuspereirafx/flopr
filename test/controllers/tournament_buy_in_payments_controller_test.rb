@@ -89,6 +89,7 @@ class TournamentBuyInPaymentsControllerTest < ActionDispatch::IntegrationTest
     @other_owner = payment_create_user("other-owner-buy-in@example.com")
     payment_create_membership(user: @player, club: @club, role: :player)
     payment_create_membership(user: @other_owner, club: @other_club, role: :owner)
+    enable_paid_plan(@club, @other_owner)
     @buy_in = payment_create_charge_option(tournament: @tournament, kind: :buy_in, amount: 100)
     payment_create_charge_option(tournament: @other_tournament, kind: :buy_in, amount: 100)
     @registration = payment_create_registration(tournament: @tournament, user: @player, status: :pending)

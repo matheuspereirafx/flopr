@@ -18,13 +18,13 @@
   {
     name: "Iniciante",
     description: "Para organizadores frequentes e clubes de poker locais.",
-    price: 49,
+    price: 190,
     billing_period: :monthly
   },
   {
     name: "Profissional",
     description: "Para grandes etapas de circuitos, ligas regionais e clubes federados.",
-    price: 119,
+    price: 290,
     billing_period: :monthly
   }
 ].each do |attributes|

@@ -35,7 +35,7 @@ class ClubPlanAccessControllerTest < ActionDispatch::IntegrationTest
     subscribe(@club, @free_plan)
     sign_in @owner
 
-    get new_club_tournament_charge_options_path(@club, @tournament)
+    get new_club_tournament_path(@club)
     assert_response :success
 
     post start_club_tournament_clock_path(@club, @tournament)
@@ -235,22 +235,27 @@ class ClubPlanAccessControllerTest < ActionDispatch::IntegrationTest
       @monthly_plan => 4,
       @premium_plan => 9
     }.each do |plan, limit|
-      subscribe(@club, plan)
+      limit_club = create_club("#{plan.name} Limit Club")
+      create_membership(@owner, limit_club, :owner)
+      subscribe(limit_club, plan)
       sign_in @owner
 
       limit.times do |index|
-        tournament = create_tournament(@club, "#{plan.name} Tournament #{index}")
-        post start_club_tournament_clock_path(@club, tournament)
+        tournament = create_tournament(limit_club, "#{plan.name} Tournament #{index}")
+        assert_equal plan, limit_club.reload.active_club_subscription.plan
+        assert_equal index, limit_club.reload.started_tournaments_in_month.count
+        post start_club_tournament_clock_path(limit_club, tournament)
+        assert_response :redirect
         assert_predicate tournament.reload.clock_state, :running?
       end
 
-      blocked_tournament = create_tournament(@club, "#{plan.name} Blocked Tournament")
-      post start_club_tournament_clock_path(@club, blocked_tournament)
+      blocked_tournament = create_tournament(limit_club, "#{plan.name} Blocked Tournament")
+      post start_club_tournament_clock_path(limit_club, blocked_tournament)
 
       assert_response :forbidden
       assert_predicate blocked_tournament.reload.clock_state, :not_started?
       sign_out @owner
-      @club.reload.active_club_subscription.update!(status: :canceled)
+      limit_club.reload.active_club_subscription.update!(status: :canceled)
     end
   end
 

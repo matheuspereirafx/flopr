@@ -2,6 +2,8 @@ class TournamentsController < ApplicationController
   before_action :set_member_club
   before_action :authorize_owner!, only: %i[new create edit update destroy]
   before_action :set_tournament, only: %i[show edit update destroy finish join]
+  before_action :authorize_invitation_access!, only: :show
+  before_action -> { authorize_tournament_plan_feature!(:buy_ins) }, only: :join
   before_action :authorize_tournament_deletion!, only: :destroy
   before_action :authorize_tournament_finishing!, only: :finish
   before_action :authorize_tournament_join!, only: :join
@@ -29,11 +31,12 @@ class TournamentsController < ApplicationController
   end
 
   def show
-    @prize_pool = @tournament.prize_pool
-    @can_view_prize_pool_amount = @current_membership&.owner? || @current_membership&.admin?
+    @prize_pool = @tournament.prize_pool if @club.plan_allows?(:prize_pool)
+    @can_view_prize_pool_amount = (@current_membership&.owner? || @current_membership&.admin?) &&
+                                  @club.plan_allows?(:prize_pool)
     @buy_in = @tournament.charge_options.find do |option|
       option.buy_in? && option.active?
-    end
+    end if @club.plan_allows?(:buy_ins)
     @invite_token_access = invitation_show_request?
     @invite_registration = current_user.tournament_registrations.find_by(
       tournament: @tournament
@@ -168,6 +171,12 @@ class TournamentsController < ApplicationController
     return if can_participate_as_player? && @tournament.posted?
 
     render plain: "Forbidden", status: :forbidden
+  end
+
+  def authorize_invitation_access!
+    return unless invitation_show_request?
+
+    authorize_tournament_plan_feature!(:invitations)
   end
 
   def tournament_params

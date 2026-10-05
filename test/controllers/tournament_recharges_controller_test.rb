@@ -207,6 +207,7 @@ class TournamentRechargesControllerTest < ActionDispatch::IntegrationTest
     payment_create_membership(user: @player, club: @club, role: :player)
     payment_create_membership(user: @other_player, club: @other_club, role: :player)
     payment_create_membership(user: @outsider, club: @other_club, role: :owner)
+    enable_paid_plan(@club, @owner)
 
     payment_create_charge_option(tournament: @tournament, kind: :buy_in)
     @rebuy = payment_create_charge_option(tournament: @tournament, kind: :rebuy, amount: 100)

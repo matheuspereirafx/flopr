@@ -10,6 +10,7 @@ class TournamentInvitationLinksControllerTest < ActionDispatch::IntegrationTest
     ClubMembership.create!(user: @owner, club: @club, role: :owner)
     ClubMembership.create!(user: @admin, club: @club, role: :admin)
     ClubMembership.create!(user: @dealer, club: @club, role: :dealer)
+    enable_paid_plan(@club, @owner)
     @tournament = create_tournament(@club)
   end
 

@@ -71,6 +71,7 @@ class Tournament < ApplicationRecord
 
   before_validation :renumber_blind_levels
   before_validation :generate_invite_token, on: :create
+  after_create :record_creation_usage
 
   def confirmed_registrations_count
     tournament_registrations.confirmed.count
@@ -166,6 +167,10 @@ class Tournament < ApplicationRecord
     return true unless club
 
     club.active_plan.nil? || club.plan_allows?(:buy_ins)
+  end
+
+  def record_creation_usage
+    club.tournament_creations.create!
   end
 
   def double_rebuy_requires_rebuy

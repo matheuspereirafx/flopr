@@ -394,6 +394,28 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "posted", first_tournament.reload.status
   end
 
+  test "deleting a free tournament does not restore the monthly creation quota" do
+    enable_free_plan(@club, @owner)
+    sign_in @owner
+
+    assert_difference "TournamentCreation.count", 1 do
+      post club_tournaments_path(@club), params: tournament_payload
+    end
+    first_tournament = Tournament.order(:created_at).last
+
+    assert_difference "Tournament.count", -1 do
+      delete club_tournament_path(@club, first_tournament)
+    end
+
+    assert_no_difference ["Tournament.count", "TournamentCreation.count"] do
+      post club_tournaments_path(@club), params: tournament_payload(
+        name: "Replacement Free Tournament"
+      )
+    end
+
+    assert_response :forbidden
+  end
+
   test "owner creates a tournament with a Google-selected location" do
     sign_in @owner
 

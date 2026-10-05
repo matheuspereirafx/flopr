@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_05_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_05_110000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -282,6 +282,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_05_090000) do
     t.check_constraint "remaining_seconds >= 0", name: "tournament_clock_states_remaining_seconds_non_negative"
   end
 
+  create_table "tournament_creations", force: :cascade do |t|
+    t.bigint "club_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["club_id", "created_at"], name: "index_tournament_creations_on_club_id_and_created_at"
+    t.index ["club_id"], name: "index_tournament_creations_on_club_id"
+  end
+
   create_table "tournament_prize_pools", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "rake_percentage", default: 0, null: false
@@ -392,6 +400,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_05_090000) do
   add_foreign_key "tournament_clock_events", "tournaments"
   add_foreign_key "tournament_clock_states", "blind_levels", column: "current_blind_level_id", on_delete: :cascade
   add_foreign_key "tournament_clock_states", "tournaments", on_delete: :cascade
+  add_foreign_key "tournament_creations", "clubs"
   add_foreign_key "tournament_prize_pools", "tournaments"
   add_foreign_key "tournament_prize_positions", "tournament_prize_pools"
   add_foreign_key "tournament_registrations", "tournaments"

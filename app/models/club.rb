@@ -1,5 +1,6 @@
 class Club < ApplicationRecord
   has_many :tournaments, dependent: :destroy
+  has_many :tournament_creations, dependent: :destroy
   has_many :club_memberships, dependent: :destroy
   has_many :club_subscriptions, dependent: :restrict_with_exception
 
@@ -41,7 +42,7 @@ class Club < ApplicationRecord
   def can_create_tournament?(reference_time = Time.current)
     return true unless active_plan&.free?
 
-    tournaments.where(created_at: reference_time.all_month).count < active_plan.monthly_tournament_limit
+    tournament_creations.where(created_at: reference_time.all_month).count < active_plan.monthly_tournament_limit
   end
 
   def can_start_tournament?

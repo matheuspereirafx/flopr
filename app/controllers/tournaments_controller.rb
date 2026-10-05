@@ -209,6 +209,9 @@ class TournamentsController < ApplicationController
 
   def create_tournament_with_clock_state
     ApplicationRecord.transaction do
+      @club.lock!
+      return false unless @club.can_create_tournament?
+
       @tournament.save!
       TournamentClockState.create_initial_for!(@tournament)
     end

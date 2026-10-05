@@ -220,7 +220,7 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".overview-details__item", text: /Taxa extra.*R\$\s*25,00.*2\.500 fichas/m
   end
 
-  test "only owner and admin see the button that copies the invite link" do
+  test "owner and admin see the invite button on a paid plan" do
     tournament = create_tournament(@club)
 
     [@owner, @admin].each do |user|
@@ -240,6 +240,24 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
       assert_select "button[data-copied-message='Link copiado']", count: 0
       sign_out user
     end
+  end
+
+  test "free plan does not show the invite button" do
+    free_plan = Plan.create!(
+      name: "Free",
+      description: "Plano gratuito",
+      price: 0,
+      billing_period: :monthly,
+      active: true
+    )
+    @club.reload.active_club_subscription.update!(plan: free_plan)
+    tournament = create_tournament(@club)
+    sign_in @owner
+
+    get club_tournament_path(@club, tournament)
+
+    assert_response :success
+    assert_select ".overview-header__invite", count: 0
   end
 
   test "owner and admin can manually finish a posted tournament" do

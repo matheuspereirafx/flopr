@@ -27,16 +27,25 @@
 
           <div class="club-subscription-field">
             <%= form.label :club_id, "Selecione um clube" %>
-            <%= form.collection_select :club_id,
-                                       @owned_clubs,
-                                       :id,
-                                       :name,
-                                       { prompt: "Escolha um clube" },
-                                       required: true %>
+            <select name="club_id" id="club_id" required>
+              <option value="">Escolha um clube</option>
+              <% @owned_clubs.each do |club| %>
+                <% same_plan = club.active_club_subscription&.plan_id == @plan.id %>
+                <option value="<%= club.id %>" <%= "disabled" if same_plan %>>
+                  <%= club.name %><%= " (plano já ativo)" if same_plan %>
+                </option>
+              <% end %>
+            </select>
           </div>
 
-          <p class="club-subscription-security-note">A contratação será registrada em seu nome como responsável histórico.</p>
-          <%= form.submit "Confirmar contratação", class: "club-subscription-submit" %>
+          <% available_club = @owned_clubs.any? { |club| club.active_club_subscription&.plan_id != @plan.id } %>
+          <% if available_club %>
+            <p class="club-subscription-security-note">A contratação será registrada em seu nome como responsável histórico.</p>
+            <%= form.submit "Confirmar contratação", class: "club-subscription-submit" %>
+          <% else %>
+            <p class="club-subscription-security-note">Todos os seus clubes já possuem este plano ativo.</p>
+            <%= form.submit "Plano já contratado", class: "club-subscription-submit", disabled: true %>
+          <% end %>
         <% end %>
       </section>
     </div>

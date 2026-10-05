@@ -5,16 +5,29 @@ class ClubSubscriptionsController < ApplicationController
   before_action :set_requested_club, only: :create
   before_action :authorize_owner!, only: :create
 
+  def index
+    @clubs = current_user.owned_clubs
+                             .includes(active_club_subscription: :plan)
+                             .order(:name)
+  end
+
   def new
     redirect_to new_user_session_path(plan_id: params[:plan_id]) unless user_signed_in?
 
-    @owned_clubs = current_user.owned_clubs.order(:name) if user_signed_in?
+    @owned_clubs = current_user.owned_clubs
+                             .includes(active_club_subscription: :plan)
+                             .order(:name) if user_signed_in?
   end
 
   def create
     plan = find_plan_for_contract
     return head :not_found unless plan
     return head :unprocessable_entity unless plan.active?
+    if @club.active_club_subscription&.plan_id == plan.id
+      redirect_to club_subscriptions_path,
+                  alert: "Este clube já possui este plano ativo."
+      return
+    end
 
     subscription = ClubSubscription.new(
       club: @club,

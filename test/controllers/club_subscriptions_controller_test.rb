@@ -39,6 +39,29 @@ class ClubSubscriptionsControllerTest < ActionDispatch::IntegrationTest
     assert_select "option[value='#{@other_club.id}']", count: 0
   end
 
+  test "owner sees the current subscription for each owned club" do
+    ClubSubscription.create!(
+      club: @club,
+      plan: @plan,
+      owner: @owner,
+      status: :active,
+      billing_period: @plan.billing_period
+    )
+    sign_in @owner
+
+    get club_subscriptions_path
+
+    assert_response :success
+    assert_select ".club-subscription-card", count: 2
+    assert_select ".club-subscription-card", text: /#{@club.name}/
+    assert_select ".club-subscription-card", text: /#{@plan.name}/
+    assert_select ".club-subscription-card", text: /R\$ 49,00 \/ mês/
+    assert_select ".club-subscription-card", text: /Não definida/
+    assert_select ".club-subscription-card", text: /#{@second_club.name}/
+    assert_select ".club-subscription-card", text: /Nenhuma assinatura ativa/
+    assert_select "a[href='#{root_path(anchor: 'planos')}']", text: "Mudar assinatura", count: 1
+  end
+
   test "owner creates an active subscription for the selected club" do
     sign_in @owner
 
@@ -56,6 +79,25 @@ class ClubSubscriptionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal @owner, subscription.owner
     assert_predicate subscription, :active?
     assert_equal @plan.billing_period, subscription.billing_period
+  end
+
+  test "does not create a duplicate subscription for the current active plan" do
+    ClubSubscription.create!(
+      club: @club,
+      plan: @plan,
+      owner: @owner,
+      status: :active,
+      billing_period: @plan.billing_period
+    )
+    sign_in @owner
+
+    assert_no_difference("ClubSubscription.count") do
+      post club_subscriptions_path, params: { plan_id: @plan.id, club_id: @club.id }
+    end
+
+    assert_redirected_to club_subscriptions_path
+    follow_redirect!
+    assert_select ".alert", text: /já possui este plano ativo/
   end
 
   test "confirms a successful subscription" do

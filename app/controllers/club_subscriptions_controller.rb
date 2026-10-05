@@ -24,11 +24,14 @@ class ClubSubscriptionsController < ApplicationController
       billing_period: plan.billing_period
     )
 
-    if subscription.save
-      redirect_to clubs_path, notice: "Plano contratado com sucesso."
-    else
-      head :unprocessable_entity
+    ClubSubscription.transaction do
+      @club.active_club_subscription&.update!(status: :canceled)
+      subscription.save!
     end
+
+    redirect_to clubs_path, notice: "Plano contratado com sucesso."
+  rescue ActiveRecord::RecordInvalid
+    head :unprocessable_entity
   end
 
   private
@@ -62,6 +65,6 @@ class ClubSubscriptionsController < ApplicationController
   end
 
   def subscription_params
-    params.permit(:plan_id, :club_id)
+    params.slice(:plan_id, :club_id).permit(:plan_id, :club_id)
   end
 end

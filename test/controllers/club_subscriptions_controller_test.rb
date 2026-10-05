@@ -146,15 +146,25 @@ class ClubSubscriptionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal @plan.billing_period, subscription.billing_period
   end
 
-  test "does not create a second active subscription" do
-    ClubSubscription.create!(club: @club, plan: @plan, owner: @owner, status: :active, billing_period: @plan.billing_period)
+  test "replaces the current active subscription with the selected plan" do
+    current_plan = Plan.create!(name: "Free", description: "Plano atual", price: 0, billing_period: "monthly", active: true)
+    current_subscription = ClubSubscription.create!(
+      club: @club,
+      plan: current_plan,
+      owner: @owner,
+      status: :active,
+      billing_period: current_plan.billing_period
+    )
     sign_in @owner
 
-    assert_no_difference("ClubSubscription.count") do
+    assert_difference("ClubSubscription.count", 1) do
       post club_subscriptions_path, params: { plan_id: @plan.id, club_id: @club.id }
     end
 
-    assert_response :unprocessable_entity
+    assert_redirected_to clubs_path
+    assert_predicate current_subscription.reload, :canceled?
+    assert_equal @plan, @club.reload.active_club_subscription.plan
+    assert_predicate @club.active_club_subscription, :active?
   end
 
   test "allows a new subscription after the previous one was canceled" do

@@ -56,6 +56,22 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_select ".landing-cta a[href='#{new_user_registration_path}']", count: 0
   end
 
+  test "authenticated user without clubs is sent to create a club from a plan CTA" do
+    plan = Plan.create!(
+      name: "Profissional",
+      description: "Para clubes avançados",
+      price: 119,
+      billing_period: "monthly",
+      active: true
+    )
+    sign_in @user
+
+    get root_path
+
+    assert_response :success
+    assert_select ".landing-plan a[href='#{new_club_path(plan_id: plan.id)}']", count: 1
+  end
+
   test "private club and player areas use the profile navigation without section links" do
     sign_in @user
 

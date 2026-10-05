@@ -17,5 +17,8 @@
       <% end %>
     </ul>
   </div>
-  <%= link_to action, new_club_subscription_path(plan_id: plan.id), class: "landing-plan__action" %>
+  <% cta_path = user_signed_in? && current_user.owned_clubs.none? ?
+                  new_club_path(plan_id: plan.id) :
+                  new_club_subscription_path(plan_id: plan.id) %>
+  <%= link_to action, cta_path, class: "landing-plan__action" %>
 </article>

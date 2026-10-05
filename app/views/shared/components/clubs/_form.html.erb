@@ -12,6 +12,7 @@
     </header>
 
     <%= simple_form_for club do |f| %>
+      <%= hidden_field_tag :plan_id, params[:plan_id] if params[:plan_id].present? %>
 
       <div class="club-form-content">
 

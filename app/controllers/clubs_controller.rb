@@ -35,7 +35,7 @@ class ClubsController < ApplicationController
 
     case create_club_with_owner_membership
     when :created
-      redirect_to clubs_path, notice: "Clube criado com sucesso."
+      redirect_after_club_creation
     when :limit_reached
       redirect_to clubs_path, alert: "Você já possui o limite de #{User::MAX_OWNED_CLUBS} clubes."
     else
@@ -99,6 +99,24 @@ class ClubsController < ApplicationController
     :created
   rescue ActiveRecord::RecordInvalid
     :invalid
+  end
+
+  def redirect_after_club_creation
+    plan_id = active_plan_id_for_redirect
+
+    if plan_id
+      redirect_to new_club_subscription_path(plan_id: plan_id),
+                  notice: "Clube criado com sucesso. Agora escolha o clube para contratar o plano."
+    else
+      redirect_to clubs_path, notice: "Clube criado com sucesso."
+    end
+  end
+
+  def active_plan_id_for_redirect
+    plan_id = params[:plan_id]
+    return if plan_id.blank?
+
+    Plan.active.exists?(id: plan_id) ? plan_id : nil
   end
 
   def confirmed_registrations_by_tournament

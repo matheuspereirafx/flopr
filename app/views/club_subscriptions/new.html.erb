@@ -22,16 +22,29 @@
         <h2 id="club-selection-title">Clube</h2>
         <p class="club-subscription-form-card__hint">A assinatura ficará vinculada ao clube selecionado.</p>
 
-        <%= form_with url: club_subscriptions_path, method: :post, class: "club-subscription-form" do |form| %>
+        <%= form_with url: club_subscriptions_path,
+                      method: :post,
+                      class: "club-subscription-form",
+                      data: {
+                        controller: "subscription-flow",
+                        subscription_flow_new_plan_price_value: @plan.price.to_f,
+                        action: "submit->subscription-flow#confirm"
+                      } do |form| %>
           <%= form.hidden_field :plan_id, value: @plan.id %>
 
           <div class="club-subscription-field">
             <%= form.label :club_id, "Selecione um clube" %>
-            <select name="club_id" id="club_id" required>
+            <select name="club_id"
+                    id="club_id"
+                    required
+                    data-subscription-flow-target="club"
+                    data-action="change->subscription-flow#checkDowngrade">
               <option value="">Escolha um clube</option>
               <% @owned_clubs.each do |club| %>
                 <% same_plan = club.active_club_subscription&.plan_id == @plan.id %>
-                <option value="<%= club.id %>" <%= "disabled" if same_plan %>>
+                <option value="<%= club.id %>"
+                        data-current-plan-price="<%= club.active_club_subscription&.plan&.price %>"
+                        <%= "disabled" if same_plan %>>
                   <%= club.name %><%= " (plano já ativo)" if same_plan %>
                 </option>
               <% end %>
@@ -41,6 +54,12 @@
           <% available_club = @owned_clubs.any? { |club| club.active_club_subscription&.plan_id != @plan.id } %>
           <% if available_club %>
             <p class="club-subscription-security-note">A contratação será registrada em seu nome como responsável histórico.</p>
+            <div class="club-subscription-downgrade-warning"
+                 data-subscription-flow-target="downgradeWarning"
+                 hidden>
+              <strong>Atenção: redução de plano</strong>
+              <span>O plano escolhido pode ter menos acessos que o plano atual deste clube.</span>
+            </div>
             <%= form.submit "Confirmar contratação", class: "club-subscription-submit" %>
           <% else %>
             <p class="club-subscription-security-note">Todos os seus clubes já possuem este plano ativo.</p>

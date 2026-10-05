@@ -39,6 +39,23 @@ class ClubSubscriptionsControllerTest < ActionDispatch::IntegrationTest
     assert_select "option[value='#{@other_club.id}']", count: 0
   end
 
+  test "exposes the current plan price for downgrade detection" do
+    lower_plan = Plan.create!(name: "Free", description: "Plano gratuito", price: 0, billing_period: "monthly", active: true)
+    ClubSubscription.create!(
+      club: @club,
+      plan: @plan,
+      owner: @owner,
+      status: :active,
+      billing_period: @plan.billing_period
+    )
+    sign_in @owner
+
+    get new_club_subscription_path(plan_id: lower_plan.id)
+
+    assert_response :success
+    assert_select "option[value='#{@club.id}'][data-current-plan-price='49.0']", count: 1
+  end
+
   test "owner sees the current subscription for each owned club" do
     ClubSubscription.create!(
       club: @club,

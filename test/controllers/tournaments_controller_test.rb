@@ -394,6 +394,26 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "posted", first_tournament.reload.status
   end
 
+  test "paid plan blocks creating more than its monthly tournament limit" do
+    enable_paid_plan(@club, @owner, price: 190)
+    sign_in @owner
+
+    4.times do |index|
+      post club_tournaments_path(@club), params: tournament_payload(
+        name: "Monthly Tournament #{index + 1}"
+      )
+      assert_response :redirect
+    end
+
+    assert_no_difference ["Tournament.count", "TournamentCreation.count"] do
+      post club_tournaments_path(@club), params: tournament_payload(
+        name: "Blocked Monthly Tournament"
+      )
+    end
+
+    assert_response :forbidden
+  end
+
   test "deleting a free tournament does not restore the monthly creation quota" do
     enable_free_plan(@club, @owner)
     sign_in @owner

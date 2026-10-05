@@ -213,7 +213,7 @@ class ClubPlanAccessControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  test "starting a tournament counts against the free monthly limit" do
+  test "free plan allows starting every created tournament" do
     subscribe(@club, @free_plan)
     first_tournament = @tournament
     second_tournament = create_tournament(@club, "Second Plan Access Tournament")
@@ -222,15 +222,12 @@ class ClubPlanAccessControllerTest < ActionDispatch::IntegrationTest
     post start_club_tournament_clock_path(@club, first_tournament)
     assert_predicate first_tournament.reload.clock_state, :running?
 
-    assert_no_changes -> { second_tournament.reload.clock_state.attributes } do
-      post start_club_tournament_clock_path(@club, second_tournament)
-    end
-
-    assert_response :forbidden
-    assert_predicate second_tournament.reload.clock_state, :not_started?
+    post start_club_tournament_clock_path(@club, second_tournament)
+    assert_redirected_to club_tournament_clock_path(@club, second_tournament)
+    assert_predicate second_tournament.reload.clock_state, :running?
   end
 
-  test "the paid monthly limits are four and nine started tournaments" do
+  test "paid monthly limits apply to creations but not timer starts" do
     {
       @monthly_plan => 4,
       @premium_plan => 9
@@ -243,17 +240,17 @@ class ClubPlanAccessControllerTest < ActionDispatch::IntegrationTest
       limit.times do |index|
         tournament = create_tournament(limit_club, "#{plan.name} Tournament #{index}")
         assert_equal plan, limit_club.reload.active_club_subscription.plan
-        assert_equal index, limit_club.reload.started_tournaments_in_month.count
         post start_club_tournament_clock_path(limit_club, tournament)
         assert_response :redirect
         assert_predicate tournament.reload.clock_state, :running?
       end
 
       blocked_tournament = create_tournament(limit_club, "#{plan.name} Blocked Tournament")
-      post start_club_tournament_clock_path(limit_club, blocked_tournament)
+      assert_not limit_club.reload.can_create_tournament?
 
-      assert_response :forbidden
-      assert_predicate blocked_tournament.reload.clock_state, :not_started?
+      post start_club_tournament_clock_path(limit_club, blocked_tournament)
+      assert_redirected_to club_tournament_clock_path(limit_club, blocked_tournament)
+      assert_predicate blocked_tournament.reload.clock_state, :running?
       sign_out @owner
       limit_club.reload.active_club_subscription.update!(status: :canceled)
     end

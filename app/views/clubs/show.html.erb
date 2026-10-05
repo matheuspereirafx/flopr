@@ -20,6 +20,8 @@
             class: "width-g club-show__create-tournament",
             data: { turbo_prefetch: false } %>
       <% else %>
+        <% active_plan = @club.active_plan %>
+        <% monthly_tournament_limit = active_plan.monthly_tournament_limit %>
         <div data-controller="plan-limit-modal">
           <button type="button"
                   class="btn-primary width-g club-show__create-tournament"
@@ -39,9 +41,9 @@
                       data-action="plan-limit-modal#close">
                 ×
               </button>
-              <p class="plan-limit-modal__eyebrow">Limite do plano Free</p>
+              <p class="plan-limit-modal__eyebrow">Limite do plano <%= active_plan.name %></p>
               <h2 id="tournament-limit-title">Limite mensal atingido</h2>
-              <p>O plano Free permite criar 1 torneio por mês.</p>
+              <p>O plano <%= active_plan.name %> permite criar <%= pluralize(monthly_tournament_limit, "torneio", "torneios") %> por mês.</p>
               <button type="button"
                       class="plan-limit-modal__confirm"
                       data-action="plan-limit-modal#close">

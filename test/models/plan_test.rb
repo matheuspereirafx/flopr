@@ -29,6 +29,11 @@ class PlanTest < ActiveSupport::TestCase
     assert_not_predicate plan, :valid?
   end
 
+  test "uses canonical limits for legacy plan prices" do
+    assert_equal 4, Plan.new(valid_plan_attributes.merge(name: "Iniciante", price: 49)).monthly_tournament_limit
+    assert_equal 9, Plan.new(valid_plan_attributes.merge(name: "Profissional", price: 119)).monthly_tournament_limit
+  end
+
   test "active scope returns only active plans" do
     active_plan = Plan.create!(valid_plan_attributes)
     Plan.create!(valid_plan_attributes.merge(name: "Inativo", active: false))

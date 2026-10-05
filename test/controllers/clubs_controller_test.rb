@@ -281,6 +281,31 @@ class ClubsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "O plano Free permite criar 1 torneio por mês."
   end
 
+  test "plan limit modal uses the active paid plan and its monthly limit" do
+    paid_plan = Plan.create!(
+      name: "Plano R$ 190",
+      description: "Plano pago",
+      price: 190,
+      billing_period: :monthly,
+      active: true
+    )
+    ClubSubscription.create!(
+      club: @club,
+      plan: paid_plan,
+      owner: @owner,
+      status: :active,
+      billing_period: paid_plan.billing_period
+    )
+    4.times { |index| create_tournament(name: "Monthly Tournament #{index + 1}") }
+
+    sign_in @owner
+    get club_path(@club)
+
+    assert_response :success
+    assert_includes response.body, "Limite do plano Plano R$ 190"
+    assert_includes response.body, "O plano Plano R$ 190 permite criar 4 torneios por mês."
+  end
+
   test "shows buy in as pending when the tournament has no financial configuration" do
     create_tournament
 

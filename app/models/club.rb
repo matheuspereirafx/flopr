@@ -35,20 +35,9 @@ class Club < ApplicationRecord
     active_plan&.allows_feature?(feature) || false
   end
 
-  def started_tournaments_in_month(reference_time = Time.current)
-    tournaments.where(clock_started_at: reference_time.all_month)
-  end
-
   def can_create_tournament?(reference_time = Time.current)
-    return true unless active_plan&.free?
+    return true unless active_plan
 
     tournament_creations.where(created_at: reference_time.all_month).count < active_plan.monthly_tournament_limit
-  end
-
-  def can_start_tournament?
-    plan = active_plan
-    return false unless plan
-
-    started_tournaments_in_month.count < plan.monthly_tournament_limit
   end
 end

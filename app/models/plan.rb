@@ -31,9 +31,9 @@ class Plan < ApplicationRecord
   end
 
   def monthly_tournament_limit
-    return 1 if free?
-    return 4 if price.to_d == 190.to_d
-    return 9 if price.to_d == 290.to_d
+    return 1 if free? || name == "Free"
+    return 4 if name == "Iniciante" || price.to_d == 190.to_d
+    return 9 if name == "Profissional" || price.to_d == 290.to_d
 
     0
   end

@@ -4,7 +4,6 @@ class TournamentClocksController < ApplicationController
   before_action :set_member_club
   before_action :set_tournament
   before_action :authorize_plan_timer!, only: %i[show start pause resume advance]
-  before_action :authorize_tournament_start_limit!, only: :start
   before_action :authorize_clock_operation!, only: :start
   before_action :authorize_clock_pause!, only: :pause
   before_action :authorize_clock_resume!, only: :resume
@@ -137,12 +136,6 @@ class TournamentClocksController < ApplicationController
 
   def authorize_plan_timer!
     authorize_plan_feature!(:timer)
-  end
-
-  def authorize_tournament_start_limit!
-    return if performed? || @club.can_start_tournament?
-
-    render plain: "Forbidden", status: :forbidden
   end
 
   def available_charge_options

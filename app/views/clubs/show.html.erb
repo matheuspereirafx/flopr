@@ -13,12 +13,44 @@
         Gerencie seus torneios, acompanhe eventos ao vivo e consulte os resultados.
       </p>
 
-      <%# Temporariamente sem rota correta de torneio %>
-      <%= render "shared/components/buttons/button_create",
-          text: "Criar Novo Torneio",
-          path: new_club_tournament_path(@club),
-          class: "width-g club-show__create-tournament",
-          data: { turbo_prefetch: false } %>
+      <% if @club.can_create_tournament? %>
+        <%= render "shared/components/buttons/button_create",
+            text: "Criar Novo Torneio",
+            path: new_club_tournament_path(@club),
+            class: "width-g club-show__create-tournament",
+            data: { turbo_prefetch: false } %>
+      <% else %>
+        <div data-controller="plan-limit-modal">
+          <button type="button"
+                  class="btn-primary width-g club-show__create-tournament"
+                  data-action="plan-limit-modal#open">
+            <span class="btn-icon">+</span>
+            <span>Criar Novo Torneio</span>
+          </button>
+
+          <dialog class="plan-limit-modal"
+                  data-plan-limit-modal-target="dialog"
+                  data-action="click->plan-limit-modal#closeOnBackdrop"
+                  aria-labelledby="tournament-limit-title">
+            <div class="plan-limit-modal__card">
+              <button type="button"
+                      class="plan-limit-modal__close"
+                      aria-label="Fechar"
+                      data-action="plan-limit-modal#close">
+                ×
+              </button>
+              <p class="plan-limit-modal__eyebrow">Limite do plano Free</p>
+              <h2 id="tournament-limit-title">Limite mensal atingido</h2>
+              <p>O plano Free permite criar 1 torneio por mês.</p>
+              <button type="button"
+                      class="plan-limit-modal__confirm"
+                      data-action="plan-limit-modal#close">
+                Entendi
+              </button>
+            </div>
+          </dialog>
+        </div>
+      <% end %>
 
     </div>
 

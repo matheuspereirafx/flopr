@@ -260,6 +260,27 @@ class ClubsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".club-show__create-tournament[data-turbo-prefetch='false']", count: 1
   end
 
+  test "free plan shows a modal instead of a create link after the monthly limit" do
+    free_plan = Plan.find_by!(name: "Free")
+    ClubSubscription.create!(
+      club: @club,
+      plan: free_plan,
+      owner: @owner,
+      status: :active,
+      billing_period: free_plan.billing_period
+    )
+    create_tournament
+
+    sign_in @owner
+    get club_path(@club)
+
+    assert_response :success
+    assert_select "a.club-show__create-tournament[href='#{new_club_tournament_path(@club)}']", count: 0
+    assert_select "button.club-show__create-tournament[data-action='plan-limit-modal#open']", count: 1
+    assert_select ".plan-limit-modal", count: 1
+    assert_includes response.body, "O plano Free permite criar 1 torneio por mês."
+  end
+
   test "shows buy in as pending when the tournament has no financial configuration" do
     create_tournament
 

@@ -32,12 +32,12 @@ class ClubPlanAccessControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "free plan allows tournament configuration and clock" do
-    subscribe(@club, @free_plan)
     sign_in @owner
 
     get new_club_tournament_path(@club)
     assert_response :success
 
+    subscribe(@club, @free_plan)
     post start_club_tournament_clock_path(@club, @tournament)
     assert_redirected_to club_tournament_clock_path(@club, @tournament)
     assert_predicate @tournament.reload.clock_state, :running?

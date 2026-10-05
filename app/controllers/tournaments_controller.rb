@@ -1,6 +1,7 @@
 class TournamentsController < ApplicationController
   before_action :set_member_club
   before_action :authorize_owner!, only: %i[new create edit update destroy]
+  before_action :authorize_tournament_creation_limit!, only: %i[new create]
   before_action :set_tournament, only: %i[show edit update destroy finish join]
   before_action :authorize_invitation_access!, only: :show
   before_action -> { authorize_tournament_plan_feature!(:buy_ins) }, only: :join
@@ -70,11 +71,10 @@ class TournamentsController < ApplicationController
 
   def create
     @tournament = @club.tournaments.build(tournament_params)
-    @tournament.status = :draft
+    @tournament.status = @club.plan_allows?(:buy_ins) ? :draft : :posted
 
     if validate_google_location && create_tournament_with_clock_state
-      redirect_to new_club_tournament_charge_options_path(@club, @tournament),
-                  notice: "Estrutura do torneio salva. Configure as regras financeiras."
+      redirect_after_tournament_structure_saved(creation: true)
     else
       render :new, status: :unprocessable_entity
     end
@@ -88,8 +88,7 @@ class TournamentsController < ApplicationController
     @tournament.assign_attributes(attributes)
 
     if validate_google_location && @tournament.save
-      redirect_to edit_club_tournament_charge_options_path(@club, @tournament),
-                  notice: "Dados do torneio salvos. Configure as opções financeiras."
+      redirect_after_tournament_structure_saved
     else
       render :edit, status: :unprocessable_entity
     end
@@ -219,9 +218,32 @@ class TournamentsController < ApplicationController
     false
   end
 
+  def redirect_after_tournament_structure_saved(creation: false)
+    if @club.plan_allows?(:buy_ins)
+      path = creation ?
+               new_club_tournament_charge_options_path(@club, @tournament) :
+               edit_club_tournament_charge_options_path(@club, @tournament)
+      redirect_to path,
+                  notice: creation ?
+                            "Estrutura do torneio salva. Configure as regras financeiras." :
+                            "Dados do torneio salvos. Configure as opções financeiras."
+    else
+      redirect_to club_tournament_path(@club, @tournament),
+                  notice: creation ?
+                            "Torneio criado. Configure as blinds e utilize o timer quando estiver pronto." :
+                            "Dados do torneio salvos. O plano Free permite utilizar o timer."
+    end
+  end
+
   def authorize_owner!
     return if performed?
     return if @current_membership.owner? || @current_membership.admin?
+
+    render plain: "Forbidden", status: :forbidden
+  end
+
+  def authorize_tournament_creation_limit!
+    return if performed? || @club.can_create_tournament?
 
     render plain: "Forbidden", status: :forbidden
   end

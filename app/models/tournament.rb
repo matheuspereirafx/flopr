@@ -63,10 +63,10 @@ class Tournament < ApplicationRecord
   validate :blind_levels_are_sequential
   validate :blind_levels_have_same_duration
   validate :blind_levels_count_matches_structure
-  validate :has_required_charge_options, if: :posted?
+  validate :has_required_charge_options, if: :requires_financial_configuration?
   validate :status_cannot_move_backwards
-  validate :double_rebuy_requires_rebuy, if: :posted?
-  validate :active_charge_options_have_valid_period, if: :posted?
+  validate :double_rebuy_requires_rebuy, if: :requires_financial_configuration?
+  validate :active_charge_options_have_valid_period, if: :requires_financial_configuration?
   validate :cover_file_is_valid
 
   before_validation :renumber_blind_levels
@@ -159,6 +159,13 @@ class Tournament < ApplicationRecord
     return if charge_option_for("buy_in")&.active?
 
     errors.add(:base, "buy-in deve estar configurado")
+  end
+
+  def requires_financial_configuration?
+    return false unless posted?
+    return true unless club
+
+    club.active_plan.nil? || club.plan_allows?(:buy_ins)
   end
 
   def double_rebuy_requires_rebuy

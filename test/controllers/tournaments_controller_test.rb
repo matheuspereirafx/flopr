@@ -362,6 +362,38 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "draft", tournament.status
   end
 
+  test "owner on the free plan creates a posted tournament without financial configuration" do
+    enable_free_plan(@club, @owner)
+    sign_in @owner
+
+    assert_difference ["Tournament.count", "TournamentClockState.count"], 1 do
+      post club_tournaments_path(@club), params: tournament_payload
+    end
+
+    tournament = Tournament.order(:created_at).last
+    assert_redirected_to club_tournament_path(@club, tournament)
+    assert_equal "posted", tournament.status
+    assert_empty tournament.charge_options
+    assert_equal tournament, tournament.clock_state.tournament
+  end
+
+  test "free plan blocks creating more than one tournament in the month" do
+    enable_free_plan(@club, @owner)
+    sign_in @owner
+
+    post club_tournaments_path(@club), params: tournament_payload
+    first_tournament = Tournament.order(:created_at).last
+
+    assert_no_difference "Tournament.count" do
+      post club_tournaments_path(@club), params: tournament_payload(
+        name: "Second Free Tournament"
+      )
+    end
+
+    assert_response :forbidden
+    assert_equal "posted", first_tournament.reload.status
+  end
+
   test "owner creates a tournament with a Google-selected location" do
     sign_in @owner
 
@@ -511,6 +543,24 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "draft", tournament.reload.status
     assert_equal 6, tournament.reload.blind_levels.count
     assert_equal original_level.small_blind, tournament.blind_levels.first.small_blind
+  end
+
+  test "owner on the free plan updates the tournament without entering financial configuration" do
+    enable_free_plan(@club, @owner)
+    tournament = create_tournament(@club, status: :posted)
+    sign_in @owner
+
+    patch club_tournament_path(@club, tournament),
+          params: tournament_payload(
+            blind_levels_count: 6,
+            blind_levels_attributes: tournament.blind_levels.map do |level|
+              level.attributes.slice("id", "level", "duration_minutes", "small_blind", "big_blind", "ante")
+            end + blind_levels_attributes(1, start_level: 6)
+          )
+
+    assert_redirected_to club_tournament_path(@club, tournament)
+    assert_equal "posted", tournament.reload.status
+    assert_equal 6, tournament.blind_levels.count
   end
 
   test "owner can update the tournament location with a Google-selected place" do
@@ -696,6 +746,18 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
 
   def create_membership(user, club, role)
     ClubMembership.create!(user: user, club: club, role: role)
+  end
+
+  def enable_free_plan(club, owner)
+    plan = Plan.create!(
+      name: "Free #{SecureRandom.uuid}",
+      description: "Plano gratuito",
+      price: 0,
+      billing_period: :monthly,
+      active: true
+    )
+
+    club.active_club_subscription.update!(plan: plan, owner: owner)
   end
 
   def create_tournament(club, attributes = {})

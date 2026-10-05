@@ -27,17 +27,5 @@
 
     <% end %>
 
-    <%= button_to club_path(club),
-        method: :delete,
-        class: "inside-menu-item inside-menu-item--danger",
-        form: {
-          data: {
-            turbo_confirm: "Tem certeza que deseja excluir este clube?"
-          }
-        } do %>
-
-      <span>Excluir clube</span>
-
-    <% end %>
   </div>
 </div>

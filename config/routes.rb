@@ -15,7 +15,7 @@ Rails.application.routes.draw do
   get "/onboarding/profile", to: "profiles#edit", as: :onboarding_profile
   patch "/onboarding/profile", to: "profiles#update"
   resources :club_subscriptions, only: %i[index new create]
-  resources :clubs do
+  resources :clubs, except: :destroy do
     resources :tournaments, only: %i[index show new create edit update destroy] do
       member do
         patch :finish

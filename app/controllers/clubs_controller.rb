@@ -1,7 +1,7 @@
 class ClubsController < ApplicationController
   before_action :set_member_club, only: :show
   before_action :authorize_club_overview!, only: :show
-  before_action :set_owned_club, only: %i[edit update destroy]
+  before_action :set_owned_club, only: %i[edit update]
 
   def index
     @clubs = Club.joins(:club_memberships)
@@ -9,6 +9,7 @@ class ClubsController < ApplicationController
                        .includes(:club_memberships, tournaments: %i[tournament_registrations clock_state blind_levels charge_options])
                        .then { |clubs| filter_clubs(clubs) }
     @tournaments_by_club = @clubs.index_with { |club| club_featured_tournament(club) }
+    @can_create_club = current_user.can_create_club?
   end
 
   def show
@@ -24,14 +25,19 @@ class ClubsController < ApplicationController
   end
 
   def new
+    return redirect_to clubs_path, alert: "Você já possui o limite de #{User::MAX_OWNED_CLUBS} clubes." unless current_user.can_create_club?
+
     @club = Club.new
   end
 
   def create
     @club = Club.new(club_params)
 
-    if create_club_with_owner_membership
+    case create_club_with_owner_membership
+    when :created
       redirect_to clubs_path, notice: "Clube criado com sucesso."
+    when :limit_reached
+      redirect_to clubs_path, alert: "Você já possui o limite de #{User::MAX_OWNED_CLUBS} clubes."
     else
       render :new, status: :unprocessable_entity
     end
@@ -46,14 +52,6 @@ class ClubsController < ApplicationController
     else
       render :edit, status: :unprocessable_entity
     end
-  end
-
-  def destroy
-    @club.destroy
-
-    redirect_to clubs_path,
-                notice: "Clube excluído com sucesso.",
-                status: :see_other
   end
 
   private
@@ -86,18 +84,21 @@ class ClubsController < ApplicationController
   end
 
   def create_club_with_owner_membership
-    ActiveRecord::Base.transaction do
-      @club.save!
-      # Esta criando o membership com id do club, id user e passando ja um role .
-      @club.club_memberships.create!(
-        user: current_user,
-        role: :owner
-      )
+    current_user.with_lock do
+      return :limit_reached unless current_user.can_create_club?
+
+      ActiveRecord::Base.transaction do
+        @club.save!
+        @club.club_memberships.create!(
+          user: current_user,
+          role: :owner
+        )
+      end
     end
 
-    true
+    :created
   rescue ActiveRecord::RecordInvalid
-    false
+    :invalid
   end
 
   def confirmed_registrations_by_tournament

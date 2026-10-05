@@ -12,11 +12,17 @@
 
     </div>
 
-    <%= render "shared/components/buttons/button_create",
-        text: "Criar novo clube",
-        path: new_club_path,
-        class: "width-g club-show__create-tournament",
-        data: { turbo_prefetch: false } %>
+    <% if @can_create_club %>
+      <%= render "shared/components/buttons/button_create",
+          text: "Criar novo clube",
+          path: new_club_path,
+          class: "width-g club-show__create-tournament",
+          data: { turbo_prefetch: false } %>
+    <% else %>
+      <p class="clubs-header__limit-message">
+        Você já possui o limite de <%= User::MAX_OWNED_CLUBS %> clubes.
+      </p>
+    <% end %>
 
 
   </div>

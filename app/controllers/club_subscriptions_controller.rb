@@ -29,6 +29,11 @@ class ClubSubscriptionsController < ApplicationController
       return
     end
 
+    current_subscription = @club.active_club_subscription
+    if current_subscription&.plan&.price.to_d > plan.price.to_d
+      return head :unprocessable_entity
+    end
+
     subscription = ClubSubscription.new(
       club: @club,
       plan: plan,

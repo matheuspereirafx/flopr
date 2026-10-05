@@ -3,11 +3,12 @@ class TournamentClocksController < ApplicationController
 
   before_action :set_member_club
   before_action :set_tournament
-  before_action :set_clock_state
+  before_action :authorize_plan_timer!, only: %i[show start pause resume advance]
   before_action :authorize_clock_operation!, only: :start
   before_action :authorize_clock_pause!, only: :pause
   before_action :authorize_clock_resume!, only: :resume
   before_action :authorize_clock_advance!, only: :advance
+  before_action :set_clock_state
 
   def show
     @current_registration = current_user.tournament_registrations.find_by(
@@ -38,6 +39,7 @@ class TournamentClocksController < ApplicationController
 
     ApplicationRecord.transaction do
       @clock_state.start!(at: started_at)
+      @tournament.update!(clock_started_at: started_at) unless @tournament.clock_started?
       @tournament.update!(starts_at: started_at)
     end
 
@@ -130,6 +132,10 @@ class TournamentClocksController < ApplicationController
     return if performed? || @current_membership.owner? || @current_membership.admin?
 
     render plain: "Forbidden", status: :forbidden
+  end
+
+  def authorize_plan_timer!
+    authorize_plan_feature!(:timer)
   end
 
   def available_charge_options

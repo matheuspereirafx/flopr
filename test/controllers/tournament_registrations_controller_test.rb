@@ -18,6 +18,7 @@ class TournamentRegistrationsControllerTest < ActionDispatch::IntegrationTest
     create_membership(user: @dealer, club: @club, role: :dealer)
     create_membership(user: @player, club: @club, role: :player)
     create_membership(user: @outsider, club: @other_club, role: :owner)
+    enable_paid_plan(@club, @owner)
 
     TournamentRegistration.create!(
       tournament: @tournament,

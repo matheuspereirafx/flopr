@@ -1,5 +1,6 @@
 class TournamentInvitationLinksController < ApplicationController
   before_action :set_tournament
+  before_action -> { authorize_tournament_plan_feature!(:invitations) }
 
   def confirm
     TournamentRegistrationConfirmation.call(

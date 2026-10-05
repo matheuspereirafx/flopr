@@ -2,6 +2,13 @@ require "test_helper"
 
 class ClubsControllerTest < ActionDispatch::IntegrationTest
   def setup
+    Plan.create!(
+      name: "Free",
+      description: "Plano gratuito",
+      price: 0,
+      billing_period: :monthly,
+      active: true
+    )
     @club = Club.create!(name: "Poker House")
     @owner = User.create!(
       email: "owner@example.com",
@@ -37,6 +44,23 @@ class ClubsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to clubs_path
     assert_equal :owner, Club.find_by!(name: "Second Club").club_memberships.find_by!(user: @owner).role.to_sym
+  end
+
+  test "creates a free active subscription for a new club" do
+    sign_in @owner
+
+    assert_difference ["Club.count", "ClubMembership.count", "ClubSubscription.count"], 1 do
+      post clubs_path, params: { club: { name: "Free Club" } }
+    end
+
+    club = Club.find_by!(name: "Free Club")
+    subscription = club.active_club_subscription
+
+    assert_redirected_to clubs_path
+    assert_equal "Free", subscription.plan.name
+    assert_equal @owner, subscription.owner
+    assert_predicate subscription, :active?
+    assert_equal "monthly", subscription.billing_period
   end
 
   test "redirects a new club to the selected plan after creation" do
@@ -234,6 +258,52 @@ class ClubsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select ".club-show__create-tournament[data-turbo-prefetch='false']", count: 1
+  end
+
+  test "free plan shows a modal instead of a create link after the monthly limit" do
+    free_plan = Plan.find_by!(name: "Free")
+    ClubSubscription.create!(
+      club: @club,
+      plan: free_plan,
+      owner: @owner,
+      status: :active,
+      billing_period: free_plan.billing_period
+    )
+    create_tournament
+
+    sign_in @owner
+    get club_path(@club)
+
+    assert_response :success
+    assert_select "a.club-show__create-tournament[href='#{new_club_tournament_path(@club)}']", count: 0
+    assert_select "button.club-show__create-tournament[data-action='plan-limit-modal#open']", count: 1
+    assert_select ".plan-limit-modal", count: 1
+    assert_includes response.body, "O plano Free permite criar 1 torneio por mês."
+  end
+
+  test "plan limit modal uses the active paid plan and its monthly limit" do
+    paid_plan = Plan.create!(
+      name: "Plano R$ 190",
+      description: "Plano pago",
+      price: 190,
+      billing_period: :monthly,
+      active: true
+    )
+    ClubSubscription.create!(
+      club: @club,
+      plan: paid_plan,
+      owner: @owner,
+      status: :active,
+      billing_period: paid_plan.billing_period
+    )
+    4.times { |index| create_tournament(name: "Monthly Tournament #{index + 1}") }
+
+    sign_in @owner
+    get club_path(@club)
+
+    assert_response :success
+    assert_includes response.body, "Limite do plano Plano R$ 190"
+    assert_includes response.body, "O plano Plano R$ 190 permite criar 4 torneios por mês."
   end
 
   test "shows buy in as pending when the tournament has no financial configuration" do

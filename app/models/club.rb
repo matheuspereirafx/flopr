@@ -1,5 +1,6 @@
 class Club < ApplicationRecord
   has_many :tournaments, dependent: :destroy
+  has_many :tournament_creations, dependent: :destroy
   has_many :club_memberships, dependent: :destroy
   has_many :club_subscriptions, dependent: :restrict_with_exception
 
@@ -25,4 +26,18 @@ class Club < ApplicationRecord
             allow_blank: true
   validates :pix_recipient_name, presence: true, if: -> { pix_key.present? }
   validates :pix_key, presence: true, if: -> { pix_key_type.present? || pix_recipient_name.present? }
+
+  def active_plan
+    active_club_subscription&.plan
+  end
+
+  def plan_allows?(feature)
+    active_plan&.allows_feature?(feature) || false
+  end
+
+  def can_create_tournament?(reference_time = Time.current)
+    return true unless active_plan
+
+    tournament_creations.where(created_at: reference_time.all_month).count < active_plan.monthly_tournament_limit
+  end
 end

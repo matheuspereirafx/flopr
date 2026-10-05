@@ -1,6 +1,7 @@
 class TournamentRechargesController < ApplicationController
   before_action :set_member_club
   before_action :set_tournament
+  before_action -> { authorize_plan_feature!(:recharges) }
   before_action :authorize_participant!
   before_action :set_registration
   before_action :load_recharge_data

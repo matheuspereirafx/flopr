@@ -1,5 +1,6 @@
 class TournamentChargeOptionsController < ApplicationController
   before_action :set_member_club
+  before_action -> { authorize_plan_feature!(:buy_ins) }
   before_action :authorize_owner!
   before_action :set_tournament
   before_action :load_charge_options

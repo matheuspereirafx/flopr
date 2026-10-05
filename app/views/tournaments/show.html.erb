@@ -18,7 +18,8 @@
                   class: "overview-header__back",
                   data: { turbo_prefetch: false } %>
     <% end %>
-    <% if @current_membership&.owner? || @current_membership&.admin? %>
+    <% if (@current_membership&.owner? || @current_membership&.admin?) &&
+          @club.plan_allows?(:invitations) %>
       <button class="overview-header__invite"
               type="button"
               aria-label="Copiar link de convite"

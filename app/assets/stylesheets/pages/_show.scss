@@ -83,6 +83,69 @@
   line-height: 1.5;
 }
 
+.plan-limit-modal {
+  width: calc(100% - 32px);
+  max-width: 420px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 16px;
+  color: #f5f2f7;
+  background: #131316;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, .45);
+}
+
+.plan-limit-modal::backdrop {
+  background: rgba(0, 0, 0, .68);
+  backdrop-filter: blur(3px);
+}
+
+.plan-limit-modal__card {
+  position: relative;
+  padding: 28px;
+}
+
+.plan-limit-modal__close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  border: 0;
+  color: #a1a1aa;
+  background: transparent;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.plan-limit-modal__eyebrow {
+  margin: 0 0 10px;
+  color: #988fd7;
+  font: 700 10px $font-secondary;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.plan-limit-modal__card h2 {
+  margin: 0;
+  font: 700 28px/1.1 $font-primary;
+}
+
+.plan-limit-modal__card p:not(.plan-limit-modal__eyebrow) {
+  margin: 12px 0 24px;
+  color: #a1a1aa;
+  font: 14px/1.5 $font-secondary;
+}
+
+.plan-limit-modal__confirm {
+  width: 100%;
+  min-height: 44px;
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  background: #52489c;
+  font: 700 14px $font-secondary;
+  cursor: pointer;
+}
+
 .club-show-hero__create-button {
   min-width: 280px;
   min-height: 50px;

@@ -238,6 +238,7 @@ class TournamentTransactionsControllerTest < ActionDispatch::IntegrationTest
     payment_create_membership(user: @dealer, club: @club, role: :dealer)
     payment_create_membership(user: @player, club: @club, role: :player)
     payment_create_membership(user: @outsider, club: @other_club, role: :owner)
+    enable_paid_plan(@club, @owner)
 
     [@tournament, @other_tournament].each do |tournament|
       payment_create_charge_option(tournament: tournament)

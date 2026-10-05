@@ -15,6 +15,7 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     create_membership(@dealer, @club, :dealer)
     create_membership(@player, @club, :player)
     create_membership(@outsider, @other_club, :owner)
+    enable_paid_plan(@club, @owner)
   end
 
   test "owner and admin can access new tournament form" do
@@ -219,7 +220,7 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".overview-details__item", text: /Taxa extra.*R\$\s*25,00.*2\.500 fichas/m
   end
 
-  test "only owner and admin see the button that copies the invite link" do
+  test "owner and admin see the invite button on a paid plan" do
     tournament = create_tournament(@club)
 
     [@owner, @admin].each do |user|
@@ -239,6 +240,24 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
       assert_select "button[data-copied-message='Link copiado']", count: 0
       sign_out user
     end
+  end
+
+  test "free plan does not show the invite button" do
+    free_plan = Plan.create!(
+      name: "Free",
+      description: "Plano gratuito",
+      price: 0,
+      billing_period: :monthly,
+      active: true
+    )
+    @club.reload.active_club_subscription.update!(plan: free_plan)
+    tournament = create_tournament(@club)
+    sign_in @owner
+
+    get club_tournament_path(@club, tournament)
+
+    assert_response :success
+    assert_select ".overview-header__invite", count: 0
   end
 
   test "owner and admin can manually finish a posted tournament" do
@@ -341,6 +360,80 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal [15], tournament.blind_levels.reorder(nil).distinct.pluck(:duration_minutes)
     assert_redirected_to new_club_tournament_charge_options_path(@club, tournament)
     assert_equal "draft", tournament.status
+  end
+
+  test "owner on the free plan creates a posted tournament without financial configuration" do
+    enable_free_plan(@club, @owner)
+    sign_in @owner
+
+    assert_difference ["Tournament.count", "TournamentClockState.count"], 1 do
+      post club_tournaments_path(@club), params: tournament_payload
+    end
+
+    tournament = Tournament.order(:created_at).last
+    assert_redirected_to club_tournament_path(@club, tournament)
+    assert_equal "posted", tournament.status
+    assert_empty tournament.charge_options
+    assert_equal tournament, tournament.clock_state.tournament
+  end
+
+  test "free plan blocks creating more than one tournament in the month" do
+    enable_free_plan(@club, @owner)
+    sign_in @owner
+
+    post club_tournaments_path(@club), params: tournament_payload
+    first_tournament = Tournament.order(:created_at).last
+
+    assert_no_difference "Tournament.count" do
+      post club_tournaments_path(@club), params: tournament_payload(
+        name: "Second Free Tournament"
+      )
+    end
+
+    assert_response :forbidden
+    assert_equal "posted", first_tournament.reload.status
+  end
+
+  test "paid plan blocks creating more than its monthly tournament limit" do
+    enable_paid_plan(@club, @owner, price: 190)
+    sign_in @owner
+
+    4.times do |index|
+      post club_tournaments_path(@club), params: tournament_payload(
+        name: "Monthly Tournament #{index + 1}"
+      )
+      assert_response :redirect
+    end
+
+    assert_no_difference ["Tournament.count", "TournamentCreation.count"] do
+      post club_tournaments_path(@club), params: tournament_payload(
+        name: "Blocked Monthly Tournament"
+      )
+    end
+
+    assert_response :forbidden
+  end
+
+  test "deleting a free tournament does not restore the monthly creation quota" do
+    enable_free_plan(@club, @owner)
+    sign_in @owner
+
+    assert_difference "TournamentCreation.count", 1 do
+      post club_tournaments_path(@club), params: tournament_payload
+    end
+    first_tournament = Tournament.order(:created_at).last
+
+    assert_difference "Tournament.count", -1 do
+      delete club_tournament_path(@club, first_tournament)
+    end
+
+    assert_no_difference ["Tournament.count", "TournamentCreation.count"] do
+      post club_tournaments_path(@club), params: tournament_payload(
+        name: "Replacement Free Tournament"
+      )
+    end
+
+    assert_response :forbidden
   end
 
   test "owner creates a tournament with a Google-selected location" do
@@ -492,6 +585,24 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "draft", tournament.reload.status
     assert_equal 6, tournament.reload.blind_levels.count
     assert_equal original_level.small_blind, tournament.blind_levels.first.small_blind
+  end
+
+  test "owner on the free plan updates the tournament without entering financial configuration" do
+    enable_free_plan(@club, @owner)
+    tournament = create_tournament(@club, status: :posted)
+    sign_in @owner
+
+    patch club_tournament_path(@club, tournament),
+          params: tournament_payload(
+            blind_levels_count: 6,
+            blind_levels_attributes: tournament.blind_levels.map do |level|
+              level.attributes.slice("id", "level", "duration_minutes", "small_blind", "big_blind", "ante")
+            end + blind_levels_attributes(1, start_level: 6)
+          )
+
+    assert_redirected_to club_tournament_path(@club, tournament)
+    assert_equal "posted", tournament.reload.status
+    assert_equal 6, tournament.blind_levels.count
   end
 
   test "owner can update the tournament location with a Google-selected place" do
@@ -677,6 +788,18 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
 
   def create_membership(user, club, role)
     ClubMembership.create!(user: user, club: club, role: role)
+  end
+
+  def enable_free_plan(club, owner)
+    plan = Plan.create!(
+      name: "Free #{SecureRandom.uuid}",
+      description: "Plano gratuito",
+      price: 0,
+      billing_period: :monthly,
+      active: true
+    )
+
+    club.active_club_subscription.update!(plan: plan, owner: owner)
   end
 
   def create_tournament(club, attributes = {})

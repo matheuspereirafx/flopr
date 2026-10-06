@@ -54,6 +54,44 @@ class PlanTest < ActiveSupport::TestCase
     assert_equal 9, Plan.new(valid_plan_attributes.merge(name: "Profissional", price: 119)).monthly_tournament_limit
   end
 
+  test "stores plan features as an array" do
+    plan = Plan.new(valid_plan_attributes.merge(features: %w[invitations guest_list]))
+
+    assert plan.valid?
+    assert_equal %w[invitations guest_list], plan.features
+  end
+
+  test "identifies a lower plan regardless of its price" do
+    current_plan = build_plan(name: "Profissional Anual", price: 1_000, billing_period: :yearly, tier: 2,
+                              features: %w[invitations guest_list buy_ins transactions prize_pool])
+    future_plan = build_plan(name: "Iniciante Mensal", price: 100, billing_period: :monthly, tier: 1,
+                             features: %w[invitations guest_list])
+
+    assert current_plan.downgrade_to?(future_plan)
+  end
+
+  test "identifies a change from yearly to monthly in the same tier as a downgrade" do
+    current_plan = build_plan(name: "Profissional Anual", price: 1_000, billing_period: :yearly, tier: 2)
+    future_plan = build_plan(name: "Profissional Mensal", price: 100, billing_period: :monthly, tier: 2)
+
+    assert current_plan.downgrade_to?(future_plan)
+  end
+
+  test "does not identify an upgrade as a downgrade" do
+    current_plan = build_plan(name: "Iniciante Mensal", price: 100, billing_period: :monthly, tier: 1,
+                              features: %w[invitations])
+    future_plan = build_plan(name: "Profissional Mensal", price: 200, billing_period: :monthly, tier: 2,
+                             features: %w[invitations guest_list buy_ins transactions prize_pool])
+
+    assert_not current_plan.downgrade_to?(future_plan)
+  end
+
+  test "does not identify the same plan as a downgrade" do
+    plan = build_plan(name: "Iniciante Mensal", price: 100, billing_period: :monthly, tier: 1)
+
+    assert_not plan.downgrade_to?(plan)
+  end
+
   test "active scope returns only active plans" do
     active_plan = Plan.create!(valid_plan_attributes)
     Plan.create!(valid_plan_attributes.merge(name: "Inativo", active: false))
@@ -62,6 +100,10 @@ class PlanTest < ActiveSupport::TestCase
   end
 
   private
+
+  def build_plan(attributes = {})
+    Plan.new(valid_plan_attributes.merge(attributes))
+  end
 
   def valid_plan_attributes
     {

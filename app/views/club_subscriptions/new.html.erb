@@ -1,4 +1,7 @@
-<main class="club-subscription-page" aria-labelledby="club-subscription-title">
+<main class="club-subscription-page"
+      aria-labelledby="club-subscription-title"
+      data-controller="subscription-flow"
+      data-subscription-flow-new_plan_price_value="<%= @plan.price.to_f %>">
   <div class="club-subscription-shell">
     <header class="club-subscription-header">
       <%= link_to "← Voltar para os planos", root_path(anchor: "planos"), class: "club-subscription-back" %>
@@ -39,8 +42,6 @@
                       method: :post,
                       class: "club-subscription-form",
                       data: {
-                        controller: "subscription-flow",
-                        subscription_flow_new_plan_price_value: @plan.price.to_f,
                         action: "submit->subscription-flow#confirm"
                       } do |form| %>
           <%= form.hidden_field :plan_id, value: @plan.id %>
@@ -55,8 +56,13 @@
               <option value="">Escolha um clube</option>
               <% @manageable_clubs.each do |club| %>
                 <% same_plan = club.active_club_subscription&.plan_id == @plan.id %>
+                <% current_plan = club.active_club_subscription&.plan %>
+                <% downgrade = current_plan && current_plan.downgrade_to?(@plan) %>
                 <option value="<%= club.id %>"
                         data-current-plan-price="<%= club.active_club_subscription&.plan&.price %>"
+                        data-current-plan-name="<%= current_plan&.name %>"
+                        data-current-plan-expires-at="<%= club.active_club_subscription&.expires_at ? l(club.active_club_subscription.expires_at.to_date) : 'Não definida' %>"
+                        data-downgrade-path="<%= club_subscription_change_path(club) if downgrade && club.active_club_subscription&.expires_at.present? %>"
                         <%= "disabled" if same_plan %>>
                   <%= club.name %><%= " (plano já ativo)" if same_plan %>
                 </option>
@@ -81,5 +87,55 @@
         <% end %>
       </section>
     </div>
+
+    <dialog class="subscription-change-dialog"
+            aria-labelledby="subscription-change-dialog-title"
+            data-subscription-flow-target="downgradeDialog"
+            data-action="click->subscription-flow#closeDowngradeConfirmation">
+      <div class="subscription-change-dialog__card">
+        <button type="button"
+                class="subscription-change-dialog__close"
+                aria-label="Fechar confirmação"
+                data-action="subscription-flow#closeDowngradeConfirmation">×</button>
+        <span class="subscription-change-label">Confirme a alteração</span>
+        <h2 id="subscription-change-dialog-title">Confirmar downgrade?</h2>
+        <dl class="subscription-change-dialog__summary">
+          <div>
+            <dt>Clube</dt>
+            <dd data-subscription-flow-target="downgradeClub">—</dd>
+          </div>
+          <div>
+            <dt>Plano atual</dt>
+            <dd data-subscription-flow-target="downgradeCurrentPlan">—</dd>
+          </div>
+          <div>
+            <dt>Plano futuro</dt>
+            <dd><%= @plan.name %></dd>
+          </div>
+          <div>
+            <dt>Aplicação</dt>
+            <dd data-subscription-flow-target="downgradeEffectiveAt">—</dd>
+          </div>
+        </dl>
+        <p class="subscription-change-dialog__warning">
+          Você está reduzindo o plano. A alteração será aplicada somente no fim da expiração da assinatura atual.
+          Não haverá reembolso automático.
+        </p>
+        <%= form_with url: club_subscription_change_path(0),
+                      method: :post,
+                      class: "subscription-change-dialog__form",
+                      data: { subscription_flow_target: "downgradeForm" } do |form| %>
+          <%= form.hidden_field :new_plan_id, value: @plan.id %>
+          <div class="subscription-change-dialog__actions">
+            <button type="button"
+                    class="subscription-change-dialog__cancel"
+                    data-action="subscription-flow#closeDowngradeConfirmation">
+              Voltar
+            </button>
+            <%= form.submit "Confirmar downgrade", class: "club-subscription-submit" %>
+          </div>
+        <% end %>
+      </div>
+    </dialog>
   </div>
 </main>

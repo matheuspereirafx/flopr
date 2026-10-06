@@ -3,6 +3,8 @@ class ClubSubscription < ApplicationRecord
   belongs_to :plan
   belongs_to :owner, class_name: "User"
 
+  has_many :subscription_changes, dependent: :restrict_with_exception
+
   enum :status, {
     active: "active",
     canceled: "canceled",

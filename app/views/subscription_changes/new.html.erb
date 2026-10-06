@@ -1,0 +1,117 @@
+<main class="subscription-change-page" aria-labelledby="subscription-change-title">
+  <div class="subscription-change-shell">
+    <header class="subscription-change-header">
+      <%= link_to "← Voltar para meus planos", club_subscriptions_path, class: "subscription-change-back" %>
+      <span class="subscription-change-kicker">Alteração agendada</span>
+      <h1 id="subscription-change-title">Reduza o plano do clube</h1>
+      <p>Escolha um plano inferior para aplicar somente na próxima renovação.</p>
+    </header>
+
+    <% if @error_message.present? %>
+      <div class="subscription-change-error" role="alert"><%= @error_message %></div>
+    <% end %>
+
+    <%= form_with url: club_subscription_change_path(@club),
+                  method: :post,
+                  scope: :subscription_change,
+                  class: "subscription-change-form",
+                  data: { controller: "subscription-change" } do |form| %>
+      <section class="subscription-change-current" aria-labelledby="current-plan-title">
+        <span class="subscription-change-label">Plano atual</span>
+        <h2 id="current-plan-title"><%= @current_subscription.plan.name %></h2>
+        <p>
+          Ativo até <strong><%= l(@current_subscription.expires_at.to_date) %></strong>.
+          Seus benefícios continuam disponíveis até essa data.
+        </p>
+      </section>
+
+      <section class="subscription-change-options" aria-labelledby="future-plan-title">
+        <div class="subscription-change-section-heading">
+          <div>
+            <span class="subscription-change-label">Plano futuro</span>
+            <h2 id="future-plan-title">Escolha uma opção inferior</h2>
+          </div>
+          <span class="subscription-change-count"><%= pluralize(@available_plans.size, "opção", "opções") %></span>
+        </div>
+
+        <% if @available_plans.any? %>
+          <div class="subscription-change-plan-list">
+            <% @available_plans.each_with_index do |plan, index| %>
+              <label class="subscription-change-plan-card" for="subscription_change_new_plan_id_<%= plan.id %>">
+                <%= form.radio_button :new_plan_id,
+                                      plan.id,
+                                      checked: index.zero?,
+                                      id: "subscription_change_new_plan_id_#{plan.id}",
+                                      data: {
+                                        subscription_change_target: "plan",
+                                        action: "change->subscription-change#selectPlan",
+                                        plan_name: plan.name
+                                      } %>
+                <span class="subscription-change-plan-card__content">
+                  <strong><%= plan.name %></strong>
+                  <span><%= plan.description %></span>
+                  <small><%= number_to_currency(plan.price, unit: "R$ ", separator: ",", delimiter: ".") %> / <%= plan.monthly? ? "mês" : "ano" %></small>
+                </span>
+              </label>
+            <% end %>
+          </div>
+
+          <aside class="subscription-change-notice">
+            <strong>A mudança não será imediata</strong>
+            <span>Não haverá reembolso automático. O plano atual permanece ativo até a data de expiração.</span>
+          </aside>
+
+          <button type="button"
+                  class="club-subscription-submit"
+                  data-action="subscription-change#openConfirmation">
+            Aplicar redução
+          </button>
+        <% else %>
+          <div class="subscription-change-empty">
+            <strong>Nenhum plano inferior disponível</strong>
+            <p>O clube já está no menor nível disponível para esta assinatura.</p>
+          </div>
+        <% end %>
+
+        <dialog class="subscription-change-dialog"
+                aria-labelledby="subscription-change-dialog-title"
+                data-subscription-change-target="dialog"
+                data-action="click->subscription-change#closeOnBackdrop">
+          <div class="subscription-change-dialog__card">
+            <button type="button"
+                    class="subscription-change-dialog__close"
+                    aria-label="Fechar confirmação"
+                    data-action="subscription-change#closeConfirmation">×</button>
+            <span class="subscription-change-label">Confirme a alteração</span>
+            <h2 id="subscription-change-dialog-title">Agendar downgrade?</h2>
+            <dl class="subscription-change-dialog__summary">
+              <div>
+                <dt>Plano atual</dt>
+                <dd><%= @current_subscription.plan.name %></dd>
+              </div>
+              <div>
+                <dt>Plano futuro</dt>
+                <dd data-subscription-change-target="futurePlan"><%= @available_plans.first&.name %></dd>
+              </div>
+              <div>
+                <dt>Aplicação</dt>
+                <dd><%= l(@current_subscription.expires_at.to_date) %></dd>
+              </div>
+            </dl>
+            <p class="subscription-change-dialog__warning">
+              O plano atual continuará ativo até a expiração. Esta solicitação não gera reembolso automático.
+            </p>
+            <div class="subscription-change-dialog__actions">
+              <button type="button"
+                      class="subscription-change-dialog__cancel"
+                      data-action="subscription-change#closeConfirmation">
+                Voltar
+              </button>
+              <%= form.submit "Confirmar downgrade", class: "club-subscription-submit" %>
+            </div>
+          </div>
+        </dialog>
+      </section>
+    <% end %>
+  </div>
+</main>

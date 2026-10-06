@@ -71,7 +71,8 @@ class ClubSubscriptionsControllerTest < ActionDispatch::IntegrationTest
       plan: @plan,
       owner: @owner,
       status: :active,
-      billing_period: @plan.billing_period
+      billing_period: @plan.billing_period,
+      expires_at: 1.month.from_now
     )
     sign_in @owner
 
@@ -79,6 +80,7 @@ class ClubSubscriptionsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "option[value='#{@club.id}'][data-current-plan-price='49.0']", count: 1
+    assert_select "option[value='#{@club.id}'][data-downgrade-path='#{club_subscription_change_path(@club)}']", count: 1
   end
 
   test "owner sees the current subscription for each owned club" do

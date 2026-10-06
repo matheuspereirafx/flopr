@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_05_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_06_100100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -149,11 +149,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_05_120000) do
     t.string "billing_period", null: false
     t.datetime "created_at", null: false
     t.text "description", null: false
+    t.string "features", default: [], null: false, array: true
     t.string "name", null: false
     t.decimal "price", precision: 10, scale: 2, null: false
+    t.integer "tier", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["active"], name: "index_plans_on_active"
     t.index ["name"], name: "index_plans_on_name", unique: true
+    t.index ["tier"], name: "index_plans_on_tier"
     t.check_constraint "price >= 0::numeric", name: "plans_price_non_negative"
   end
 
@@ -233,6 +236,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_05_120000) do
     t.check_constraint "gateway_fee_amount >= 0::numeric", name: "registration_payments_gateway_fee_non_negative"
     t.check_constraint "platform_fee_amount >= 0::numeric", name: "registration_payments_platform_fee_non_negative"
     t.check_constraint "total_amount >= 0::numeric", name: "registration_payments_total_amount_non_negative"
+  end
+
+  create_table "subscription_changes", force: :cascade do |t|
+    t.datetime "applied_at"
+    t.datetime "canceled_at"
+    t.string "change_type", null: false
+    t.bigint "club_id", null: false
+    t.bigint "club_subscription_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "current_plan_id", null: false
+    t.datetime "effective_at", null: false
+    t.bigint "new_plan_id", null: false
+    t.bigint "requested_by_id", null: false
+    t.string "status", default: "pending", null: false
+    t.datetime "updated_at", null: false
+    t.index ["change_type"], name: "index_subscription_changes_on_change_type"
+    t.index ["club_id"], name: "index_subscription_changes_on_club_id"
+    t.index ["club_id"], name: "index_subscription_changes_on_pending_club", unique: true, where: "((status)::text = 'pending'::text)"
+    t.index ["club_subscription_id"], name: "index_subscription_changes_on_club_subscription_id"
+    t.index ["current_plan_id"], name: "index_subscription_changes_on_current_plan_id"
+    t.index ["effective_at"], name: "index_subscription_changes_on_effective_at"
+    t.index ["new_plan_id"], name: "index_subscription_changes_on_new_plan_id"
+    t.index ["requested_by_id"], name: "index_subscription_changes_on_requested_by_id"
+    t.index ["status"], name: "index_subscription_changes_on_status"
   end
 
   create_table "tournament_charge_options", force: :cascade do |t|
@@ -394,6 +421,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_05_120000) do
   add_foreign_key "registration_payments", "tournament_charge_options"
   add_foreign_key "registration_payments", "tournament_registrations"
   add_foreign_key "registration_payments", "users", column: "recorded_by_id"
+  add_foreign_key "subscription_changes", "club_subscriptions"
+  add_foreign_key "subscription_changes", "clubs"
+  add_foreign_key "subscription_changes", "plans", column: "current_plan_id"
+  add_foreign_key "subscription_changes", "plans", column: "new_plan_id"
+  add_foreign_key "subscription_changes", "users", column: "requested_by_id"
   add_foreign_key "tournament_charge_options", "blind_levels", column: "available_from_level_id"
   add_foreign_key "tournament_charge_options", "blind_levels", column: "available_until_level_id"
   add_foreign_key "tournament_charge_options", "tournaments"

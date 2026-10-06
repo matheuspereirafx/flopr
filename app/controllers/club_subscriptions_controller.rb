@@ -7,7 +7,8 @@ class ClubSubscriptionsController < ApplicationController
 
   def index
     @clubs = manageable_clubs
-                             .includes(active_club_subscription: :plan)
+                             .includes(active_club_subscription: :plan,
+                                       pending_subscription_change: :new_plan)
                              .order(:name)
   end
 

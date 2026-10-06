@@ -107,7 +107,30 @@
         <h2 id="pricing-title">Planos transparentes para jogos<br>entre amigos e grandes clubes</h2>
         <p>Comece gratuitamente e evolua para ferramentas avançadas conforme seu nível crescer.</p>
       </div>
-      <div class="landing-pricing__grid">
+      <div class="club-subscription-period-selector club-subscription-period-selector--pricing"
+           data-controller="pricing-period">
+        <div class="club-subscription-period-selector__options"
+             role="group"
+             aria-label="Periodicidade dos planos">
+          <button type="button"
+                  class="club-subscription-period-selector__option is-active"
+                  data-pricing-period-target="toggle"
+                  data-period="monthly"
+                  data-action="pricing-period#select"
+                  aria-pressed="true">
+            Mensal
+          </button>
+          <button type="button"
+                  class="club-subscription-period-selector__option"
+                  data-pricing-period-target="toggle"
+                  data-period="yearly"
+                  data-action="pricing-period#select"
+                  aria-pressed="false">
+            Anual <span>30% de desconto</span>
+          </button>
+        </div>
+
+        <div class="landing-pricing__grid">
         <% plan_presentations = {
           "Free" => {
             features: [
@@ -140,12 +163,23 @@
               { text: "Prize pool", state: :included }
             ],
             action: "Assinar Profissional"
-          }
+          },
         } %>
-        <% @plans.each do |plan| %>
-          <% presentation = plan_presentations.fetch(plan.name, { features: [], action: "Contratar plano" }) %>
-          <%= render "pages/pricing_card", plan: plan, **presentation %>
+        <% plans_by_tier = @plans.group_by { |plan| plan.name.delete_suffix(" Anual") } %>
+        <% ["Free", "Iniciante", "Profissional"].each do |tier_name| %>
+          <% plans = plans_by_tier[tier_name] || [] %>
+          <% monthly_plan = plans.find(&:monthly?) %>
+          <% yearly_plan = plans.find(&:yearly?) %>
+          <% next unless monthly_plan || yearly_plan %>
+          <% presentation = plan_presentations.fetch(tier_name, { features: [], action: "Contratar plano" }) %>
+          <%= render "pages/pricing_card",
+                     plan: monthly_plan || yearly_plan,
+                     monthly_plan: monthly_plan,
+                     yearly_plan: yearly_plan,
+                     tier_name: tier_name,
+                     **presentation %>
         <% end %>
+        </div>
       </div>
     </div>
   </section>

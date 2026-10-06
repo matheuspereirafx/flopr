@@ -33,6 +33,32 @@ class ClubSubscriptionTest < ActiveSupport::TestCase
     assert_equal @plan.billing_period, subscription.billing_period
   end
 
+  test "is valid while its expiration is in the future" do
+    subscription = ClubSubscription.new(
+      club: @club,
+      plan: @plan,
+      owner: @owner,
+      status: :active,
+      billing_period: "monthly",
+      expires_at: 1.day.from_now
+    )
+
+    assert subscription.valid_at?
+  end
+
+  test "is invalid after its expiration" do
+    subscription = ClubSubscription.new(
+      club: @club,
+      plan: @plan,
+      owner: @owner,
+      status: :active,
+      billing_period: "monthly",
+      expires_at: 1.day.ago
+    )
+
+    assert_not subscription.valid_at?
+  end
+
   test "allows a new active subscription after cancellation" do
     ClubSubscription.create!(club: @club, plan: @plan, owner: @owner, status: :canceled, billing_period: "monthly")
 

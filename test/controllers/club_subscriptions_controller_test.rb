@@ -39,6 +39,31 @@ class ClubSubscriptionsControllerTest < ActionDispatch::IntegrationTest
     assert_select "option[value='#{@other_club.id}']", count: 0
   end
 
+  test "owner can navigate between monthly and yearly options" do
+    yearly_plan = Plan.create!(name: "Iniciante Anual", description: "Plano anual", price: 411, billing_period: "yearly", active: true)
+    sign_in @owner
+
+    get new_club_subscription_path(plan_id: @plan.id)
+
+    assert_response :success
+    assert_select "a[href='#{new_club_subscription_path(plan_id: @plan.id)}']", text: "Mensal", count: 1
+    assert_select "a[href='#{new_club_subscription_path(plan_id: yearly_plan.id)}']", text: "Anual", count: 1
+  end
+
+  test "admin can see and contract a plan for the club" do
+    sign_in @admin
+    get new_club_subscription_path(plan_id: @plan.id)
+
+    assert_response :success
+    assert_select "option[value='#{@club.id}']", count: 1
+
+    assert_difference("ClubSubscription.count", 1) do
+      post club_subscriptions_path, params: { plan_id: @plan.id, club_id: @club.id }
+    end
+
+    assert_redirected_to clubs_path
+  end
+
   test "exposes the current plan price for downgrade detection" do
     lower_plan = Plan.create!(name: "Free", description: "Plano gratuito", price: 0, billing_period: "monthly", active: true)
     ClubSubscription.create!(
@@ -96,6 +121,34 @@ class ClubSubscriptionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal @owner, subscription.owner
     assert_predicate subscription, :active?
     assert_equal @plan.billing_period, subscription.billing_period
+    assert_in_delta 1.month.from_now.to_f, subscription.expires_at.to_f, 5.seconds
+  end
+
+  test "owner creates a yearly subscription with a twelve-month expiration" do
+    yearly_plan = Plan.create!(name: "Iniciante Anual", description: "Plano anual", price: 411, billing_period: "yearly", active: true)
+    sign_in @owner
+
+    post club_subscriptions_path, params: { plan_id: yearly_plan.id, club_id: @club.id }
+
+    assert_redirected_to clubs_path
+    subscription = ClubSubscription.order(:created_at).last
+    assert_equal yearly_plan, subscription.plan
+    assert_equal "yearly", subscription.billing_period
+    assert_in_delta 1.year.from_now.to_f, subscription.expires_at.to_f, 5.seconds
+  end
+
+  test "does not accept a forged expiration date" do
+    sign_in @owner
+    forged_expiration = 10.years.from_now
+
+    post club_subscriptions_path, params: {
+      plan_id: @plan.id,
+      club_id: @club.id,
+      expires_at: forged_expiration
+    }
+
+    subscription = ClubSubscription.order(:created_at).last
+    assert_operator subscription.expires_at, :<, forged_expiration
   end
 
   test "does not create a duplicate subscription for the current active plan" do
@@ -136,7 +189,7 @@ class ClubSubscriptionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  %i[admin dealer player].each do |role|
+  %i[dealer player].each do |role|
     test "#{role} cannot contract a plan" do
       sign_in instance_variable_get("@#{role}")
 

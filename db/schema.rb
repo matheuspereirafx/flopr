@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_05_110000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_05_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -108,12 +108,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_05_110000) do
     t.string "billing_period", null: false
     t.bigint "club_id", null: false
     t.datetime "created_at", null: false
+    t.datetime "expires_at"
     t.bigint "owner_id", null: false
     t.bigint "plan_id", null: false
     t.string "status", default: "active", null: false
     t.datetime "updated_at", null: false
     t.index ["club_id"], name: "index_club_subscriptions_on_active_club", unique: true, where: "((status)::text = 'active'::text)"
     t.index ["club_id"], name: "index_club_subscriptions_on_club_id"
+    t.index ["expires_at"], name: "index_club_subscriptions_on_expires_at"
     t.index ["owner_id"], name: "index_club_subscriptions_on_owner_id"
     t.index ["plan_id"], name: "index_club_subscriptions_on_plan_id"
     t.index ["status"], name: "index_club_subscriptions_on_status"

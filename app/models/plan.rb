@@ -24,6 +24,12 @@ class Plan < ApplicationRecord
     price.to_d.zero?
   end
 
+  def subscription_expires_at(started_at = Time.current)
+    return if free?
+
+    started_at + (yearly? ? 1.year : 1.month)
+  end
+
   def allows_feature?(feature)
     return true if %i[create_tournament configure_blinds timer].include?(feature.to_sym)
 
@@ -32,8 +38,8 @@ class Plan < ApplicationRecord
 
   def monthly_tournament_limit
     return 1 if free? || name == "Free"
-    return 4 if name == "Iniciante" || price.to_d == 190.to_d
-    return 9 if name == "Profissional" || price.to_d == 290.to_d
+    return 4 if name.to_s.start_with?("Iniciante") || price.to_d == 190.to_d
+    return 9 if name.to_s.start_with?("Profissional") || price.to_d == 290.to_d
 
     0
   end

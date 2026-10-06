@@ -29,6 +29,26 @@ class PlanTest < ActiveSupport::TestCase
     assert_not_predicate plan, :valid?
   end
 
+  test "calculates a yearly expiration twelve months after the start" do
+    plan = Plan.new(valid_plan_attributes.merge(billing_period: "yearly", price: 840))
+    started_at = Time.zone.parse("2026-10-05 12:00:00")
+
+    assert_equal started_at + 1.year, plan.subscription_expires_at(started_at)
+  end
+
+  test "calculates a monthly expiration one month after the start" do
+    plan = Plan.new(valid_plan_attributes.merge(billing_period: "monthly", price: 100))
+    started_at = Time.zone.parse("2026-10-05 12:00:00")
+
+    assert_equal started_at + 1.month, plan.subscription_expires_at(started_at)
+  end
+
+  test "does not expire the free plan" do
+    plan = Plan.new(valid_plan_attributes)
+
+    assert_nil plan.subscription_expires_at
+  end
+
   test "uses canonical limits for legacy plan prices" do
     assert_equal 4, Plan.new(valid_plan_attributes.merge(name: "Iniciante", price: 49)).monthly_tournament_limit
     assert_equal 9, Plan.new(valid_plan_attributes.merge(name: "Profissional", price: 119)).monthly_tournament_limit

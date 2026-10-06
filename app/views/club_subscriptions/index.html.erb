@@ -3,7 +3,7 @@
     <header class="club-subscriptions-header">
       <span class="club-subscriptions-kicker">Gestão de assinaturas</span>
       <h1 id="club-subscriptions-title">Meus planos</h1>
-      <p>Consulte e altere as assinaturas dos clubes em que você é owner.</p>
+      <p>Consulte e altere as assinaturas dos clubes que você administra.</p>
     </header>
 
     <% if @clubs.any? %>
@@ -29,7 +29,7 @@
                 </div>
                 <div>
                   <dt>Expiração da assinatura</dt>
-                  <dd><%= subscription.respond_to?(:expires_at) && subscription.expires_at.present? ? l(subscription.expires_at.to_date) : "Não definida" %></dd>
+                  <dd><%= subscription.expires_at.present? ? l(subscription.expires_at.to_date) : "Não definida" %></dd>
                 </div>
               </dl>
             <% else %>

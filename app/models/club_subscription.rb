@@ -17,6 +17,10 @@ class ClubSubscription < ApplicationRecord
   validates :billing_period, presence: true
   validate :only_one_active_subscription_per_club, if: :active?
 
+  def valid_at?(time = Time.current)
+    active? && (expires_at.blank? || expires_at > time)
+  end
+
   private
 
   def only_one_active_subscription_per_club

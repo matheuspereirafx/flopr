@@ -4,7 +4,7 @@
       <%= link_to "← Voltar para os planos", root_path(anchor: "planos"), class: "club-subscription-back" %>
       <span class="club-subscription-kicker">Contratação do plano</span>
       <h1 id="club-subscription-title">Escolha o clube da assinatura</h1>
-      <p>Confirme o plano selecionado e escolha um clube em que você é owner.</p>
+      <p>Confirme o plano selecionado e escolha um clube que você administra.</p>
     </header>
 
     <div class="club-subscription-layout">
@@ -16,6 +16,19 @@
           <strong><%= number_to_currency(@plan.price, unit: "R$ ", separator: ",", delimiter: ".") %></strong>
           <span>/ <%= @plan.monthly? ? "mês" : "ano" %></span>
         </div>
+
+        <% if @billing_options.size > 1 %>
+          <nav class="club-subscription-period-selector" aria-label="Periodicidade do plano">
+            <span class="club-subscription-period-selector__label">Escolha a periodicidade</span>
+            <div class="club-subscription-period-selector__options">
+              <% @billing_options.each do |billing_option| %>
+                <%= link_to(billing_option.monthly? ? "Mensal" : "Anual",
+                            new_club_subscription_path(plan_id: billing_option.id),
+                            class: "club-subscription-period-selector__option#{' is-active' if billing_option.id == @plan.id}") %>
+              <% end %>
+            </div>
+          </nav>
+        <% end %>
       </section>
 
       <section class="club-subscription-form-card" aria-labelledby="club-selection-title">
@@ -40,7 +53,7 @@
                     data-subscription-flow-target="club"
                     data-action="change->subscription-flow#checkDowngrade">
               <option value="">Escolha um clube</option>
-              <% @owned_clubs.each do |club| %>
+              <% @manageable_clubs.each do |club| %>
                 <% same_plan = club.active_club_subscription&.plan_id == @plan.id %>
                 <option value="<%= club.id %>"
                         data-current-plan-price="<%= club.active_club_subscription&.plan&.price %>"
@@ -51,7 +64,7 @@
             </select>
           </div>
 
-          <% available_club = @owned_clubs.any? { |club| club.active_club_subscription&.plan_id != @plan.id } %>
+          <% available_club = @manageable_clubs.any? { |club| club.active_club_subscription&.plan_id != @plan.id } %>
           <% if available_club %>
             <p class="club-subscription-security-note">A contratação será registrada em seu nome como responsável histórico.</p>
             <div class="club-subscription-downgrade-warning"

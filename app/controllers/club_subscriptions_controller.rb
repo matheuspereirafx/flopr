@@ -6,7 +6,7 @@ class ClubSubscriptionsController < ApplicationController
   before_action :authorize_owner!, only: :create
 
   def index
-    @clubs = current_user.owned_clubs
+    @clubs = manageable_clubs
                              .includes(active_club_subscription: :plan)
                              .order(:name)
   end
@@ -14,9 +14,10 @@ class ClubSubscriptionsController < ApplicationController
   def new
     redirect_to new_user_session_path(plan_id: params[:plan_id]) unless user_signed_in?
 
-    @owned_clubs = current_user.owned_clubs
+    @manageable_clubs = manageable_clubs
                              .includes(active_club_subscription: :plan)
                              .order(:name) if user_signed_in?
+    @billing_options = billing_options
   end
 
   def create
@@ -39,7 +40,8 @@ class ClubSubscriptionsController < ApplicationController
       plan: plan,
       owner: current_user,
       status: :active,
-      billing_period: plan.billing_period
+      billing_period: plan.billing_period,
+      expires_at: plan.subscription_expires_at
     )
 
     ClubSubscription.transaction do
@@ -77,9 +79,22 @@ class ClubSubscriptionsController < ApplicationController
   end
 
   def authorize_owner!
-    return if performed? || @current_membership.owner?
+    return if performed? || @current_membership.owner? || @current_membership.admin?
 
     head :forbidden
+  end
+
+  def manageable_clubs
+    Club.joins(:club_memberships)
+        .where(club_memberships: { user_id: current_user.id, role: %i[owner admin] })
+  end
+
+  def billing_options
+    base_name = @plan.name.delete_suffix(" Anual")
+
+    Plan.active
+        .where(name: [base_name, "#{base_name} Anual"])
+        .order(:billing_period)
   end
 
   def subscription_params

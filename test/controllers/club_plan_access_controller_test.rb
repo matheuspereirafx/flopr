@@ -51,6 +51,16 @@ class ClubPlanAccessControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
+  test "an expired paid subscription cannot use paid features" do
+    subscribe(@club, @monthly_plan)
+    @club.reload.active_club_subscription.update!(expires_at: 1.minute.ago)
+    sign_in @owner
+
+    get club_tournament_transactions_path(@club, @tournament)
+
+    assert_response :forbidden
+  end
+
   test "free plan blocks invitations for owner and admin" do
     subscribe(@club, @free_plan)
 

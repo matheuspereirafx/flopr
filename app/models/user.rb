@@ -9,6 +9,10 @@ class User < ApplicationRecord
            class_name: "ClubSubscription",
            foreign_key: :owner_id,
            dependent: :restrict_with_exception
+  has_many :requested_subscription_changes,
+           class_name: "SubscriptionChange",
+           foreign_key: :requested_by_id,
+           dependent: :restrict_with_exception
 
   has_many :recorded_registration_payments,
            class_name: "RegistrationPayment",

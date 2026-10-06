@@ -3,6 +3,8 @@ class ClubSubscription < ApplicationRecord
   belongs_to :plan
   belongs_to :owner, class_name: "User"
 
+  has_many :subscription_changes, dependent: :restrict_with_exception
+
   enum :status, {
     active: "active",
     canceled: "canceled",
@@ -16,6 +18,10 @@ class ClubSubscription < ApplicationRecord
 
   validates :billing_period, presence: true
   validate :only_one_active_subscription_per_club, if: :active?
+
+  def valid_at?(time = Time.current)
+    active? && (expires_at.blank? || expires_at > time)
+  end
 
   private
 

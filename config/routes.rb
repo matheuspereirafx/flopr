@@ -16,6 +16,10 @@ Rails.application.routes.draw do
   patch "/onboarding/profile", to: "profiles#update"
   resources :club_subscriptions, only: %i[index new create]
   resources :clubs, except: :destroy do
+    resource :subscription_change,
+             only: %i[new create destroy],
+             controller: "subscription_changes"
+
     resources :tournaments, only: %i[index show new create edit update destroy] do
       member do
         patch :finish

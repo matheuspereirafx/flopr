@@ -72,6 +72,20 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_select ".landing-plan a[href='#{new_club_path(plan_id: plan.id)}']", count: 1
   end
 
+  test "visitor sees an active yearly plan with its annual price" do
+    Plan.create!(name: "Iniciante", description: "Plano mensal", price: 49, billing_period: "monthly", active: true)
+    yearly = Plan.create!(name: "Iniciante Anual", description: "Plano anual", price: 411, billing_period: "yearly", active: true)
+
+    get root_path
+
+    assert_response :success
+    assert_select ".landing-plan", count: 1
+    assert_match(/data-yearly-price="R\$\s+411,00"/, response.body)
+    assert_select ".club-subscription-period-selector__option", text: /Anual/,
+                  count: 1
+    assert_select ".landing-plan[data-yearly-path='#{new_club_subscription_path(plan_id: yearly.id)}']", count: 1
+  end
+
   test "private club and player areas use the profile navigation without section links" do
     sign_in @user
 

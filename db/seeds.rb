@@ -22,10 +22,22 @@
     billing_period: :monthly
   },
   {
+    name: "Iniciante Anual",
+    description: "Para organizadores frequentes e clubes de poker locais.",
+    price: 1596,
+    billing_period: :yearly
+  },
+  {
     name: "Profissional",
     description: "Para grandes etapas de circuitos, ligas regionais e clubes federados.",
     price: 290,
     billing_period: :monthly
+  },
+  {
+    name: "Profissional Anual",
+    description: "Para grandes etapas de circuitos, ligas regionais e clubes federados.",
+    price: 2436,
+    billing_period: :yearly
   }
 ].each do |attributes|
   plan = Plan.find_or_initialize_by(name: attributes[:name])

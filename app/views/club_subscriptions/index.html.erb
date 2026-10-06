@@ -3,7 +3,7 @@
     <header class="club-subscriptions-header">
       <span class="club-subscriptions-kicker">Gestão de assinaturas</span>
       <h1 id="club-subscriptions-title">Meus planos</h1>
-      <p>Consulte e altere as assinaturas dos clubes em que você é owner.</p>
+      <p>Consulte e altere as assinaturas dos clubes que você administra.</p>
     </header>
 
     <% if @clubs.any? %>
@@ -29,9 +29,26 @@
                 </div>
                 <div>
                   <dt>Expiração da assinatura</dt>
-                  <dd><%= subscription.respond_to?(:expires_at) && subscription.expires_at.present? ? l(subscription.expires_at.to_date) : "Não definida" %></dd>
+                  <dd><%= subscription.expires_at.present? ? l(subscription.expires_at.to_date) : "Não definida" %></dd>
                 </div>
               </dl>
+
+              <% pending_change = club.pending_subscription_change %>
+              <% if pending_change %>
+                <section class="club-subscription-pending" aria-label="Downgrade agendado">
+                  <span class="club-subscription-pending__eyebrow">Downgrade agendado</span>
+                  <strong><%= pending_change.new_plan.name %></strong>
+                  <p>
+                    Aplicação em <%= l(pending_change.effective_at.to_date) %>.
+                    O plano atual continua ativo até essa data.
+                  </p>
+                  <%= button_to "Cancelar downgrade",
+                                club_subscription_change_path(club),
+                                method: :delete,
+                                class: "club-subscription-card__action club-subscription-card__action--secondary",
+                                data: { turbo_confirm: "Cancelar o downgrade agendado?" } %>
+                </section>
+              <% end %>
             <% else %>
               <div class="club-subscription-card__empty">
                 <strong>Nenhuma assinatura ativa</strong>

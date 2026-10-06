@@ -1,10 +1,29 @@
-<article class="landing-plan<%= ' landing-plan--highlighted' if local_assigns[:highlighted] %>">
+<% monthly_plan = local_assigns[:monthly_plan] || plan %>
+<% yearly_plan = local_assigns[:yearly_plan] || monthly_plan %>
+<% tier_name = local_assigns[:tier_name] || plan.name.delete_suffix(" Anual") %>
+<% monthly_cta = user_signed_in? && current_user.owned_clubs.none? ? new_club_path(plan_id: monthly_plan&.id) : new_club_subscription_path(plan_id: monthly_plan&.id) %>
+<% yearly_cta = user_signed_in? && current_user.owned_clubs.none? ? new_club_path(plan_id: yearly_plan&.id) : new_club_subscription_path(plan_id: yearly_plan&.id) %>
+<article class="landing-plan<%= ' landing-plan--highlighted' if local_assigns[:highlighted] %>"
+         data-pricing-period-target="card"
+         data-monthly-name="<%= tier_name %>"
+         data-yearly-name="<%= tier_name %>"
+         data-monthly-description="<%= monthly_plan&.description || plan.description %>"
+         data-yearly-description="<%= yearly_plan&.description || plan.description %>"
+         data-monthly-price="<%= monthly_plan ? number_to_currency(monthly_plan.price, unit: 'R$ ', separator: ',', delimiter: '.') : '' %>"
+         data-yearly-price="<%= yearly_plan ? number_to_currency(yearly_plan.price, unit: 'R$ ', separator: ',', delimiter: '.') : '' %>"
+         data-monthly-period="mês"
+         data-yearly-period="ano"
+         data-monthly-path="<%= monthly_cta %>"
+         data-yearly-path="<%= yearly_cta %>"
+         data-monthly-action="<%= action %>"
+         data-yearly-action="<%= tier_name == 'Free' ? action : "Assinar #{tier_name} Anual" %>"
+         data-yearly-available="<%= yearly_plan.present? %>">
   <% if local_assigns[:highlighted] %><span class="landing-plan__badge">Mais popular</span><% end %>
   <div class="landing-plan__body">
-    <div class="landing-plan__intro"><h3><%= plan.name %></h3><p><%= plan.description %></p></div>
+    <div class="landing-plan__intro"><h3><%= tier_name %></h3><p><%= monthly_plan&.description || plan.description %></p></div>
     <div class="landing-plan__price-row">
-      <strong class="landing-plan__price"><%= number_to_currency(plan.price, unit: "R$ ", separator: ",", delimiter: ".") %></strong>
-      <small>/ <%= plan.monthly? ? "mês" : "ano" %></small>
+      <strong class="landing-plan__price"><%= number_to_currency((monthly_plan || plan).price, unit: "R$ ", separator: ",", delimiter: ".") %></strong>
+      <small>/ <%= (monthly_plan || plan).monthly? ? "mês" : "ano" %></small>
       <% if local_assigns[:annual_price] %><span class="landing-plan__annual"><%= annual_price %></span><% end %>
     </div>
     <ul>
@@ -17,8 +36,5 @@
       <% end %>
     </ul>
   </div>
-  <% cta_path = user_signed_in? && current_user.owned_clubs.none? ?
-                  new_club_path(plan_id: plan.id) :
-                  new_club_subscription_path(plan_id: plan.id) %>
-  <%= link_to action, cta_path, class: "landing-plan__action" %>
+  <%= link_to action, monthly_cta, class: "landing-plan__action" %>
 </article>

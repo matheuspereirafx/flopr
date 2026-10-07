@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_06_170000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_06_180100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -260,6 +260,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_170000) do
 
   create_table "subscription_changes", force: :cascade do |t|
     t.datetime "applied_at"
+    t.string "asaas_subscription_id"
     t.datetime "canceled_at"
     t.string "change_type", null: false
     t.bigint "club_id", null: false
@@ -271,9 +272,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_170000) do
     t.bigint "requested_by_id", null: false
     t.string "status", default: "pending", null: false
     t.datetime "updated_at", null: false
+    t.index ["asaas_subscription_id"], name: "index_subscription_changes_on_asaas_subscription_id", unique: true, where: "(asaas_subscription_id IS NOT NULL)"
     t.index ["change_type"], name: "index_subscription_changes_on_change_type"
     t.index ["club_id"], name: "index_subscription_changes_on_club_id"
-    t.index ["club_id"], name: "index_subscription_changes_on_pending_club", unique: true, where: "((status)::text = 'pending'::text)"
+    t.index ["club_id"], name: "index_subscription_changes_on_pending_club", unique: true, where: "((status)::text = ANY ((ARRAY['pending'::character varying, 'provider_sync_pending'::character varying])::text[]))"
     t.index ["club_subscription_id"], name: "index_subscription_changes_on_club_subscription_id"
     t.index ["current_plan_id"], name: "index_subscription_changes_on_current_plan_id"
     t.index ["effective_at"], name: "index_subscription_changes_on_effective_at"

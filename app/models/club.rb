@@ -7,7 +7,7 @@ class Club < ApplicationRecord
   has_many :subscription_upgrades, dependent: :restrict_with_exception
 
   has_one :pending_subscription_change,
-          -> { pending },
+          -> { where(status: %w[pending provider_sync_pending]) },
           class_name: "SubscriptionChange"
 
   has_one :active_club_subscription,

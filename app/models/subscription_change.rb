@@ -11,6 +11,7 @@ class SubscriptionChange < ApplicationRecord
 
   enum :status, {
     pending: "pending",
+    provider_sync_pending: "provider_sync_pending",
     applied: "applied",
     canceled: "canceled"
   }
@@ -22,7 +23,7 @@ class SubscriptionChange < ApplicationRecord
   validate :new_plan_is_active_and_lower, if: :pending?
   validate :only_one_pending_change, if: :pending?
 
-  scope :due, -> { pending.where(effective_at: ..Time.current) }
+  scope :due, -> { where(status: %w[pending provider_sync_pending]).where(effective_at: ..Time.current) }
 
   private
 
@@ -57,7 +58,7 @@ class SubscriptionChange < ApplicationRecord
   def only_one_pending_change
     return if club.blank?
 
-    relation = club.subscription_changes.pending
+    relation = club.subscription_changes.where(status: %w[pending provider_sync_pending])
     relation = relation.where.not(id: id) if persisted?
     return unless relation.exists?
 

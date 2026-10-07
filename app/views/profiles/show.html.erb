@@ -1,0 +1,74 @@
+<main class="profile-settings-page">
+  <section class="profile-settings-card" aria-labelledby="profile-settings-title">
+    <div class="profile-settings-card__header">
+      <p class="profile-settings-card__eyebrow">Minha conta</p>
+      <h1 id="profile-settings-title">Configurações do perfil</h1>
+      <p>Atualize seus dados pessoais e mantenha sua conta segura.</p>
+    </div>
+
+    <section class="profile-settings-section" aria-labelledby="profile-data-title">
+      <h2 id="profile-data-title">Dados do perfil</h2>
+
+      <%= simple_form_for current_user, url: profile_path, method: :patch do |f| %>
+        <div class="profile-settings-field">
+          <%= f.input :email,
+                      label: "E-mail",
+                      disabled: true,
+                      input_html: { autocomplete: "email" } %>
+        </div>
+
+        <div class="profile-settings-field">
+          <%= f.input :name,
+                      label: "Nome completo",
+                      required: true,
+                      input_html: { autocomplete: "name" } %>
+        </div>
+
+        <div class="profile-settings-field">
+          <%= f.input :username,
+                      label: "Apelido",
+                      required: true,
+                      input_html: { autocomplete: "username", pattern: "[a-zA-Z0-9_.]+" } %>
+        </div>
+
+        <div class="profile-settings-field">
+          <%= f.input :cpf,
+                      label: "CPF",
+                      hint: "Usado para identificar sua conta em pagamentos.",
+                      input_html: { autocomplete: "off", inputmode: "numeric" } %>
+        </div>
+
+        <%= f.button :submit, "Salvar dados", class: "profile-settings-button" %>
+      <% end %>
+    </section>
+
+    <section class="profile-settings-section" aria-labelledby="password-title">
+      <h2 id="password-title">Alterar senha</h2>
+
+      <%= simple_form_for current_user, url: profile_path, method: :patch do |f| %>
+        <div class="profile-settings-field">
+          <%= f.input :current_password,
+                      label: "Senha atual",
+                      required: true,
+                      input_html: { autocomplete: "current-password" } %>
+        </div>
+
+        <div class="profile-settings-field">
+          <%= f.input :password,
+                      label: "Nova senha",
+                      required: true,
+                      input_html: { autocomplete: "new-password" } %>
+        </div>
+
+        <div class="profile-settings-field">
+          <%= f.input :password_confirmation,
+                      label: "Confirme a nova senha",
+                      required: true,
+                      input_html: { autocomplete: "new-password" } %>
+        </div>
+
+        <%= f.button :submit, "Alterar senha", class: "profile-settings-button" %>
+      <% end %>
+    </section>
+  </section>
+</main>

@@ -9,22 +9,29 @@ module Asaas
     end
 
     def call(event_id)
-      return :duplicate if SubscriptionWebhookEvent.exists?(provider: "asaas", provider_event_id: event_id)
-
-      event = SubscriptionWebhookEvent.create!(
+      existing_event = SubscriptionWebhookEvent.find_by(
         provider: "asaas",
-        provider_event_id: event_id,
-        event_type: @payload.fetch("event"),
-        payload: @payload
+        provider_event_id: event_id
       )
+      return retry_existing_payment(existing_event) if existing_event&.pending_payment_retry?
+      return :duplicate if existing_event
 
-      if APPROVED_EVENTS.include?(@payload["event"]) || REJECTED_EVENTS.include?(@payload["event"])
-        process_payment(event)
-      elsif CANCELED_SUBSCRIPTION_EVENTS.include?(@payload["event"])
-        process_subscription_cancellation(event)
+      ApplicationRecord.transaction do
+        event = SubscriptionWebhookEvent.create!(
+          provider: "asaas",
+          provider_event_id: event_id,
+          event_type: @payload.fetch("event"),
+          payload: @payload
+        )
+
+        if APPROVED_EVENTS.include?(@payload["event"]) || REJECTED_EVENTS.include?(@payload["event"])
+          process_payment(event)
+        elsif CANCELED_SUBSCRIPTION_EVENTS.include?(@payload["event"])
+          process_subscription_cancellation(event)
+        end
+
+        event
       end
-
-      event
     end
 
     private
@@ -53,6 +60,13 @@ module Asaas
       activate_subscription!(subscription) if approved_event?
     end
 
+    def retry_existing_payment(event)
+      ApplicationRecord.transaction do
+        process_payment(event)
+        event
+      end
+    end
+
     def process_subscription_cancellation(event)
       subscription_id = @payload.dig("subscription", "id")
       subscription = ClubSubscription.find_by(asaas_subscription_id: subscription_id)
@@ -63,11 +77,17 @@ module Asaas
     end
 
     def activate_subscription!(subscription)
-      started_at = subscription.expires_at&.future? ? subscription.expires_at : Time.current
-      subscription.update!(
-        status: :active,
-        expires_at: subscription.plan.subscription_expires_at(started_at)
-      )
+      subscription.club.with_lock do
+        subscription.club.club_subscriptions.active.where.not(id: subscription.id).find_each do |current_subscription|
+          current_subscription.update!(status: :canceled)
+        end
+
+        started_at = subscription.expires_at&.future? ? subscription.expires_at : Time.current
+        subscription.update!(
+          status: :active,
+          expires_at: subscription.plan.subscription_expires_at(started_at)
+        )
+      end
     end
 
     def approved_event?

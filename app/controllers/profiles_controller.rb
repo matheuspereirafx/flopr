@@ -5,7 +5,10 @@ class ProfilesController < ApplicationController
     redirect_to after_sign_in_path_for(current_user) unless current_user.profile_incomplete?
   end
 
-  def update
+  def show
+  end
+
+  def onboarding_update
     current_user.assign_attributes(profile_params.merge(profile_completed_at: Time.current))
 
     if current_user.save
@@ -15,9 +18,38 @@ class ProfilesController < ApplicationController
     end
   end
 
+  def update
+    if password_params[:password].present? || password_params[:password_confirmation].present?
+      update_password
+    else
+      update_profile
+    end
+  end
+
   private
 
+  def update_profile
+    if current_user.update(profile_params)
+      redirect_to profile_path, notice: "Perfil atualizado com sucesso."
+    else
+      render :show, status: :unprocessable_entity
+    end
+  end
+
+  def update_password
+    if current_user.update_with_password(password_params)
+      bypass_sign_in(current_user)
+      redirect_to profile_path, notice: "Senha atualizada com sucesso."
+    else
+      render :show, status: :unprocessable_entity
+    end
+  end
+
   def profile_params
-    params.require(:user).permit(:name, :username)
+    params.require(:user).permit(:name, :username, :cpf)
+  end
+
+  def password_params
+    params.require(:user).permit(:password, :password_confirmation, :current_password)
   end
 end

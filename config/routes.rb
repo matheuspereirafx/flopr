@@ -13,7 +13,8 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
   get "/access", to: "onboarding#access", as: :access
   get "/onboarding/profile", to: "profiles#edit", as: :onboarding_profile
-  patch "/onboarding/profile", to: "profiles#update"
+  patch "/onboarding/profile", to: "profiles#onboarding_update"
+  resource :profile, only: %i[show update], controller: "profiles"
   resources :club_subscriptions, only: %i[index new create]
   resources :clubs, except: :destroy do
     resource :subscription_change,

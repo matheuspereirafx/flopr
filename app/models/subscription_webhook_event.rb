@@ -6,6 +6,11 @@ class SubscriptionWebhookEvent < ApplicationRecord
   validates :provider_event_id, uniqueness: { scope: :provider }
 
   def pending_payment_retry?
-    club_subscription&.pending? && club_subscription_payment&.approved?
+    return false unless club_subscription_payment&.approved?
+
+    return true if club_subscription&.pending?
+
+    upgrade = club_subscription&.incoming_subscription_upgrade
+    upgrade.present? && !upgrade.applied?
   end
 end

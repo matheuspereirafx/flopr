@@ -17,6 +17,14 @@ class Plan < ApplicationRecord
            class_name: "SubscriptionChange",
            foreign_key: :new_plan_id,
            dependent: :restrict_with_exception
+  has_many :current_subscription_upgrades,
+           class_name: "SubscriptionUpgrade",
+           foreign_key: :current_plan_id,
+           dependent: :restrict_with_exception
+  has_many :new_subscription_upgrades,
+           class_name: "SubscriptionUpgrade",
+           foreign_key: :new_plan_id,
+           dependent: :restrict_with_exception
 
   enum :billing_period, {
     monthly: "monthly",

@@ -4,6 +4,13 @@ class ClubSubscription < ApplicationRecord
   belongs_to :owner, class_name: "User"
 
   has_many :subscription_changes, dependent: :restrict_with_exception
+  has_many :subscription_upgrades,
+           foreign_key: :current_subscription_id,
+           dependent: :restrict_with_exception
+  has_one :incoming_subscription_upgrade,
+          class_name: "SubscriptionUpgrade",
+          foreign_key: :new_subscription_id,
+          dependent: :restrict_with_exception
   has_many :club_subscription_payments, dependent: :restrict_with_exception
   has_many :subscription_webhook_events, dependent: :nullify
 

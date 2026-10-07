@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_06_150200) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_06_170000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -282,6 +282,43 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_150200) do
     t.index ["status"], name: "index_subscription_changes_on_status"
   end
 
+  create_table "subscription_upgrades", force: :cascade do |t|
+    t.datetime "applied_at"
+    t.string "asaas_payment_id"
+    t.string "asaas_subscription_id"
+    t.bigint "club_id", null: false
+    t.datetime "created_at", null: false
+    t.decimal "credit_amount", precision: 10, scale: 2, null: false
+    t.bigint "current_plan_id", null: false
+    t.bigint "current_subscription_id", null: false
+    t.string "external_reference", null: false
+    t.datetime "failed_at"
+    t.text "failure_reason"
+    t.bigint "new_plan_id", null: false
+    t.bigint "new_subscription_id", null: false
+    t.decimal "original_amount", precision: 10, scale: 2, null: false
+    t.datetime "period_ends_at", null: false
+    t.datetime "period_started_at", null: false
+    t.bigint "requested_by_id", null: false
+    t.string "status", default: "pending_payment", null: false
+    t.datetime "updated_at", null: false
+    t.decimal "upgrade_amount", precision: 10, scale: 2, null: false
+    t.index ["asaas_payment_id"], name: "index_subscription_upgrades_on_asaas_payment_id", unique: true, where: "(asaas_payment_id IS NOT NULL)"
+    t.index ["asaas_subscription_id"], name: "index_subscription_upgrades_on_asaas_subscription_id", unique: true, where: "(asaas_subscription_id IS NOT NULL)"
+    t.index ["club_id"], name: "index_pending_subscription_upgrades_on_club_id", unique: true, where: "((status)::text = ANY ((ARRAY['pending_payment'::character varying, 'payment_approved'::character varying, 'provider_sync_pending'::character varying])::text[]))"
+    t.index ["club_id"], name: "index_subscription_upgrades_on_club_id"
+    t.index ["current_plan_id"], name: "index_subscription_upgrades_on_current_plan_id"
+    t.index ["current_subscription_id"], name: "index_subscription_upgrades_on_current_subscription_id"
+    t.index ["external_reference"], name: "index_subscription_upgrades_on_external_reference", unique: true
+    t.index ["new_plan_id"], name: "index_subscription_upgrades_on_new_plan_id"
+    t.index ["new_subscription_id"], name: "index_subscription_upgrades_on_new_subscription_id"
+    t.index ["requested_by_id"], name: "index_subscription_upgrades_on_requested_by_id"
+    t.index ["status"], name: "index_subscription_upgrades_on_status"
+    t.check_constraint "credit_amount >= 0::numeric", name: "subscription_upgrades_credit_amount_non_negative"
+    t.check_constraint "original_amount >= 0::numeric", name: "subscription_upgrades_original_amount_non_negative"
+    t.check_constraint "upgrade_amount >= 0::numeric", name: "subscription_upgrades_upgrade_amount_non_negative"
+  end
+
   create_table "subscription_webhook_events", force: :cascade do |t|
     t.bigint "club_subscription_id"
     t.bigint "club_subscription_payment_id"
@@ -461,6 +498,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_150200) do
   add_foreign_key "subscription_changes", "plans", column: "current_plan_id"
   add_foreign_key "subscription_changes", "plans", column: "new_plan_id"
   add_foreign_key "subscription_changes", "users", column: "requested_by_id"
+  add_foreign_key "subscription_upgrades", "club_subscriptions", column: "current_subscription_id"
+  add_foreign_key "subscription_upgrades", "club_subscriptions", column: "new_subscription_id"
+  add_foreign_key "subscription_upgrades", "clubs"
+  add_foreign_key "subscription_upgrades", "plans", column: "current_plan_id"
+  add_foreign_key "subscription_upgrades", "plans", column: "new_plan_id"
+  add_foreign_key "subscription_upgrades", "users", column: "requested_by_id"
   add_foreign_key "subscription_webhook_events", "club_subscription_payments"
   add_foreign_key "subscription_webhook_events", "club_subscriptions"
   add_foreign_key "tournament_charge_options", "blind_levels", column: "available_from_level_id"

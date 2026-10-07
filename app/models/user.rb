@@ -13,6 +13,10 @@ class User < ApplicationRecord
            class_name: "SubscriptionChange",
            foreign_key: :requested_by_id,
            dependent: :restrict_with_exception
+  has_many :requested_subscription_upgrades,
+           class_name: "SubscriptionUpgrade",
+           foreign_key: :requested_by_id,
+           dependent: :restrict_with_exception
 
   has_many :recorded_registration_payments,
            class_name: "RegistrationPayment",

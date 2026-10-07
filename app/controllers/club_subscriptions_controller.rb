@@ -36,6 +36,13 @@ class ClubSubscriptionsController < ApplicationController
       return head :unprocessable_entity
     end
 
+    if current_subscription && plan.price.to_d > current_subscription.plan.price.to_d &&
+        !current_subscription.plan.free?
+      SubscriptionUpgradeService.new(user: current_user).create_upgrade(plan, @club)
+      redirect_to clubs_path, notice: "Cobrança proporcional do upgrade criada. Aguardando pagamento."
+      return
+    end
+
     asaas_subscription = Asaas::SubscriptionService.new(user: current_user)
                                       .create_subscription(plan, @club)
 
@@ -55,7 +62,7 @@ class ClubSubscriptionsController < ApplicationController
     end
 
     redirect_to clubs_path, notice: "Cobrança criada. Aguardando confirmação do pagamento."
-  rescue ActiveRecord::RecordInvalid, KeyError, Asaas::Error
+  rescue ActiveRecord::RecordInvalid, KeyError, Asaas::Error, SubscriptionUpgradeService::Error
     head :unprocessable_entity
   end
 

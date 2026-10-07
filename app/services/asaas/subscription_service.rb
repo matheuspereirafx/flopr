@@ -2,14 +2,12 @@ require "json"
 require "net/http"
 
 module Asaas
-  class Error < StandardError; end unless const_defined?(:Error)
-
   class SubscriptionService
     def initialize(user:)
       @user = user
     end
 
-    def create_subscription(plan, club)
+    def customer_id_for(club)
       customer_id = @user.asaas_customer_id.presence
       response = post(
         "/customers",
@@ -18,16 +16,33 @@ module Asaas
 
       customer_id ||= response.fetch("id")
       @user.update!(asaas_customer_id: customer_id) if @user.asaas_customer_id.blank?
+      customer_id
+    end
+
+    def create_subscription(plan, club, next_due_date: Date.current, external_reference: nil)
+      customer_id = customer_id_for(club)
 
       subscription = post(
         "/subscriptions",
-        subscription_payload(plan, club, customer_id)
+        subscription_payload(
+          plan,
+          club,
+          customer_id,
+          next_due_date: next_due_date,
+          external_reference: external_reference
+        )
       )
 
       {
         customer_id: customer_id,
         subscription_id: subscription.fetch("id")
       }
+    end
+
+    def cancel_subscription(subscription_id)
+      return if subscription_id.blank?
+
+      delete("/subscriptions/#{subscription_id}")
     end
 
     private
@@ -42,15 +57,15 @@ module Asaas
       }.compact
     end
 
-    def subscription_payload(plan, club, customer_id)
+    def subscription_payload(plan, club, customer_id, next_due_date:, external_reference:)
       {
         customer: customer_id,
         billingType: "UNDEFINED",
         value: plan.price.to_f,
         cycle: plan.monthly? ? "MONTHLY" : "YEARLY",
         description: plan.name,
-        externalReference: "club:#{club.id}:plan:#{plan.id}",
-        nextDueDate: Date.current.to_s
+        externalReference: external_reference || "club:#{club.id}:plan:#{plan.id}",
+        nextDueDate: next_due_date.to_date.to_s
       }
     end
 
@@ -68,6 +83,24 @@ module Asaas
       parsed_response = JSON.parse(response.body)
       return parsed_response if response.is_a?(Net::HTTPSuccess)
 
+      raise Error, parsed_response["errors"] || "Asaas request failed"
+    rescue JSON::ParserError => error
+      raise Error, error.message
+    end
+
+    def delete(path)
+      uri = URI.join(normalized_base_url, path.to_s.delete_prefix("/"))
+      request = Net::HTTP::Delete.new(uri)
+      request["access_token"] = api_key
+      request["Content-Type"] = "application/json"
+
+      response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https") do |http|
+        http.request(request)
+      end
+
+      return true if response.is_a?(Net::HTTPSuccess) || response.is_a?(Net::HTTPNotFound)
+
+      parsed_response = JSON.parse(response.body)
       raise Error, parsed_response["errors"] || "Asaas request failed"
     rescue JSON::ParserError => error
       raise Error, error.message

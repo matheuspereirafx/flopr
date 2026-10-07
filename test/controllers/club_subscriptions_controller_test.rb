@@ -1,6 +1,39 @@
 require "test_helper"
 
+class AsaasSubscriptionServiceDouble
+  attr_reader :calls
+
+  def initialize(response)
+    @response = response
+    @calls = []
+  end
+
+  def create_subscription(plan, club)
+    @calls << [plan, club]
+    @response
+  end
+end
+
+module Asaas
+  class SubscriptionService
+    class << self
+      attr_accessor :test_double
+    end
+
+    def self.new(*)
+      test_double || AsaasSubscriptionServiceDouble.new(
+        customer_id: "cus_default",
+        subscription_id: "sub_default"
+      )
+    end
+  end
+end
+
 class ClubSubscriptionsControllerTest < ActionDispatch::IntegrationTest
+  teardown do
+    Asaas::SubscriptionService.test_double = nil
+  end
+
   setup do
     @club = Club.create!(name: "Owner Club")
     @other_club = Club.create!(name: "Other Club")
@@ -106,7 +139,7 @@ class ClubSubscriptionsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href='#{root_path(anchor: 'planos')}']", text: "Mudar assinatura", count: 1
   end
 
-  test "owner creates an active subscription for the selected club" do
+  test "owner creates a pending subscription for the selected club" do
     sign_in @owner
 
     assert_difference("ClubSubscription.count", 1) do
@@ -121,12 +154,12 @@ class ClubSubscriptionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal @club, subscription.club
     assert_equal @plan, subscription.plan
     assert_equal @owner, subscription.owner
-    assert_predicate subscription, :active?
+    assert_predicate subscription, :pending?
     assert_equal @plan.billing_period, subscription.billing_period
-    assert_in_delta 1.month.from_now.to_f, subscription.expires_at.to_f, 5.seconds
+    assert_nil subscription.expires_at
   end
 
-  test "owner creates a yearly subscription with a twelve-month expiration" do
+  test "owner creates a yearly subscription without activating it before payment" do
     yearly_plan = Plan.create!(name: "Iniciante Anual", description: "Plano anual", price: 411, billing_period: "yearly", active: true)
     sign_in @owner
 
@@ -136,7 +169,8 @@ class ClubSubscriptionsControllerTest < ActionDispatch::IntegrationTest
     subscription = ClubSubscription.order(:created_at).last
     assert_equal yearly_plan, subscription.plan
     assert_equal "yearly", subscription.billing_period
-    assert_in_delta 1.year.from_now.to_f, subscription.expires_at.to_f, 5.seconds
+    assert_predicate subscription, :pending?
+    assert_nil subscription.expires_at
   end
 
   test "does not accept a forged expiration date" do
@@ -150,7 +184,7 @@ class ClubSubscriptionsControllerTest < ActionDispatch::IntegrationTest
     }
 
     subscription = ClubSubscription.order(:created_at).last
-    assert_operator subscription.expires_at, :<, forged_expiration
+    assert_nil subscription.expires_at
   end
 
   test "does not create a duplicate subscription for the current active plan" do
@@ -178,7 +212,7 @@ class ClubSubscriptionsControllerTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
 
-    assert_select ".alert", text: /contrat/i
+    assert_select ".alert", text: /cobrança|aguardando/i
   end
 
   test "does not create a subscription for a club owned by another user" do
@@ -256,7 +290,7 @@ class ClubSubscriptionsControllerTest < ActionDispatch::IntegrationTest
     }
 
     subscription = ClubSubscription.order(:created_at).last
-    assert_predicate subscription, :active?
+    assert_predicate subscription, :pending?
     assert_equal @plan.billing_period, subscription.billing_period
   end
 
@@ -276,9 +310,8 @@ class ClubSubscriptionsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to clubs_path
-    assert_predicate current_subscription.reload, :canceled?
-    assert_equal @plan, @club.reload.active_club_subscription.plan
-    assert_predicate @club.active_club_subscription, :active?
+    assert_predicate current_subscription.reload, :active?
+    assert_predicate ClubSubscription.order(:created_at).last, :pending?
   end
 
   test "allows a new subscription after the previous one was canceled" do
@@ -289,7 +322,7 @@ class ClubSubscriptionsControllerTest < ActionDispatch::IntegrationTest
       post club_subscriptions_path, params: { plan_id: @plan.id, club_id: @club.id }
     end
 
-    assert_predicate ClubSubscription.order(:created_at).last, :active?
+    assert_predicate ClubSubscription.order(:created_at).last, :pending?
   end
 
   test "allows a new subscription after the previous one expired" do
@@ -300,7 +333,7 @@ class ClubSubscriptionsControllerTest < ActionDispatch::IntegrationTest
       post club_subscriptions_path, params: { plan_id: @plan.id, club_id: @club.id }
     end
 
-    assert_predicate ClubSubscription.order(:created_at).last, :active?
+    assert_predicate ClubSubscription.order(:created_at).last, :pending?
   end
 
   test "rejects missing sensitive and required parameters without changing the database" do
@@ -314,6 +347,66 @@ class ClubSubscriptionsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unprocessable_entity
+  end
+
+  test "starts a pending external subscription without trusting sensitive parameters" do
+    sign_in @owner
+    service = AsaasSubscriptionServiceDouble.new(
+      customer_id: "cus_created",
+      subscription_id: "sub_created"
+    )
+
+    Asaas::SubscriptionService.test_double = service
+    assert_difference("ClubSubscription.count", 1) do
+      post club_subscriptions_path, params: {
+        plan_id: @plan.id,
+        club_id: @club.id,
+        owner_id: @outsider.id,
+        status: "active",
+        billing_period: "yearly",
+        price: 0,
+        asaas_customer_id: "cus_forged",
+        asaas_subscription_id: "sub_forged"
+      }
+    end
+    Asaas::SubscriptionService.test_double = nil
+
+    subscription = ClubSubscription.order(:created_at).last
+    assert_predicate subscription, :pending?
+    assert_equal "sub_created", subscription.asaas_subscription_id
+    assert_equal @owner, subscription.owner
+    assert_equal @plan.billing_period, subscription.billing_period
+    assert_equal [[@plan, @club]], service.calls
+  end
+
+  test "does not cancel the current subscription before the new payment is approved" do
+    current_subscription = ClubSubscription.create!(
+      club: @club,
+      plan: @plan,
+      owner: @owner,
+      status: :active,
+      billing_period: @plan.billing_period,
+      expires_at: 1.month.from_now
+    )
+    next_plan = Plan.create!(
+      name: "Next Plan #{SecureRandom.hex(4)}",
+      description: "Próximo plano",
+      price: 99,
+      billing_period: :monthly,
+      active: true
+    )
+    service = AsaasSubscriptionServiceDouble.new(
+      customer_id: "cus_created",
+      subscription_id: "sub_created"
+    )
+    sign_in @owner
+
+    Asaas::SubscriptionService.test_double = service
+    post club_subscriptions_path, params: { plan_id: next_plan.id, club_id: @club.id }
+    Asaas::SubscriptionService.test_double = nil
+
+    assert_predicate current_subscription.reload, :active?
+    assert_equal [[next_plan, @club]], service.calls
   end
 
   private

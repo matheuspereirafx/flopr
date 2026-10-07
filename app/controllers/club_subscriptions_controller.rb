@@ -36,22 +36,26 @@ class ClubSubscriptionsController < ApplicationController
       return head :unprocessable_entity
     end
 
+    asaas_subscription = Asaas::SubscriptionService.new(user: current_user)
+                                      .create_subscription(plan, @club)
+
     subscription = ClubSubscription.new(
       club: @club,
       plan: plan,
       owner: current_user,
-      status: :active,
+      status: :pending,
       billing_period: plan.billing_period,
-      expires_at: plan.subscription_expires_at
+      asaas_subscription_id: asaas_subscription.fetch(:subscription_id)
     )
 
     ClubSubscription.transaction do
-      @club.active_club_subscription&.update!(status: :canceled)
+      current_user.update!(asaas_customer_id: asaas_subscription[:customer_id]) if
+        current_user.asaas_customer_id.blank? && asaas_subscription[:customer_id].present?
       subscription.save!
     end
 
-    redirect_to clubs_path, notice: "Plano contratado com sucesso."
-  rescue ActiveRecord::RecordInvalid
+    redirect_to clubs_path, notice: "Cobrança criada. Aguardando confirmação do pagamento."
+  rescue ActiveRecord::RecordInvalid, KeyError, Asaas::Error
     head :unprocessable_entity
   end
 

@@ -4,8 +4,11 @@ class ClubSubscription < ApplicationRecord
   belongs_to :owner, class_name: "User"
 
   has_many :subscription_changes, dependent: :restrict_with_exception
+  has_many :club_subscription_payments, dependent: :restrict_with_exception
+  has_many :subscription_webhook_events, dependent: :nullify
 
   enum :status, {
+    pending: "pending",
     active: "active",
     canceled: "canceled",
     expired: "expired"
@@ -22,6 +25,8 @@ class ClubSubscription < ApplicationRecord
   def valid_at?(time = Time.current)
     active? && (expires_at.blank? || expires_at > time)
   end
+
+  validates :asaas_subscription_id, uniqueness: true, allow_blank: true
 
   private
 

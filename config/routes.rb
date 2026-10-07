@@ -65,6 +65,8 @@ Rails.application.routes.draw do
     end
   end
 
+  post "/webhooks/asaas", to: "webhooks/asaas#create", as: :asaas_webhook
+
   patch "tournament-invitations/:token/confirm",
         to: "tournament_invitation_links#confirm",
         as: :confirm_tournament_invitation

@@ -40,9 +40,9 @@ class SubscriptionChangeTest < ActiveSupport::TestCase
     assert_equal @club, change.club
   end
 
-  test "supports downgrade change type and pending, applied, and canceled statuses" do
+  test "supports downgrade change type and its lifecycle statuses" do
     assert_equal %w[downgrade], SubscriptionChange.change_types.keys
-    assert_equal %w[pending applied canceled], SubscriptionChange.statuses.keys
+    assert_equal %w[pending provider_sync_pending applied canceled], SubscriptionChange.statuses.keys
   end
 
   test "is valid with a future effective date and a lower plan" do

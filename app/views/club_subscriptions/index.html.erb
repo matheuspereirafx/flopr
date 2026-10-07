@@ -49,6 +49,7 @@
                                 data: { turbo_confirm: "Cancelar o downgrade agendado?" } %>
                 </section>
               <% end %>
+
             <% else %>
               <div class="club-subscription-card__empty">
                 <strong>Nenhuma assinatura ativa</strong>
@@ -59,6 +60,50 @@
             <%= link_to(subscription ? "Mudar assinatura" : "Contratar plano",
                         root_path(anchor: "planos"),
                         class: "club-subscription-card__action") %>
+
+            <% if subscription && @free_plan && plan != @free_plan && pending_change.nil? && plan.downgrade_to?(@free_plan) %>
+              <div class="club-subscription-cancellation" data-controller="subscription-cancellation">
+                <p class="club-subscription-cancel-link">
+                  <button type="button"
+                          class="club-subscription-cancel-link__button"
+                          data-action="subscription-cancellation#open">
+                    Cancelamento de assinatura
+                  </button>
+                </p>
+
+                <dialog class="subscription-change-dialog"
+                        aria-labelledby="subscription-cancellation-dialog-title-<%= club.id %>"
+                        data-subscription-cancellation-target="dialog"
+                        data-action="click->subscription-cancellation#closeOnBackdrop">
+                  <div class="subscription-change-dialog__card">
+                    <button type="button"
+                            class="subscription-change-dialog__close"
+                            aria-label="Fechar confirmação"
+                            data-action="subscription-cancellation#close">×</button>
+                    <span class="subscription-change-label">Cancelamento de assinatura</span>
+                    <h2 id="subscription-cancellation-dialog-title-<%= club.id %>">Cancelar assinatura?</h2>
+                    <p class="subscription-change-dialog__warning">
+                      O plano <strong><%= plan.name %></strong> continuará ativo até a expiração.
+                      Depois disso, o clube será rebaixado para o plano Free, sem novas cobranças no Asaas.
+                    </p>
+                    <%= form_with url: club_subscription_change_path(club),
+                                  method: :post,
+                                  scope: :subscription_change,
+                                  class: "subscription-change-dialog__form" do |form| %>
+                      <%= form.hidden_field :new_plan_id, value: @free_plan.id %>
+                      <div class="subscription-change-dialog__actions">
+                        <button type="button"
+                                class="subscription-change-dialog__cancel"
+                                data-action="subscription-cancellation#close">
+                          Voltar
+                        </button>
+                        <%= form.submit "Confirmar cancelamento", class: "club-subscription-submit" %>
+                      </div>
+                    <% end %>
+                  </div>
+                </dialog>
+              </div>
+            <% end %>
           </article>
         <% end %>
       </section>

@@ -49,7 +49,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_select ".app-navbar", count: 0
     assert_select ".landing-nav .app-navbar__profile-menu", count: 1
     assert_select ".landing-nav .app-navbar__profile-link[href='#{access_path}']", text: "Escolha sua navegação", count: 1
-    assert_select ".landing-nav .app-navbar__profile-link[href='#{onboarding_profile_path}']", text: "Meu perfil", count: 1
+    assert_select ".landing-nav .app-navbar__profile-link[href='#{profile_path}']", text: "Meu perfil", count: 1
     assert_select ".landing-nav .app-navbar__profile-link[href='#{club_subscriptions_path}']", text: "Meus planos", count: 1
     assert_select ".landing-nav__actions > a", count: 0
     assert_select ".landing-hero__actions a[href='#{new_user_registration_path}']", count: 0

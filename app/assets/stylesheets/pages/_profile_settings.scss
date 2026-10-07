@@ -1,0 +1,94 @@
+.profile-settings-page {
+  min-height: calc(100vh - 80px);
+  padding: 48px 24px;
+  background: #131218;
+}
+
+.profile-settings-card {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px;
+  color: #f7f5ff;
+  background: #1e1d23;
+  border: 1px solid #2d2c34;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.28);
+}
+
+.profile-settings-card__header {
+  margin-bottom: 32px;
+}
+
+.profile-settings-card__eyebrow {
+  margin-bottom: 8px;
+  color: #c3b5ff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.profile-settings-card h1,
+.profile-settings-card h2 {
+  margin: 0;
+}
+
+.profile-settings-card h1 {
+  font-size: 2rem;
+}
+
+.profile-settings-card h2 {
+  margin-bottom: 20px;
+  font-size: 1.25rem;
+}
+
+.profile-settings-card__header > p:last-child {
+  margin: 8px 0 0;
+  color: #aaa7b8;
+}
+
+.profile-settings-section + .profile-settings-section {
+  margin-top: 36px;
+  padding-top: 32px;
+  border-top: 1px solid #35343c;
+}
+
+.profile-settings-field {
+  margin-bottom: 18px;
+}
+
+.profile-settings-field .form-control {
+  color: #f7f5ff;
+  background: #282731;
+  border-color: #454351;
+}
+
+.profile-settings-field .form-control:disabled {
+  color: #aaa7b8;
+  background: #24232c;
+}
+
+.profile-settings-button {
+  min-height: 44px;
+  padding: 0 22px;
+  color: #26213b;
+  background: #c3b5ff;
+  border: 0;
+  border-radius: 24px;
+  font-weight: 700;
+}
+
+.profile-settings-button:hover {
+  background: #d1c5ff;
+}
+
+@media (max-width: 576px) {
+  .profile-settings-page {
+    padding: 24px 16px;
+  }
+
+  .profile-settings-card {
+    padding: 24px 18px;
+  }
+}

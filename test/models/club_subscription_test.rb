@@ -95,4 +95,70 @@ class ClubSubscriptionTest < ActiveSupport::TestCase
 
     assert_equal @plan, subscription.reload.plan
   end
+
+  test "supports a pending subscription before the first payment approval" do
+    subscription = ClubSubscription.new(
+      club: @club,
+      plan: @plan,
+      owner: @owner,
+      status: :pending,
+      billing_period: @plan.billing_period,
+      asaas_subscription_id: "sub_#{SecureRandom.hex(8)}"
+    )
+
+    assert_predicate subscription, :valid?
+    assert_predicate subscription, :pending?
+    assert_not subscription.valid_at?
+  end
+
+  test "keeps platform access until expiration after provider cancellation" do
+    subscription = ClubSubscription.new(
+      club: @club,
+      plan: @plan,
+      owner: @owner,
+      status: :active,
+      billing_period: @plan.billing_period,
+      expires_at: 1.month.from_now,
+      asaas_subscription_id: "sub_#{SecureRandom.hex(8)}"
+    )
+
+    assert subscription.valid_at?
+  end
+
+  test "blocks platform access after a canceled subscription expires" do
+    subscription = ClubSubscription.new(
+      club: @club,
+      plan: @plan,
+      owner: @owner,
+      status: :active,
+      billing_period: @plan.billing_period,
+      expires_at: 1.day.ago,
+      asaas_subscription_id: "sub_#{SecureRandom.hex(8)}"
+    )
+
+    assert_not subscription.valid_at?
+  end
+
+  test "does not allow duplicate external subscription identifiers" do
+    external_id = "sub_#{SecureRandom.hex(8)}"
+    ClubSubscription.create!(
+      club: @club,
+      plan: @plan,
+      owner: @owner,
+      status: :active,
+      billing_period: @plan.billing_period,
+      asaas_subscription_id: external_id
+    )
+
+    duplicate = ClubSubscription.new(
+      club: Club.create!(name: "Another Subscription Club"),
+      plan: @plan,
+      owner: @owner,
+      status: :active,
+      billing_period: @plan.billing_period,
+      asaas_subscription_id: external_id
+    )
+
+    assert_not_predicate duplicate, :valid?
+  end
 end

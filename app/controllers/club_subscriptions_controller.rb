@@ -2,10 +2,11 @@ class ClubSubscriptionsController < ApplicationController
   skip_before_action :authenticate_user!, only: :new
 
   before_action :set_plan, only: :new
-  before_action :set_requested_club, only: :create
-  before_action :authorize_owner!, only: :create
+  before_action :set_requested_club, only: %i[create quote]
+  before_action :authorize_owner!, only: %i[create quote]
 
   def index
+    @free_plan = Plan.active.find_by(name: "Free")
     @clubs = manageable_clubs
                              .includes(active_club_subscription: :plan,
                                        pending_subscription_change: :new_plan)
@@ -19,6 +20,25 @@ class ClubSubscriptionsController < ApplicationController
                              .includes(active_club_subscription: :plan)
                              .order(:name) if user_signed_in?
     @billing_options = billing_options
+  end
+
+  def quote
+    plan = find_plan_for_contract
+    return render json: { message: "Plano não encontrado." }, status: :not_found unless plan
+    return render json: { message: "Plano indisponível." }, status: :unprocessable_entity unless plan.active?
+
+    result = SubscriptionQuoteService.new(club: @club, plan: plan).call
+    render json: {
+      mode: result.mode,
+      eligible: result.eligible,
+      current_plan_name: result.current_plan_name,
+      new_plan_name: result.new_plan_name,
+      new_plan_amount: result.new_plan_amount.to_f,
+      credit_amount: result.credit_amount.to_f,
+      amount_due: result.amount_due.to_f,
+      next_renewal_at: result.next_renewal_at&.iso8601,
+      message: result.message
+    }
   end
 
   def create
@@ -36,22 +56,33 @@ class ClubSubscriptionsController < ApplicationController
       return head :unprocessable_entity
     end
 
+    if current_subscription && plan.price.to_d > current_subscription.plan.price.to_d &&
+        !current_subscription.plan.free?
+      SubscriptionUpgradeService.new(user: current_user).create_upgrade(plan, @club)
+      redirect_to clubs_path, notice: "Cobrança proporcional do upgrade criada. Aguardando pagamento."
+      return
+    end
+
+    asaas_subscription = Asaas::SubscriptionService.new(user: current_user)
+                                      .create_subscription(plan, @club)
+
     subscription = ClubSubscription.new(
       club: @club,
       plan: plan,
       owner: current_user,
-      status: :active,
+      status: :pending,
       billing_period: plan.billing_period,
-      expires_at: plan.subscription_expires_at
+      asaas_subscription_id: asaas_subscription.fetch(:subscription_id)
     )
 
     ClubSubscription.transaction do
-      @club.active_club_subscription&.update!(status: :canceled)
+      current_user.update!(asaas_customer_id: asaas_subscription[:customer_id]) if
+        current_user.asaas_customer_id.blank? && asaas_subscription[:customer_id].present?
       subscription.save!
     end
 
-    redirect_to clubs_path, notice: "Plano contratado com sucesso."
-  rescue ActiveRecord::RecordInvalid
+    redirect_to clubs_path, notice: "Cobrança criada. Aguardando confirmação do pagamento."
+  rescue ActiveRecord::RecordInvalid, KeyError, Asaas::Error, SubscriptionUpgradeService::Error
     head :unprocessable_entity
   end
 

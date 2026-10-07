@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_06_100100) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_06_180100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -104,15 +104,35 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_100100) do
     t.check_constraint "net_amount > 0::numeric", name: "club_payouts_net_amount_positive"
   end
 
+  create_table "club_subscription_payments", force: :cascade do |t|
+    t.decimal "amount", precision: 10, scale: 2, null: false
+    t.bigint "club_subscription_id", null: false
+    t.datetime "created_at", null: false
+    t.text "failure_reason"
+    t.datetime "paid_at"
+    t.string "provider", default: "asaas", null: false
+    t.string "provider_payment_id"
+    t.string "provider_status"
+    t.string "status", default: "pending", null: false
+    t.datetime "updated_at", null: false
+    t.index ["club_subscription_id"], name: "index_club_subscription_payments_on_club_subscription_id"
+    t.index ["provider", "provider_payment_id"], name: "index_club_subscription_payments_on_provider_payment_id", unique: true, where: "(provider_payment_id IS NOT NULL)"
+    t.index ["status"], name: "index_club_subscription_payments_on_status"
+    t.check_constraint "amount >= 0::numeric", name: "club_subscription_payments_amount_non_negative"
+  end
+
   create_table "club_subscriptions", force: :cascade do |t|
+    t.string "asaas_subscription_id"
     t.string "billing_period", null: false
     t.bigint "club_id", null: false
     t.datetime "created_at", null: false
     t.datetime "expires_at"
     t.bigint "owner_id", null: false
     t.bigint "plan_id", null: false
+    t.datetime "provider_canceled_at"
     t.string "status", default: "active", null: false
     t.datetime "updated_at", null: false
+    t.index ["asaas_subscription_id"], name: "index_club_subscriptions_on_asaas_subscription_id", unique: true, where: "(asaas_subscription_id IS NOT NULL)"
     t.index ["club_id"], name: "index_club_subscriptions_on_active_club", unique: true, where: "((status)::text = 'active'::text)"
     t.index ["club_id"], name: "index_club_subscriptions_on_club_id"
     t.index ["expires_at"], name: "index_club_subscriptions_on_expires_at"
@@ -240,6 +260,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_100100) do
 
   create_table "subscription_changes", force: :cascade do |t|
     t.datetime "applied_at"
+    t.string "asaas_subscription_id"
     t.datetime "canceled_at"
     t.string "change_type", null: false
     t.bigint "club_id", null: false
@@ -251,15 +272,67 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_100100) do
     t.bigint "requested_by_id", null: false
     t.string "status", default: "pending", null: false
     t.datetime "updated_at", null: false
+    t.index ["asaas_subscription_id"], name: "index_subscription_changes_on_asaas_subscription_id", unique: true, where: "(asaas_subscription_id IS NOT NULL)"
     t.index ["change_type"], name: "index_subscription_changes_on_change_type"
     t.index ["club_id"], name: "index_subscription_changes_on_club_id"
-    t.index ["club_id"], name: "index_subscription_changes_on_pending_club", unique: true, where: "((status)::text = 'pending'::text)"
+    t.index ["club_id"], name: "index_subscription_changes_on_pending_club", unique: true, where: "((status)::text = ANY ((ARRAY['pending'::character varying, 'provider_sync_pending'::character varying])::text[]))"
     t.index ["club_subscription_id"], name: "index_subscription_changes_on_club_subscription_id"
     t.index ["current_plan_id"], name: "index_subscription_changes_on_current_plan_id"
     t.index ["effective_at"], name: "index_subscription_changes_on_effective_at"
     t.index ["new_plan_id"], name: "index_subscription_changes_on_new_plan_id"
     t.index ["requested_by_id"], name: "index_subscription_changes_on_requested_by_id"
     t.index ["status"], name: "index_subscription_changes_on_status"
+  end
+
+  create_table "subscription_upgrades", force: :cascade do |t|
+    t.datetime "applied_at"
+    t.string "asaas_payment_id"
+    t.string "asaas_subscription_id"
+    t.bigint "club_id", null: false
+    t.datetime "created_at", null: false
+    t.decimal "credit_amount", precision: 10, scale: 2, null: false
+    t.bigint "current_plan_id", null: false
+    t.bigint "current_subscription_id", null: false
+    t.string "external_reference", null: false
+    t.datetime "failed_at"
+    t.text "failure_reason"
+    t.bigint "new_plan_id", null: false
+    t.bigint "new_subscription_id", null: false
+    t.decimal "original_amount", precision: 10, scale: 2, null: false
+    t.datetime "period_ends_at", null: false
+    t.datetime "period_started_at", null: false
+    t.bigint "requested_by_id", null: false
+    t.string "status", default: "pending_payment", null: false
+    t.datetime "updated_at", null: false
+    t.decimal "upgrade_amount", precision: 10, scale: 2, null: false
+    t.index ["asaas_payment_id"], name: "index_subscription_upgrades_on_asaas_payment_id", unique: true, where: "(asaas_payment_id IS NOT NULL)"
+    t.index ["asaas_subscription_id"], name: "index_subscription_upgrades_on_asaas_subscription_id", unique: true, where: "(asaas_subscription_id IS NOT NULL)"
+    t.index ["club_id"], name: "index_pending_subscription_upgrades_on_club_id", unique: true, where: "((status)::text = ANY ((ARRAY['pending_payment'::character varying, 'payment_approved'::character varying, 'provider_sync_pending'::character varying])::text[]))"
+    t.index ["club_id"], name: "index_subscription_upgrades_on_club_id"
+    t.index ["current_plan_id"], name: "index_subscription_upgrades_on_current_plan_id"
+    t.index ["current_subscription_id"], name: "index_subscription_upgrades_on_current_subscription_id"
+    t.index ["external_reference"], name: "index_subscription_upgrades_on_external_reference", unique: true
+    t.index ["new_plan_id"], name: "index_subscription_upgrades_on_new_plan_id"
+    t.index ["new_subscription_id"], name: "index_subscription_upgrades_on_new_subscription_id"
+    t.index ["requested_by_id"], name: "index_subscription_upgrades_on_requested_by_id"
+    t.index ["status"], name: "index_subscription_upgrades_on_status"
+    t.check_constraint "credit_amount >= 0::numeric", name: "subscription_upgrades_credit_amount_non_negative"
+    t.check_constraint "original_amount >= 0::numeric", name: "subscription_upgrades_original_amount_non_negative"
+    t.check_constraint "upgrade_amount >= 0::numeric", name: "subscription_upgrades_upgrade_amount_non_negative"
+  end
+
+  create_table "subscription_webhook_events", force: :cascade do |t|
+    t.bigint "club_subscription_id"
+    t.bigint "club_subscription_payment_id"
+    t.datetime "created_at", null: false
+    t.string "event_type", null: false
+    t.jsonb "payload", default: {}, null: false
+    t.string "provider", null: false
+    t.string "provider_event_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["club_subscription_id"], name: "index_subscription_webhook_events_on_club_subscription_id"
+    t.index ["club_subscription_payment_id"], name: "idx_on_club_subscription_payment_id_1043413e24"
+    t.index ["provider", "provider_event_id"], name: "index_subscription_webhook_events_on_provider_event_id", unique: true
   end
 
   create_table "tournament_charge_options", force: :cascade do |t|
@@ -411,6 +484,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_100100) do
   add_foreign_key "club_payouts", "club_payout_destinations"
   add_foreign_key "club_payouts", "clubs"
   add_foreign_key "club_payouts", "users", column: "requested_by_id"
+  add_foreign_key "club_subscription_payments", "club_subscriptions"
   add_foreign_key "club_subscriptions", "clubs"
   add_foreign_key "club_subscriptions", "plans"
   add_foreign_key "club_subscriptions", "users", column: "owner_id"
@@ -426,6 +500,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_100100) do
   add_foreign_key "subscription_changes", "plans", column: "current_plan_id"
   add_foreign_key "subscription_changes", "plans", column: "new_plan_id"
   add_foreign_key "subscription_changes", "users", column: "requested_by_id"
+  add_foreign_key "subscription_upgrades", "club_subscriptions", column: "current_subscription_id"
+  add_foreign_key "subscription_upgrades", "club_subscriptions", column: "new_subscription_id"
+  add_foreign_key "subscription_upgrades", "clubs"
+  add_foreign_key "subscription_upgrades", "plans", column: "current_plan_id"
+  add_foreign_key "subscription_upgrades", "plans", column: "new_plan_id"
+  add_foreign_key "subscription_upgrades", "users", column: "requested_by_id"
+  add_foreign_key "subscription_webhook_events", "club_subscription_payments"
+  add_foreign_key "subscription_webhook_events", "club_subscriptions"
   add_foreign_key "tournament_charge_options", "blind_levels", column: "available_from_level_id"
   add_foreign_key "tournament_charge_options", "blind_levels", column: "available_until_level_id"
   add_foreign_key "tournament_charge_options", "tournaments"

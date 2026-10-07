@@ -13,7 +13,9 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
   get "/access", to: "onboarding#access", as: :access
   get "/onboarding/profile", to: "profiles#edit", as: :onboarding_profile
-  patch "/onboarding/profile", to: "profiles#update"
+  patch "/onboarding/profile", to: "profiles#onboarding_update"
+  resource :profile, only: %i[show update], controller: "profiles"
+  get "/club_subscriptions/quote", to: "club_subscriptions#quote", as: :club_subscription_quote
   resources :club_subscriptions, only: %i[index new create]
   resources :clubs, except: :destroy do
     resource :subscription_change,
@@ -64,6 +66,8 @@ Rails.application.routes.draw do
            to: "tournament_buy_in_payments#create"
     end
   end
+
+  post "/webhooks/asaas", to: "webhooks/asaas#create", as: :asaas_webhook
 
   patch "tournament-invitations/:token/confirm",
         to: "tournament_invitation_links#confirm",

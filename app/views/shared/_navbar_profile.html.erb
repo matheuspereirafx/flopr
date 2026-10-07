@@ -17,7 +17,7 @@
     data-inside-menu-target="dropdown"
     hidden>
     <%= link_to "Escolha sua navegação", access_path, class: "app-navbar__profile-link" %>
-    <%= link_to "Meu perfil", onboarding_profile_path, class: "app-navbar__profile-link" %>
+    <%= link_to "Meu perfil", profile_path, class: "app-navbar__profile-link" %>
     <%= link_to "Meus planos", club_subscriptions_path, class: "app-navbar__profile-link" %>
     <%= button_to "Sair", destroy_user_session_path, method: :delete, class: "app-navbar__profile-link app-navbar__profile-link--danger" %>
   </div>

@@ -230,6 +230,43 @@ class ClubSubscriptionsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href='#{root_path(anchor: 'planos')}']", text: "Mudar assinatura", count: 1
   end
 
+  test "owner sees the discreet cancellation link for a paid subscription" do
+    free_plan = Plan.create!(name: "Free", description: "Plano gratuito", price: 0, billing_period: "monthly", active: true)
+    ClubSubscription.create!(
+      club: @club,
+      plan: @plan,
+      owner: @owner,
+      status: :active,
+      billing_period: @plan.billing_period,
+      expires_at: 1.month.from_now
+    )
+    sign_in @owner
+
+    get club_subscriptions_path
+
+    assert_response :success
+    assert_select "button", text: "Cancelamento de assinatura", count: 1
+    assert_select "form[action='#{club_subscription_change_path(@club)}'] input[name='subscription_change[new_plan_id]'][value='#{free_plan.id}']",
+                  count: 1
+  end
+
+  test "does not show the cancellation link when the club is already on Free" do
+    free_plan = Plan.create!(name: "Free", description: "Plano gratuito", price: 0, billing_period: "monthly", active: true)
+    ClubSubscription.create!(
+      club: @club,
+      plan: free_plan,
+      owner: @owner,
+      status: :active,
+      billing_period: free_plan.billing_period
+    )
+    sign_in @owner
+
+    get club_subscriptions_path
+
+    assert_response :success
+    assert_select "a", text: "Cancelamento de assinatura", count: 0
+  end
+
   test "owner creates a pending subscription for the selected club" do
     sign_in @owner
 

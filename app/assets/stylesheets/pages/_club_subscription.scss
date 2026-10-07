@@ -430,6 +430,29 @@
   text-transform: uppercase;
 }
 
+.club-subscription-cancel-link {
+  margin: 0;
+  text-align: center;
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.club-subscription-cancel-link__button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #71717a;
+  cursor: pointer;
+  font: inherit;
+  text-decoration: underline;
+  text-decoration-color: rgba(113, 113, 122, .45);
+  text-underline-offset: 3px;
+}
+
+.club-subscription-cancel-link__button:hover {
+  color: #c9c4d3;
+}
+
 .club-subscription-pending strong {
   font: 700 16px/22px $font-primary;
 }

@@ -6,6 +6,7 @@ class ClubSubscriptionsController < ApplicationController
   before_action :authorize_owner!, only: %i[create quote]
 
   def index
+    @free_plan = Plan.active.find_by(name: "Free")
     @clubs = manageable_clubs
                              .includes(active_club_subscription: :plan,
                                        pending_subscription_change: :new_plan)

@@ -1,6 +1,6 @@
 <nav class="app-navbar <%= "app-navbar--tournament-area" if tournament_area? %>" aria-label="Navegação autenticada">
-  <%= link_to root_path, class: "app-navbar__brand", aria: { label: "Flopr - início" } do %>
-    <span>Flopr</span><strong aria-hidden="true">.</strong>
+  <%= link_to root_path, class: "landing-brand", aria: { label: "Flopr - início" } do %>
+    <span>Flopr</span><i aria-hidden="true"></i>
   <% end %>
 
   <%= render "shared/navbar_profile" %>

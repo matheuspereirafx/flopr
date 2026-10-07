@@ -8,21 +8,7 @@
   min-height:64px;
   padding:0 20px;
   border-bottom:0;
-  background:$backgroundclub;
-}
-
-.app-navbar__brand{
-  display:inline-flex;
-  align-items:center;
-  color:#c7bfff;
-  font:24px/32px $font-primary;
-  letter-spacing:-.4px;
-  text-decoration:none;
-}
-
-.app-navbar__brand strong{
-  color:#eb5160;
-  font-weight:700;
+  background:#0a0a0c;
 }
 
 .app-navbar__profile-menu{

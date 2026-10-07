@@ -92,9 +92,75 @@ class ClubSubscriptionsControllerTest < ActionDispatch::IntegrationTest
     get new_club_subscription_path(plan_id: @plan.id)
 
     assert_response :success
+    assert_select "main[data-subscription-flow-new-plan-id-value='#{@plan.id}']", count: 1
+    assert_select "main[data-subscription-flow-quote-url-value='#{club_subscription_quote_path}']", count: 1
     assert_select "option[value='#{@club.id}']", count: 1
     assert_select "option[value='#{@second_club.id}']", count: 1
     assert_select "option[value='#{@other_club.id}']", count: 0
+  end
+
+  test "returns the full price for an initial subscription quote" do
+    sign_in @owner
+
+    get club_subscription_quote_path,
+        params: { club_id: @club.id, plan_id: @plan.id },
+        headers: { "ACCEPT" => "application/json" }
+
+    assert_response :success
+    quote = JSON.parse(response.body)
+    assert_equal "initial", quote.fetch("mode")
+    assert_equal true, quote.fetch("eligible")
+    assert_equal 0.0, quote.fetch("credit_amount")
+    assert_equal 49.0, quote.fetch("amount_due")
+  end
+
+  test "returns the proportional amount for a paid upgrade quote" do
+    current_plan = Plan.create!(name: "Current #{SecureRandom.hex(4)}", description: "Atual", price: 190, billing_period: "monthly", active: true)
+    next_plan = Plan.create!(name: "Next #{SecureRandom.hex(4)}", description: "Novo", price: 290, billing_period: "monthly", active: true)
+    ClubSubscription.create!(
+      club: @club,
+      plan: current_plan,
+      owner: @owner,
+      status: :active,
+      billing_period: current_plan.billing_period,
+      expires_at: 1.month.from_now
+    )
+    sign_in @owner
+
+    get club_subscription_quote_path,
+        params: { club_id: @club.id, plan_id: next_plan.id },
+        headers: { "ACCEPT" => "application/json" }
+
+    assert_response :success
+    quote = JSON.parse(response.body)
+    assert_equal "upgrade", quote.fetch("mode")
+    assert_equal true, quote.fetch("eligible")
+    assert_in_delta 100.0, quote.fetch("amount_due"), 1.0
+    assert_operator quote.fetch("credit_amount"), :>, 0.0
+  end
+
+  test "rejects a monthly to yearly upgrade quote until its proration rule is defined" do
+    current_plan = Plan.create!(name: "Monthly Current #{SecureRandom.hex(4)}", description: "Atual", price: 190, billing_period: "monthly", active: true)
+    yearly_plan = Plan.create!(name: "Yearly New #{SecureRandom.hex(4)}", description: "Novo", price: 2_436, billing_period: "yearly", active: true)
+    ClubSubscription.create!(
+      club: @club,
+      plan: current_plan,
+      owner: @owner,
+      status: :active,
+      billing_period: current_plan.billing_period,
+      expires_at: 1.month.from_now
+    )
+    sign_in @owner
+
+    get club_subscription_quote_path,
+        params: { club_id: @club.id, plan_id: yearly_plan.id },
+        headers: { "ACCEPT" => "application/json" }
+
+    assert_response :success
+    quote = JSON.parse(response.body)
+    assert_equal "incompatible_cycle", quote.fetch("mode")
+    assert_equal false, quote.fetch("eligible")
+    assert_equal "A troca entre ciclos mensal e anual ainda não está disponível.", quote.fetch("message")
   end
 
   test "owner can navigate between monthly and yearly options" do

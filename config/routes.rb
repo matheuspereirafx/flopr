@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   get "/onboarding/profile", to: "profiles#edit", as: :onboarding_profile
   patch "/onboarding/profile", to: "profiles#onboarding_update"
   resource :profile, only: %i[show update], controller: "profiles"
+  get "/club_subscriptions/quote", to: "club_subscriptions#quote", as: :club_subscription_quote
   resources :club_subscriptions, only: %i[index new create]
   resources :clubs, except: :destroy do
     resource :subscription_change,

@@ -1,7 +1,9 @@
 <main class="club-subscription-page"
       aria-labelledby="club-subscription-title"
       data-controller="subscription-flow"
-      data-subscription-flow-new_plan_price_value="<%= @plan.price.to_f %>">
+      data-subscription-flow-new-plan-price-value="<%= @plan.price.to_f %>"
+      data-subscription-flow-new-plan-id-value="<%= @plan.id %>"
+      data-subscription-flow-quote-url-value="<%= club_subscription_quote_path %>">
   <div class="club-subscription-shell">
     <header class="club-subscription-header">
       <%= link_to "← Voltar para os planos", root_path(anchor: "planos"), class: "club-subscription-back" %>
@@ -52,7 +54,7 @@
                     id="club_id"
                     required
                     data-subscription-flow-target="club"
-                    data-action="change->subscription-flow#checkDowngrade">
+                    data-action="change->subscription-flow#changeClub">
               <option value="">Escolha um clube</option>
               <% @manageable_clubs.each do |club| %>
                 <% same_plan = club.active_club_subscription&.plan_id == @plan.id %>
@@ -79,7 +81,39 @@
               <strong>Atenção: redução de plano</strong>
               <span>O plano escolhido pode ter menos acessos que o plano atual deste clube.</span>
             </div>
-            <%= form.submit "Confirmar contratação", class: "club-subscription-submit" %>
+            <section class="club-subscription-quote"
+                     aria-live="polite"
+                     data-subscription-flow-target="quotePanel"
+                     hidden>
+              <span class="club-subscription-quote__label">Resumo da contratação</span>
+              <dl class="club-subscription-quote__details">
+                <div>
+                  <dt>Plano atual</dt>
+                  <dd data-subscription-flow-target="quoteCurrentPlan">—</dd>
+                </div>
+                <div>
+                  <dt>Novo plano</dt>
+                  <dd data-subscription-flow-target="quoteNewPlan">—</dd>
+                </div>
+                <div>
+                  <dt>Crédito proporcional</dt>
+                  <dd data-subscription-flow-target="quoteCredit">R$ 0,00</dd>
+                </div>
+                <div class="club-subscription-quote__total">
+                  <dt>Valor a pagar agora</dt>
+                  <dd data-subscription-flow-target="quoteAmount">R$ 0,00</dd>
+                </div>
+                <div>
+                  <dt>Próxima renovação</dt>
+                  <dd data-subscription-flow-target="quoteRenewal">—</dd>
+                </div>
+              </dl>
+              <p class="club-subscription-quote__message"
+                 data-subscription-flow-target="quoteMessage"></p>
+            </section>
+            <%= form.submit "Confirmar contratação",
+                            class: "club-subscription-submit",
+                            data: { subscription_flow_target: "submit" } %>
           <% else %>
             <p class="club-subscription-security-note">Todos os seus clubes já possuem este plano ativo.</p>
             <%= form.submit "Plano já contratado", class: "club-subscription-submit", disabled: true %>

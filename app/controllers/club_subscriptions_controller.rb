@@ -2,8 +2,8 @@ class ClubSubscriptionsController < ApplicationController
   skip_before_action :authenticate_user!, only: :new
 
   before_action :set_plan, only: :new
-  before_action :set_requested_club, only: :create
-  before_action :authorize_owner!, only: :create
+  before_action :set_requested_club, only: %i[create quote]
+  before_action :authorize_owner!, only: %i[create quote]
 
   def index
     @clubs = manageable_clubs
@@ -19,6 +19,25 @@ class ClubSubscriptionsController < ApplicationController
                              .includes(active_club_subscription: :plan)
                              .order(:name) if user_signed_in?
     @billing_options = billing_options
+  end
+
+  def quote
+    plan = find_plan_for_contract
+    return render json: { message: "Plano não encontrado." }, status: :not_found unless plan
+    return render json: { message: "Plano indisponível." }, status: :unprocessable_entity unless plan.active?
+
+    result = SubscriptionQuoteService.new(club: @club, plan: plan).call
+    render json: {
+      mode: result.mode,
+      eligible: result.eligible,
+      current_plan_name: result.current_plan_name,
+      new_plan_name: result.new_plan_name,
+      new_plan_amount: result.new_plan_amount.to_f,
+      credit_amount: result.credit_amount.to_f,
+      amount_due: result.amount_due.to_f,
+      next_renewal_at: result.next_renewal_at&.iso8601,
+      message: result.message
+    }
   end
 
   def create
